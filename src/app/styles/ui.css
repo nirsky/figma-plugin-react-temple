@@ -1,9 +1,72 @@
-body {
-  font: 12px sans-serif;
-  text-align: center;
-  margin: 20px;
+div {
+  border: 1px solid #000;
+  margin: 4px;
 }
-button {
+
+div.palette {
+  
+  border-bottom: 0px solid #c0babe;
+}
+div.colours {
+  display: inline-flex;
+  width: 100%
+}
+div.meta {
+  display: flex;
+  justify-content: space-between;
+}
+
+input.title {
+width: 300px;
+font-weight: bold;
+font-size: 20px;
+display: inline-block;
+vertical-align: top;
+background-color: #efebed;
+border: 1px solid #c3bec1;
+white-space: nowrap;
+overflow: hidden;
+border-radius: 4px;
+
+}
+div.type {
+  margin-right: auto;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  padding-left: 4px;
+padding-right: 4px;
+} 
+div.controls {
+  display: flex;
+  align-items: center;
+} 
+
+div.control {
+  width: 32px;
+  height: 32px;
+  margin: 0px;
+} 
+
+div.colour {
+  width: 32px;
+  height: 32px;
+} 
+input.colourField {
+  
+  width: 24px;
+  height: 24px;
+  
+  
+  }
+
+body {
+  padding: 1em;
+  background-color: #e9e3e6;
+  color: #01161E;
+  font-family: "Jost", sans-serif;
+}
+/*button {
   border-radius: 5px;
   background: white;
   color: black;
@@ -12,7 +75,7 @@ button {
   margin: 0 5px;
   box-shadow: inset 0 0 0 1px black;
   outline: none;
-}
+}*/
 #create {
   box-shadow: none;
   background: #18a0fb;

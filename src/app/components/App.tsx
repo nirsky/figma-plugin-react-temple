@@ -1,47 +1,79 @@
 import React from 'react';
-import logo from '../assets/logo.svg';
 import '../styles/ui.css';
+import Palettes from './paletteDisplay';
 
-function App() {
-  const textbox = React.useRef<HTMLInputElement>(undefined);
 
-  const countRef = React.useCallback((element: HTMLInputElement) => {
-    if (element) element.value = '5';
-    textbox.current = element;
-  }, []);
+const palettes = [
+  {
+  "meta": {
+      "title": 'palette 1',
+      "type": 'categorical',
+      "seed": ['123456'],
+      "comment": 'Thise is a test comment',
+      "controls": [{
+        "name": 'edit', 
+        "position": '1', 
+        "tooltip": 'Edit Palette'
+      }, 
+      {
+        "name": 'link', 
+        "position": '2', 
+        "tooltip": 'Create Linked Palettes'
+      }, 
+      {
+        "name": 'swap_horiz', 
+        "position": '2', 
+        "tooltip": 'Reveres Palette'
+      }, 
+      {
+        "name": 'arrow_upward', 
+        "position": '2', 
+        "tooltip": 'Move Palette one up'
+      }, 
+      {
+        "name": 'arrow_downward', 
+        "position": '2', 
+        "tooltip": 'Move Palette one down'
+      }, 
+      {
+        "name": 'delete', 
+        "position": '2', 
+        "tooltip": 'Delete Palette'
+      }]
+      },  
+  "colours": [{"value": '#ff074e', "id": '123'}, {"value": '#fabcde', "id": '456789'}]
+  },
+  {
+  "meta": {
+      "title": 'palette 2',
+      "type": 'sequential',
+      "seed": ['123456'],
+      "comment": 'Thise is a test comment',
+      "controls": [{
+        "name": 'swap_horiz', 
+        "position": '2', 
+        "tooltip": 'Reveres Palette'
+      }, 
+      {
+        "name": 'arrow_upward', 
+        "position": '2', 
+        "tooltip": 'Move Palette one up'
+      }, 
+      {
+        "name": 'arrow_downward', 
+        "position": '2', 
+        "tooltip": 'Move Palette one down'
+      }, 
+      {
+        "name": 'delete', 
+        "position": '2', 
+        "tooltip": 'Delete Palette'
+      }]
+  },  
+  "colours": [{"value": '#763916', "id": '123456'}, {"value": '#96fe11', "id": '456789'}]
+  },
+]
 
-  const onCreate = () => {
-    const count = parseInt(textbox.current.value, 10);
-    parent.postMessage({ pluginMessage: { type: 'create-rectangles', count } }, '*');
-  };
-
-  const onCancel = () => {
-    parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
-  };
-
-  React.useEffect(() => {
-    // This is how we read messages sent from the plugin controller
-    window.onmessage = (event) => {
-      const { type, message } = event.data.pluginMessage;
-      if (type === 'create-rectangles') {
-        console.log(`Figma Says: ${message}`);
-      }
-    };
-  }, []);
-
-  return (
-    <div>
-      <img src={logo} />
-      <h2>Rectangle Creator</h2>
-      <p>
-        Count: <input ref={countRef} />
-      </p>
-      <button id="create" onClick={onCreate}>
-        Create
-      </button>
-      <button onClick={onCancel}>Cancel</button>
-    </div>
-  );
+export default function App() {
+  return <Palettes palettes={palettes} />;
 }
-
-export default App;

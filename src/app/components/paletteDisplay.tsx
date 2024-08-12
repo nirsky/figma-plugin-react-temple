@@ -1,5 +1,6 @@
 import React from "react"
 import { useState } from 'react';
+import { useImmer } from 'use-immer'
 
 function Colour({colour}){
   return(
@@ -36,10 +37,14 @@ function Control({index, control, palette, setPalette, palettes, setPalettes}){
         console.log('link')
         break;
       case 'swap':
-        setPalette({
+
+      setPalette(draft => {
+        draft.colours = palette.colours.toReversed()
+      })
+      /*  setPalette({
           ...palette,
           colours: palette.colours.toReversed()
-        })
+        })*/
         break;
       case 'up':
         if (index <= 0 || index > palettes.length - 1) {
@@ -104,10 +109,10 @@ function Controls({index, controls, palette, setPalette, palettes, setPalettes})
 }
   
 function Meta({index, meta, palette, setPalette, palettes, setPalettes}){
-  function handleOnChange() {
-    setPalette({
-      ...palette,
-      meta.title: palette.colours.toReversed()
+  function handleInputChange(e) {
+    
+    setPalette(draft => {
+      draft.meta.title = e.target.value;
     })
   }
   return(
@@ -116,7 +121,7 @@ function Meta({index, meta, palette, setPalette, palettes, setPalettes}){
             type="text" 
             className="title" 
             value={meta.title}
-            onChange={handleOnChange}></input>
+            onChange={handleInputChange}></input>
           <div className="type">{meta.type}</div>
           <Controls 
             index = {index}
@@ -130,7 +135,8 @@ function Meta({index, meta, palette, setPalette, palettes, setPalettes}){
 }
   
 function Palette({paletteContent, index, palettes, setPalettes}){
-  const [palette, setPalette] = useState(paletteContent);
+  const [palette, setPalette] = useImmer(paletteContent);
+  //console.log('palette', palette)
   return(
       <div className="palette">
           <Meta 
@@ -147,6 +153,7 @@ function Palette({paletteContent, index, palettes, setPalettes}){
   
 export default function Palettes ( {paletteContent}) {
   const [palettes, setPalettes] = useState(paletteContent);
+  
     const rows = []
     
     palettes.forEach((palette, index) => {

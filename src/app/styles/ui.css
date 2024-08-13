@@ -39,6 +39,11 @@ div.type {
 padding-right: 4px;
 } 
 
+textarea {
+  width: 100%;
+  height: 64px;
+}
+
 div.controls {
   display: flex;
   align-items: center;
@@ -58,7 +63,7 @@ div.colour {
   height: 32px;
 } 
 
-input.colourField {
+input.colourField, div.colourfield {
   width: 24px;
   height: 24px;
 }

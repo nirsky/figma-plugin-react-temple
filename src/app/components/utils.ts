@@ -1,3 +1,7 @@
+
+//import { chroma } from 'chroma-js'
+import chroma from "chroma-js"
+
 type Control = {
     type: 'swap' | 'up' | 'down' | 'delete'; // Enumerate the possible types
     name: string;
@@ -68,4 +72,21 @@ export function parseXML(doc) {
     }
     console.log('loadedPalettes', loadedPalettes)
     return loadedPalettes
+}
+
+
+export function parseColours(input: string) {
+    const hexColorRegex = /(?<=\W|x|^)([a-fA-F0-9]{8}|[a-fA-F0-9]{6}|#[a-fA-F0-9]{3})(?=\W|$)/g;
+    let colours = []
+    if (input != "") {
+        colours = input.match(hexColorRegex);
+     }
+
+     colours = colours.map( value => chroma(value).hex())
+    /*if (colours != null){
+        colours.forEach(function(colour) {
+            palette.addColour(chroma(colour).hex())
+        })
+    }*/
+    return colours;
 }

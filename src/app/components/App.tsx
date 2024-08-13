@@ -1,9 +1,9 @@
 import React from 'react';
 import '../styles/ui.css';
-import Palettes from './paletteDisplay';
+import ColourManager from './paletteDisplay';
 
 
-const palettes = [
+/*const palettes = [
   {
   "meta": {
       "title": 'palette 1',
@@ -115,9 +115,17 @@ const palettes = [
   },  
   "colours": [{"value": '#369852', "id": '46548'}, {"value": '#153874', "id": '318494'}]
   }
-]
+]*/
+
+
+
+
 
 
 export default function App() {
-  return <Palettes paletteContent={palettes} />;
+  return( 
+    <>
+      <ColourManager />
+    </>)
+
 }

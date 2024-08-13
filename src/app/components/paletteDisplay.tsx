@@ -1,6 +1,88 @@
 import React from "react"
 import { useState } from 'react';
 import { useImmer } from 'use-immer'
+import { parseXML } from './fileHandle'
+
+
+const controls = [/*{
+        "type": 'edit', 
+        "name": 'edit', 
+        "position": '1', 
+        "tooltip": 'Edit Palette'
+      }, 
+      {
+        "type": 'link', 
+        "name": 'link', 
+        "position": '2', 
+        "tooltip": 'Create Linked Palettes'
+      }, */
+      {
+        "type": 'swap', 
+        "name": 'swap_horiz', 
+        "position": '3', 
+        "tooltip": 'Reveres Palette'
+      }, 
+      {
+        "type": 'up', 
+        "name": 'arrow_upward', 
+        "position": '4', 
+        "tooltip": 'Move Palette one up'
+      }, 
+      {
+        "type": 'down', 
+        "name": 'arrow_downward', 
+        "position": '5', 
+        "tooltip": 'Move Palette one down'
+      }, 
+      {
+        "type": 'delete', 
+        "name": 'delete', 
+        "position": '6', 
+        "tooltip": 'Delete Palette'
+      }]
+
+function Intro (palettes, setPalettes) {
+  console.log('palettes Intro', palettes)
+  console.log('setPalettes Intro', setPalettes)
+  function handleOnFileChange(e) {
+    e.preventDefault();
+
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    let newPalettes = []
+    let xml = []
+
+    if (!file) return;
+
+    console.log('file', file)
+    reader.readAsText(file);
+    reader.onload = function() {
+        xml = parseXML(reader.result);
+        console.log('xml', xml)
+        newPalettes = palettes.palettes.slice().concat(xml)
+        console.log('newPalettes', newPalettes)
+        palettes.setPalettes(newPalettes)
+    };
+  }
+
+  return(
+    <>
+      <h1>Colour Manager for Tableau</h1>
+        <div>
+          <h2>Upload your preferences.tps (optional)</h2>
+          <div>
+              <p>Or add palettes below if you start from scratch.</p>
+              <p>You can find it in: C:\Users\..\Documents\My Tableau Repository.</p>
+              <p>For more details on what this tool is doing, visit <a href="https://help.tableau.com/current/pro/desktop/en-us/formatting_create_custom_colors.htm">the Tableau Knowledge Base</a></p>
+          </div>
+          <form id="upload">
+              <input type="file" id="file" accept=".tps" onChange={handleOnFileChange}></input>
+          </form>
+      </div>
+    </>
+  );
+}
+
 
 function Colour({colour}){
   return(
@@ -37,14 +119,9 @@ function Control({index, control, palette, setPalette, palettes, setPalettes}){
         console.log('link')
         break;
       case 'swap':
-
-      setPalette(draft => {
-        draft.colours = palette.colours.toReversed()
-      })
-      /*  setPalette({
-          ...palette,
-          colours: palette.colours.toReversed()
-        })*/
+        setPalette(draft => {
+          draft.colours = palette.colours.toReversed()
+        })
         break;
       case 'up':
         if (index <= 0 || index > palettes.length - 1) {
@@ -55,7 +132,6 @@ function Control({index, control, palette, setPalette, palettes, setPalettes}){
           newPalettes.splice(index - 1, 0, element);
           setPalettes(newPalettes)
         }
-        console.log('up')
         break;
       case 'down':
         if (index < 0 || index >= palettes.length - 1) {
@@ -86,7 +162,7 @@ function Control({index, control, palette, setPalette, palettes, setPalettes}){
   )
 }
   
-function Controls({index, controls, palette, setPalette, palettes, setPalettes}){
+function Controls({index, palette, setPalette, palettes, setPalettes}){
   const rows = []
   controls.forEach((control) => {
       rows.push(
@@ -99,8 +175,8 @@ function Controls({index, controls, palette, setPalette, palettes, setPalettes})
               palettes = {palettes}
               setPalettes = {setPalettes} />
       )
-
   })
+
   return(
       <div className="controls">
           {rows}
@@ -125,7 +201,6 @@ function Meta({index, meta, palette, setPalette, palettes, setPalettes}){
           <div className="type">{meta.type}</div>
           <Controls 
             index = {index}
-            controls = {meta.controls}
             palette = {palette}
             setPalette = {setPalette}
             palettes = {palettes}
@@ -151,11 +226,10 @@ function Palette({paletteContent, index, palettes, setPalettes}){
   )
 }
   
-export default function Palettes ( {paletteContent}) {
-  const [palettes, setPalettes] = useState(paletteContent);
+function Palettes ( {palettes, setPalettes}) {
   
+  console.log('palettes Palettes', palettes)
     const rows = []
-    
     palettes.forEach((palette, index) => {
         rows.push(
             <Palette 
@@ -165,15 +239,148 @@ export default function Palettes ( {paletteContent}) {
                 palettes = {palettes}
                 setPalettes = {setPalettes}/>
         )
-  
     })
-    //console.log('palettes', palettes)
     return (
-      <div>
-        <div>Header!?</div>
-        <div>{rows}</div>
-      </div>
+      <>
+        {rows}
+      </>
       );
   
+  }
+
+  function AddPalettes() {
+    return (
+      <div>
+        Add palettes
+      </div>
+      );
+  }
+
+  export default function ColourManager() {
+    const [palettes, setPalettes] = useState([
+      {
+      "meta": {
+          "title": 'palette 1',
+          "type": 'categorical',
+          "seed": ['123456'],
+          "comment": 'Thise is a test comment',
+          "controls": [{
+            "type": 'edit', 
+            "name": 'edit', 
+            "position": '1', 
+            "tooltip": 'Edit Palette'
+          }, 
+          {
+            "type": 'link', 
+            "name": 'link', 
+            "position": '2', 
+            "tooltip": 'Create Linked Palettes'
+          }, 
+          {
+            "type": 'swap', 
+            "name": 'swap_horiz', 
+            "position": '2', 
+            "tooltip": 'Reveres Palette'
+          }, 
+          {
+            "type": 'up', 
+            "name": 'arrow_upward', 
+            "position": '2', 
+            "tooltip": 'Move Palette one up'
+          }, 
+          {
+            "type": 'down', 
+            "name": 'arrow_downward', 
+            "position": '2', 
+            "tooltip": 'Move Palette one down'
+          }, 
+          {
+            "type": 'delete', 
+            "name": 'delete', 
+            "position": '2', 
+            "tooltip": 'Delete Palette'
+          }]
+          },  
+      "colours": [{"value": '#ff074e', "id": '123'}, {"value": '#fabcde', "id": '456789'}]
+      },
+      {
+      "meta": {
+          "title": 'palette 2',
+          "type": 'sequential',
+          "seed": ['123456'],
+          "comment": 'Thise is a test comment',
+          "controls": [{
+            "type": 'swap', 
+            "name": 'swap_horiz', 
+            "position": '2', 
+            "tooltip": 'Reveres Palette'
+          }, 
+          {
+            "type": 'up', 
+            "name": 'arrow_upward', 
+            "position": '2', 
+            "tooltip": 'Move Palette one up'
+          }, 
+          {
+            "type": 'down', 
+            "name": 'arrow_downward', 
+            "position": '2', 
+            "tooltip": 'Move Palette one down'
+          }, 
+          {
+            "type": 'delete', 
+            "name": 'delete', 
+            "position": '2', 
+            "tooltip": 'Delete Palette'
+          }]
+      },  
+      "colours": [{"value": '#763916', "id": '123456'}, {"value": '#96fe11', "id": '456789'}]
+      },
+      {
+      "meta": {
+          "title": 'palette 3',
+          "type": 'sequential',
+          "seed": ['384321'],
+          "comment": 'Thise is a test comment',
+          "controls": [{
+            "type": 'swap', 
+            "name": 'swap_horiz', 
+            "position": '2', 
+            "tooltip": 'Reveres Palette'
+          }, 
+          {
+            "type": 'up', 
+            "name": 'arrow_upward', 
+            "position": '2', 
+            "tooltip": 'Move Palette one up'
+          }, 
+          {
+            "type": 'down', 
+            "name": 'arrow_downward', 
+            "position": '2', 
+            "tooltip": 'Move Palette one down'
+          }, 
+          {
+            "type": 'delete', 
+            "name": 'delete', 
+            "position": '2', 
+            "tooltip": 'Delete Palette'
+          }]
+      },  
+      "colours": [{"value": '#369852', "id": '46548'}, {"value": '#153874', "id": '318494'}]
+      }
+    ]);
+    //let paletteContent = []
+    return (
+      <div>
+        <Intro 
+            palettes = {palettes}
+            setPalettes = {setPalettes}/>
+        <Palettes
+            palettes = {palettes}
+            setPalettes = {setPalettes}/>
+        <AddPalettes />
+      </div>
+      );
   }
   

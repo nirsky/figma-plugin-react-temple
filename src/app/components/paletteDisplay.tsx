@@ -2,6 +2,7 @@ import React from "react"
 import { useState } from 'react';
 import { useImmer } from 'use-immer'
 import { parseColours, parseXML } from './utils'
+import chroma from "chroma-js"
 
 
 const controls = [/*{
@@ -109,47 +110,24 @@ function Intro (palettes, setPalettes) {
 }
 
 
-function Colour({colour, type}){
-function handleOnClick() {
-  /*palette.colours.forEach(function(colour) {
-    divColour = createDOMNode('div', {class: 'colour selected', style: 'background-color: ' + colour.value + ';', uuid: colour.uuid, seed: colour.uuid}, parent)
-    if (chroma.contrast(colour.value, '#ffffff') < 4.5 ) {
-        textcolour = '#000000'
-    } else {
-        textcolour = '#ffffff'
-    }
-    createDOMNode('i', {class: 'material-symbols-outlined', text: 'check', style:"color:" + textcolour + ' !important;'}, divColour)
-    setSelectListener(divColour)
-})
-*/
-
+function ColourActive({colour}){
+  return(
+    <div className="clr-field" style={{color: colour}}>
+      <button type="button" aria-labelledby="clr-open-label"></button>
+      <input type="text" className="coloris colourField" value={colour} data-coloris></input>
+    </div>
+  )
 }
-  switch (type) {
-    case 'active':   
-      return(
-        <div className="clr-field" style={{color: colour}}>
-          <button type="button" aria-labelledby="clr-open-label"></button>
-          <input type="text" className="coloris colourField" value={colour} data-coloris></input>
-        </div>
-      )
-    case 'select':
-      return(
-      <div className="colourfield" style={{backgroundColor: colour.value}} onClick={handleOnClick}>
-        <i className='material-symbols-outlined'>check</i>
-      </div>
-      )
-  }
 
-}
+
   
 function Colours({colours}){
   const rows = []
   colours.forEach((colour) => {
     rows.push( 
-        <Colour 
+        <ColourActive 
             colour = {colour.value}
-            key = {colour.value}
-            type = 'active' />
+            key = {colour.value}/>
     )
   })
   return(
@@ -290,62 +268,91 @@ function Palettes ( {palettes, setPalettes}) {
     return (<>{rows}</>);
   }
 
-  function AddButtons() {
-    function handleOnEverythingClick () {
+function AddButtons() {
+  function handleOnEverythingClick () {
 
-    }
-    return(<>
-            <p>
-              <button onClick={handleOnEverythingClick}>Create Everything</button>
-            </p>
-            <p>
-              <button id="create-categorical">Categorical Palette</button>
-              <button id="create-sequential">Sequential Palette</button>
-            </p>  
-            <p>
-              <button id="create-diverging">Diverging Palette (bright)</button>  
-              <button id="create-diverging-tableau">Diverging Palette (dark)</button>  
-            </p>
-        </>
-    )
   }
+  return(<>
+          <p>
+            <button onClick={handleOnEverythingClick}>Create Everything</button>
+          </p>
+          <p>
+            <button id="create-categorical">Categorical Palette</button>
+            <button id="create-sequential">Sequential Palette</button>
+          </p>  
+          <p>
+            <button id="create-diverging">Diverging Palette (bright)</button>  
+            <button id="create-diverging-tableau">Diverging Palette (dark)</button>  
+          </p>
+      </>
+  )
+}
 
-  function AddPalettes() {
-    const [colours, setColours] = useImmer([]);
-    function handleOnChange(e) {
-      let newColours = []
-      const parsedColours = parseColours(e.target.value)
-      parsedColours.forEach((parsedColour) => {
-        newColours.push(
-          {
-            value: parsedColour,
-            selected: false
-          }
-        )
-      }) 
+function ColourSelect({colour, colours, setColours}){
+  function handleOnClick() { 
+    let newColours = colours.slice()
+      newColours[colour.index].selected = !colour.selected
       setColours(newColours)
-    }
-
-    const rows = []
-    colours.forEach((colour, index) => {
-        rows.push(
-            <Colour 
-                colour = {colour}
-                key = {index}
-                type = 'select' />
-        )
-    })
-
-    return (
-      <div>
-                <textarea id="colourstring" placeholder="eg.: https://coolors.co/fb5012-#01fdf6 (cbbaed,#e9df00)#03fcba" onChange={handleOnChange} defaultValue='https://coolors.co/01161e-8dadb9-124559-e9e3e6-c4d6b0'></textarea>
-                <div>You can insert any text with hexcodes, no need to clean them up. All found colours are displayed below.</div>
-                <div className="colours">{rows}</div>
-                <div>Select the coloured boxes above to create palettes</div>
-                    <AddButtons />
-            </div>
-      );
   }
+  let selected = ''
+  if (colour.selected === true) {
+    selected = 'check'
+  } else {
+    selected = ''
+  }
+  let textcolour = ''
+  if (chroma.contrast(colour.value, '#ffffff') < 4.5 ) {
+    textcolour = '#000000'
+  } else {
+    textcolour = '#ffffff'
+  }
+
+  return(
+        <div className="colourfield" style={{backgroundColor: colour.value, color: textcolour}} onClick={handleOnClick}>
+          <i className='material-symbols-outlined'>{selected}</i>
+        </div>
+  )
+  }
+
+
+function AddPalettes() {
+  const [colours, setColours] = useImmer([]);
+  function handleOnChange(e) {
+    let newColours = []
+    const parsedColours = parseColours(e.target.value)
+    parsedColours.forEach((parsedColour, index) => {
+      newColours.push(
+        {
+          value: parsedColour,
+          selected: false,
+          index: index
+        }
+      )
+    }) 
+    setColours(newColours)
+  }
+
+  const rows = []
+  colours.forEach((colour, index) => {
+      rows.push(
+          <ColourSelect 
+              colour = {colour}
+              key = {index}
+              colours = {colours}
+              setColours = {setColours} />
+      )
+  })
+
+  return (
+    <div>
+              <textarea id="colourstring" placeholder="eg.: https://coolors.co/fb5012-#01fdf6 (cbbaed,#e9df00)#03fcba" onChange={handleOnChange} defaultValue='https://coolors.co/01161e-8dadb9-124559-e9e3e6-c4d6b0'></textarea>
+              <div>You can insert any text with hexcodes, no need to clean them up. All found colours are displayed below.</div>
+              <div className="colours">{rows}</div>
+              <div>Select the coloured boxes above to create palettes</div>
+                  <AddButtons />
+          </div>
+    );
+}
 
   export default function ColourManager() {
     const [palettes, setPalettes] = useState(testPalettes);

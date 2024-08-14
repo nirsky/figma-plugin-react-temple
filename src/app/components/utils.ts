@@ -90,7 +90,7 @@ export function parseColours(input: string) {
     }*/
     return colours;
 }
-
+/*
 export function generateSequential(colour, steps = 20) {
     let sequence = new Palette
     sequence.seed = [].concat(colour)[0]
@@ -122,4 +122,4 @@ export function generateSequential(colour, steps = 20) {
         sequence.addColour(newColours(i / steps).hex())
     }
     return sequence;
-}
+}*/

@@ -70,7 +70,24 @@ const controls = [/*{
   },
   "colours": [{"value": '#369852', "id": '46548'}, {"value": '#153874', "id": '318494'}]
   }
-]     
+]  
+
+export default function ColourManager() {
+  const [palettes, setPalettes] = useState(testPalettes);
+  return (
+    <div>
+      <Intro 
+          palettes = {palettes}
+          setPalettes = {setPalettes}/>
+      <Palettes
+          palettes = {palettes}
+          setPalettes = {setPalettes}/>
+      <AddPalettes
+          palettes = {palettes}
+          setPalettes = {setPalettes}/>
+    </div>
+    );
+}
 
 function Intro (palettes, setPalettes) {
   function handleOnFileChange(e) {
@@ -109,31 +126,84 @@ function Intro (palettes, setPalettes) {
   );
 }
 
-function ColourActive({colour}){
+function Palettes ( {palettes, setPalettes}) {
+  const rows = []
+  palettes.forEach((palette, index) => {
+      rows.push(
+          <Palette 
+              paletteContent = {palette}
+              index = {index}
+              key = {palette.meta.title} 
+              palettes = {palettes}
+              setPalettes = {setPalettes}/>
+      )
+  })
+  return (<>{rows}</>);
+}
+
+function Palette({paletteContent, index, palettes, setPalettes}){
+  const [palette, setPalette] = useImmer(paletteContent);
   return(
-    <div className="clr-field" style={{color: colour}}>
-      <button type="button" aria-labelledby="clr-open-label"></button>
-      <input type="text" className="coloris colourField" value={colour} data-coloris></input>
-    </div>
+      <div className="palette">
+          <Meta 
+            index = {index}
+            meta = {palette.meta}
+            palette = {palette}
+            setPalette = {setPalette}
+            palettes = {palettes}
+            setPalettes = {setPalettes}/>
+          <Colours colours = {palette.colours}/>
+      </div>
   )
 }
 
-function Colours({colours}){
-  const rows = []
-  colours.forEach((colour) => {
-    rows.push( 
-        <ColourActive 
-            colour = {colour.value}
-            key = {colour.value}/>
-    )
-  })
+function Meta({index, meta, palette, setPalette, palettes, setPalettes}){
+  function handleInputChange(e) {
+    
+    setPalette(draft => {
+      draft.meta.title = e.target.value;
+    })
+  }
   return(
-      <div className="colours">
+      <div className="meta">
+          <input 
+            type="text" 
+            className="title" 
+            value={meta.title}
+            onChange={handleInputChange}></input>
+          <div className="type">{meta.type}</div>
+          <Controls 
+            index = {index}
+            palette = {palette}
+            setPalette = {setPalette}
+            palettes = {palettes}
+            setPalettes = {setPalettes}/>
+      </div>
+  )
+}
+
+function Controls({index, palette, setPalette, palettes, setPalettes}){
+  const rows = []
+  controls.forEach((control) => {
+      rows.push(
+          <Control 
+              index = {index}
+              control = {control}
+              key = {control.name}
+              palette = {palette}
+              setPalette = {setPalette}
+              palettes = {palettes}
+              setPalettes = {setPalettes} />
+      )
+  })
+
+  return(
+      <div className="controls">
           {rows}
       </div>
   )
 }
-  
+
 function Control({index, control, palette, setPalette, palettes, setPalettes}){
   function handleOnClick() {
     switch  (control.type) {
@@ -186,83 +256,109 @@ function Control({index, control, palette, setPalette, palettes, setPalettes}){
       </div>
   )
 }
-  
-function Controls({index, palette, setPalette, palettes, setPalettes}){
-  const rows = []
-  controls.forEach((control) => {
-      rows.push(
-          <Control 
-              index = {index}
-              control = {control}
-              key = {control.name}
-              palette = {palette}
-              setPalette = {setPalette}
-              palettes = {palettes}
-              setPalettes = {setPalettes} />
-      )
-  })
 
+function Colours({colours}){
+  const rows = []
+  colours.forEach((colour) => {
+    rows.push( 
+        <ColourActive 
+            colour = {colour.value}
+            key = {colour.value}/>
+    )
+  })
   return(
-      <div className="controls">
+      <div className="colours">
           {rows}
       </div>
   )
 }
+
+function ColourActive({colour}){
+  return(
+    <div className="clr-field" style={{color: colour}}>
+      <button type="button" aria-labelledby="clr-open-label"></button>
+      <input type="text" className="coloris colourField" value={colour} readOnly data-coloris></input>
+    </div>
+  )
+}   
   
-function Meta({index, meta, palette, setPalette, palettes, setPalettes}){
-  function handleInputChange(e) {
-    
-    setPalette(draft => {
-      draft.meta.title = e.target.value;
-    })
+function AddPalettes({palettes, setPalettes}) {
+  const [colours, setColours] = useState([]);
+  function handleOnChange(e) {
+    let newColours = []
+    const parsedColours = parseColours(e.target.value)
+    parsedColours.forEach((parsedColour, index) => {
+      newColours.push(
+        {
+          value: parsedColour,
+          selected: false,
+          index: index
+        }
+      )
+    }) 
+    setColours(newColours)
   }
-  return(
-      <div className="meta">
-          <input 
-            type="text" 
-            className="title" 
-            value={meta.title}
-            onChange={handleInputChange}></input>
-          <div className="type">{meta.type}</div>
-          <Controls 
-            index = {index}
-            palette = {palette}
-            setPalette = {setPalette}
-            palettes = {palettes}
-            setPalettes = {setPalettes}/>
-      </div>
-  )
-}
-  
-function Palette({paletteContent, index, palettes, setPalettes}){
-  const [palette, setPalette] = useImmer(paletteContent);
-  return(
-      <div className="palette">
-          <Meta 
-            index = {index}
-            meta = {palette.meta}
-            palette = {palette}
-            setPalette = {setPalette}
-            palettes = {palettes}
-            setPalettes = {setPalettes}/>
-          <Colours colours = {palette.colours}/>
-      </div>
-  )
-}
-  
-function Palettes ( {palettes, setPalettes}) {
-    const rows = []
-    palettes.forEach((palette, index) => {
-        rows.push(
-            <Palette 
-                paletteContent = {palette}
-                index = {index}
-                key = {palette.meta.title} 
-                palettes = {palettes}
-                setPalettes = {setPalettes}/>
-        )
-    })
-    return (<>{rows}</>);
+
+  function handleOnSelectClick(e) {
+    let select = false
+    switch (e.target.textContent){
+      case 'All':
+        select = true
+        break;
+      case 'None':
+        select = false
+        break;
+    }
+    const newColours = colours.map(element => {
+      return {
+          ...element,
+          selected: select
+      };
+    });
+    setColours(newColours)
+  }
+
+  const rows = []
+  colours.forEach((colour, index) => {
+      rows.push(
+          <ColourSelect 
+              colour = {colour}
+              key = {index}
+              colours = {colours}
+              setColours = {setColours} />
+      )
+  })
+
+  let selectButtons, btnAllDisabled, btnNoneDisabled
+
+  if (colours.filter(element => element.selected === true).length === 0) {
+    btnNoneDisabled = 'disabled'
+  } else {
+    btnNoneDisabled = ''
+  }
+
+  if (colours.filter(element => element.selected === false).length === 0) {
+    btnAllDisabled = 'disabled'
+  } else {
+    btnAllDisabled = ''
+  }
+
+  if (colours.length > 0) {
+    selectButtons  = <>Select <button onClick={handleOnSelectClick} className={btnAllDisabled}>All</button>
+                        <button onClick={handleOnSelectClick} className={btnNoneDisabled}>None</button>
+                      </>
+  }
+
+  return (
+    <div>
+              <textarea id="colourstring" placeholder="eg.: https://coolors.co/fb5012-#01fdf6 (cbbaed,#e9df00)#03fcba" onInput={handleOnChange} onLoad={handleOnChange} defaultValue='https://coolors.co/01161e-8dadb9-124559-e9e3e6-c4d6b0'></textarea>
+              <div>You can insert any text with hexcodes, no need to clean them up. All found colours are displayed below.</div>
+              {selectButtons}
+              <div className="colours">{rows}</div>
+              <div>Select the coloured boxes above to create palettes</div>
+                  <AddCategorical colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
+          </div>
+    );
 }
 
 function ColourSelect({colour, colours, setColours}){
@@ -291,7 +387,7 @@ function ColourSelect({colour, colours, setColours}){
   )
 }
 
-function AddButtons({colours, palettes, setPalettes}) {
+function AddCategorical({colours, palettes, setPalettes}) {
   function handleOnCategoricalClick () {
     const selectedItems = colours.filter(element => element.selected === true);
     const selectedColours = selectedItems.map(element => {
@@ -300,7 +396,6 @@ function AddButtons({colours, palettes, setPalettes}) {
           id: generateUUID()
       };
     });
-    console.log('selectedColours', )
 
     let palette = {
       meta: {
@@ -317,73 +412,7 @@ function AddButtons({colours, palettes, setPalettes}) {
   }
 
   return(<>
-          <p>
-            <button>Create Everything</button>
-          </p>
-          <p>
             <button onClick={handleOnCategoricalClick}>Categorical Palette</button>
-            <button id="create-sequential">Sequential Palette</button>
-          </p>  
-          <p>
-            <button id="create-diverging">Diverging Palette (bright)</button>  
-            <button id="create-diverging-tableau">Diverging Palette (dark)</button>  
-          </p>
       </>
   )
-}
-  
-function AddPalettes({palettes, setPalettes}) {
-  const [colours, setColours] = useState([]);
-  function handleOnChange(e) {
-    let newColours = []
-    const parsedColours = parseColours(e.target.value)
-    parsedColours.forEach((parsedColour, index) => {
-      newColours.push(
-        {
-          value: parsedColour,
-          selected: false,
-          index: index
-        }
-      )
-    }) 
-    setColours(newColours)
-  }
-
-  const rows = []
-  colours.forEach((colour, index) => {
-      rows.push(
-          <ColourSelect 
-              colour = {colour}
-              key = {index}
-              colours = {colours}
-              setColours = {setColours} />
-      )
-  })
-
-  return (
-    <div>
-              <textarea id="colourstring" placeholder="eg.: https://coolors.co/fb5012-#01fdf6 (cbbaed,#e9df00)#03fcba" onInput={handleOnChange} onLoad={handleOnChange} defaultValue='https://coolors.co/01161e-8dadb9-124559-e9e3e6-c4d6b0'></textarea>
-              <div>You can insert any text with hexcodes, no need to clean them up. All found colours are displayed below.</div>
-              <div className="colours">{rows}</div>
-              <div>Select the coloured boxes above to create palettes</div>
-                  <AddButtons colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
-          </div>
-    );
-}
-
-export default function ColourManager() {
-  const [palettes, setPalettes] = useState(testPalettes);
-  return (
-    <div>
-      <Intro 
-          palettes = {palettes}
-          setPalettes = {setPalettes}/>
-      <Palettes
-          palettes = {palettes}
-          setPalettes = {setPalettes}/>
-      <AddPalettes
-          palettes = {palettes}
-          setPalettes = {setPalettes}/>
-    </div>
-    );
 }

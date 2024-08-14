@@ -27,7 +27,7 @@ type Palette = {
     colours: Colour[];
 };
 
-function generateUUID(length = 10) {
+export function generateUUID(length = 10) {
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let result = '';
     const array = new Uint8Array(length);
@@ -89,4 +89,37 @@ export function parseColours(input: string) {
         })
     }*/
     return colours;
+}
+
+export function generateSequential(colour, steps = 20) {
+    let sequence = new Palette
+    sequence.seed = [].concat(colour)[0]
+    let newColours = [sequence.seed];
+    let newColour = sequence.seed;
+    let brightness = chroma(sequence.seed).luminance();
+
+    while (brightness < 0.75) {
+        newColour = chroma(newColour).brighten().hex();
+        
+        brightness = chroma(newColour).luminance();
+        if (brightness < 0.95) {
+            newColours.unshift(newColour);
+        }
+    }
+    newColour = sequence.seed;
+    brightness = chroma(sequence.seed).luminance();
+
+    while (brightness > 0.25) {
+        newColour = chroma(newColour).darken().hex();
+        brightness = chroma(newColour).luminance();
+        if ( brightness > 0.05) {
+            newColours.push(newColour);
+        }
+    }
+    newColours = chroma.bezier(newColours).scale().correctLightness();
+
+    for (let i = 0; i < steps; i++) {
+        sequence.addColour(newColours(i / steps).hex())
+    }
+    return sequence;
 }

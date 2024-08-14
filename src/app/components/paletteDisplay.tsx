@@ -1,7 +1,7 @@
 import React from "react"
 import { useState } from 'react';
 import { useImmer } from 'use-immer'
-import { parseColours, parseXML } from './utils'
+import { parseColours, parseXML, generateUUID } from './utils'
 import chroma from "chroma-js"
 
 
@@ -46,7 +46,7 @@ const controls = [/*{
   {
   "meta": {
       "title": 'palette 1',
-      "type": 'categorical',
+      "type": 'regular',
       "seed": ['123456'],
       "comment": 'Thise is a test comment'
       },  
@@ -55,7 +55,7 @@ const controls = [/*{
   {
   "meta": {
       "title": 'palette 2',
-      "type": 'sequential',
+      "type": 'ordered-sequential',
       "seed": ['123456'],
       "comment": 'Thise is a test comment'
   },  
@@ -64,7 +64,7 @@ const controls = [/*{
   {
   "meta": {
       "title": 'palette 3',
-      "type": 'sequential',
+      "type": 'ordered-diverging',
       "seed": ['384321'],
       "comment": 'Thise is a test comment'
   },
@@ -109,7 +109,6 @@ function Intro (palettes, setPalettes) {
   );
 }
 
-
 function ColourActive({colour}){
   return(
     <div className="clr-field" style={{color: colour}}>
@@ -119,8 +118,6 @@ function ColourActive({colour}){
   )
 }
 
-
-  
 function Colours({colours}){
   const rows = []
   colours.forEach((colour) => {
@@ -266,26 +263,6 @@ function Palettes ( {palettes, setPalettes}) {
         )
     })
     return (<>{rows}</>);
-  }
-
-function AddButtons() {
-  function handleOnEverythingClick () {
-
-  }
-  return(<>
-          <p>
-            <button onClick={handleOnEverythingClick}>Create Everything</button>
-          </p>
-          <p>
-            <button id="create-categorical">Categorical Palette</button>
-            <button id="create-sequential">Sequential Palette</button>
-          </p>  
-          <p>
-            <button id="create-diverging">Diverging Palette (bright)</button>  
-            <button id="create-diverging-tableau">Diverging Palette (dark)</button>  
-          </p>
-      </>
-  )
 }
 
 function ColourSelect({colour, colours, setColours}){
@@ -312,11 +289,51 @@ function ColourSelect({colour, colours, setColours}){
           <i className='material-symbols-outlined'>{selected}</i>
         </div>
   )
+}
+
+function AddButtons({colours, palettes, setPalettes}) {
+  function handleOnCategoricalClick () {
+    const selectedItems = colours.filter(element => element.selected === true);
+    const selectedColours = selectedItems.map(element => {
+      return {
+          value: element.value,
+          id: generateUUID()
+      };
+    });
+    console.log('selectedColours', )
+
+    let palette = {
+      meta: {
+          title: 'Categorical',
+          type: 'regular',
+          seed: [],
+          comment: '',
+      },
+      colours: selectedColours
+    };
+    let newPalettes = palettes.slice()
+    newPalettes.push(palette)
+    setPalettes(newPalettes)
   }
 
-
-function AddPalettes() {
-  const [colours, setColours] = useImmer([]);
+  return(<>
+          <p>
+            <button>Create Everything</button>
+          </p>
+          <p>
+            <button onClick={handleOnCategoricalClick}>Categorical Palette</button>
+            <button id="create-sequential">Sequential Palette</button>
+          </p>  
+          <p>
+            <button id="create-diverging">Diverging Palette (bright)</button>  
+            <button id="create-diverging-tableau">Diverging Palette (dark)</button>  
+          </p>
+      </>
+  )
+}
+  
+function AddPalettes({palettes, setPalettes}) {
+  const [colours, setColours] = useState([]);
   function handleOnChange(e) {
     let newColours = []
     const parsedColours = parseColours(e.target.value)
@@ -345,27 +362,28 @@ function AddPalettes() {
 
   return (
     <div>
-              <textarea id="colourstring" placeholder="eg.: https://coolors.co/fb5012-#01fdf6 (cbbaed,#e9df00)#03fcba" onChange={handleOnChange} defaultValue='https://coolors.co/01161e-8dadb9-124559-e9e3e6-c4d6b0'></textarea>
+              <textarea id="colourstring" placeholder="eg.: https://coolors.co/fb5012-#01fdf6 (cbbaed,#e9df00)#03fcba" onInput={handleOnChange} onLoad={handleOnChange} defaultValue='https://coolors.co/01161e-8dadb9-124559-e9e3e6-c4d6b0'></textarea>
               <div>You can insert any text with hexcodes, no need to clean them up. All found colours are displayed below.</div>
               <div className="colours">{rows}</div>
               <div>Select the coloured boxes above to create palettes</div>
-                  <AddButtons />
+                  <AddButtons colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
           </div>
     );
 }
 
-  export default function ColourManager() {
-    const [palettes, setPalettes] = useState(testPalettes);
-    return (
-      <div>
-        <Intro 
-            palettes = {palettes}
-            setPalettes = {setPalettes}/>
-        <Palettes
-            palettes = {palettes}
-            setPalettes = {setPalettes}/>
-        <AddPalettes />
-      </div>
-      );
-  }
-  
+export default function ColourManager() {
+  const [palettes, setPalettes] = useState(testPalettes);
+  return (
+    <div>
+      <Intro 
+          palettes = {palettes}
+          setPalettes = {setPalettes}/>
+      <Palettes
+          palettes = {palettes}
+          setPalettes = {setPalettes}/>
+      <AddPalettes
+          palettes = {palettes}
+          setPalettes = {setPalettes}/>
+    </div>
+    );
+}

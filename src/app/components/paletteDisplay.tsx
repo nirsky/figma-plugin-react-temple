@@ -1,7 +1,7 @@
 import React from "react"
 import { useState } from 'react';
 import { useImmer } from 'use-immer'
-import { parseColours, parseXML, generateUUID } from './utils'
+import { parseColours, parseXML, generateUUID, createXML } from './utils'
 import chroma from "chroma-js"
 
 
@@ -138,7 +138,35 @@ function Palettes ( {palettes, setPalettes}) {
               setPalettes = {setPalettes}/>
       )
   })
-  return (<>{rows}</>);
+  return (<>{rows}
+        <ExportXML 
+              palettes = {palettes}/>
+          </>);
+}
+
+function ExportXML({palettes}) {
+  function handleOnClick() {
+    const xmlString = createXML(palettes)
+    let filename = "preferences.tps";
+    let pom = document.createElement('a');
+    let bb = new Blob([xmlString], {type: 'text/plain'});
+  
+    pom.setAttribute('href', window.URL.createObjectURL(bb));
+    pom.setAttribute('download', filename);
+  
+    pom.dataset.downloadurl = ['text/plain', pom.download, pom.href].join(':');
+    pom.draggable = true; 
+    pom.classList.add('dragout');
+  
+    pom.click();
+  }
+
+
+
+  return (<>
+    <button onClick={handleOnClick}>Export Preferences</button>
+    </>
+  )
 }
 
 function Palette({paletteContent, index, palettes, setPalettes}){

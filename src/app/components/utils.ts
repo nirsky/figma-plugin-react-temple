@@ -90,36 +90,92 @@ export function parseColours(input: string) {
     }*/
     return colours;
 }
-/*
+
 export function generateSequential(colour, steps = 20) {
-    let sequence = new Palette
-    sequence.seed = [].concat(colour)[0]
-    let newColours = [sequence.seed];
-    let newColour = sequence.seed;
-    let brightness = chroma(sequence.seed).luminance();
 
-    while (brightness < 0.75) {
-        newColour = chroma(newColour).brighten().hex();
+    if(colour.length == 1) {
+        let newColour = colour[0].value
+        let brightness = chroma(newColour).luminance();
+        while (brightness < 0.75) {
+            newColour = chroma(newColour).brighten().hex();  
+            brightness = chroma(newColour).luminance();
+        } 
+        let newColours = [newColour]
+
         
+        newColour = colour[0].value
         brightness = chroma(newColour).luminance();
-        if (brightness < 0.95) {
-            newColours.unshift(newColour);
-        }
-    }
-    newColour = sequence.seed;
-    brightness = chroma(sequence.seed).luminance();
 
-    while (brightness > 0.25) {
-        newColour = chroma(newColour).darken().hex();
-        brightness = chroma(newColour).luminance();
-        if ( brightness > 0.05) {
-            newColours.push(newColour);
+        while (brightness > 0.25) {
+            newColour = chroma(newColour).darken().hex();
+            brightness = chroma(newColour).luminance();
         }
-    }
-    newColours = chroma.bezier(newColours).scale().correctLightness();
 
-    for (let i = 0; i < steps; i++) {
-        sequence.addColour(newColours(i / steps).hex())
+        newColours.push(newColour)
+
+        let newScale = chroma.bezier(newColours).scale().correctLightness().colors(steps).hex();
+
+        return newScale;
+
+    } else if (colour.length == 2) {
+
+
     }
-    return sequence;
-}*/
+   
+}
+
+export function createXML(palettes) {
+    const xmlDoc = document.implementation.createDocument(null, "workbook");
+    const xmlPref = xmlDoc.createElement("preferences");
+    xmlDoc.getElementsByTagName("workbook")[0].appendChild(xmlPref);
+    
+    let paletteNames = []
+
+    palettes.forEach(function(palette) {
+        let i = 1
+        while (paletteNames.includes(palette.meta.title)) {
+            if (i > 1) {
+                palette.name = palette.name.slice(0, -2); 
+            } 
+            palette.name += " " + i
+            i++
+        }
+        paletteNames.push(palette.meta.title)
+
+        const xmlPalette = xmlDoc.createElement("color-palette");
+        xmlPalette.setAttribute('name', palette.meta.title)
+        xmlPalette.setAttribute('type', palette.meta.type)
+        /*if (palette.seed) {
+            xmlPalette.setAttribute('seed', palette.seed)
+        }*/
+        
+        let colours = palette.colours
+        colours.forEach(function(colour){
+            const xmlColour = xmlDoc.createElement("color");
+            /*if (colours.colours[el].uuid) {
+                xmlColour.setAttribute('uuid', colours.colours[el].uuid)
+            }*/
+            const xmlColourValue = xmlDoc.createTextNode(chroma(colour.value).hex());
+            xmlColour.appendChild(xmlColourValue);
+            xmlPalette.appendChild(xmlColour);
+        })
+        xmlPref.appendChild(xmlPalette)
+    })
+
+    const pi = xmlDoc.createProcessingInstruction('xml', "version='1.0'");
+    xmlDoc.insertBefore(pi, xmlDoc.firstChild);
+
+    let serializer = new XMLSerializer();
+    let xmlString = serializer.serializeToString(xmlDoc);
+    xmlString = xmlString.replace(/<workbook/g, '\n\t<workbook');
+    xmlString = xmlString.replace(/<\/workbook/g, '\n\t</workbook');
+    xmlString = xmlString.replace(/<preferences/g, '\n\t\t<preferences');
+    xmlString = xmlString.replace(/<\/preferences/g, '\n\t\t</preferences');
+    xmlString = xmlString.replace(/<color/g, '\n\t\t\t\t<color');
+    xmlString = xmlString.replace(/<color-palette/g, '\n\t\t\t<color-palette');
+    xmlString = xmlString.replace(/<\/color-palette>/g, '\n\t\t\t</color-palette>\n');
+    //let output = "<!--\tThis file was created by the Tableau Colour Manager\n\t\tfor mroe infos on the tool and how to use it, visit \n\n\t\tvizku.nz/tableau-colour-manager\n\n\t\tdesgined by Alex Waleczek at Vizku          -->\n\n"
+    //output += xmlString
+    console.log(xmlString)
+    return xmlString
+}

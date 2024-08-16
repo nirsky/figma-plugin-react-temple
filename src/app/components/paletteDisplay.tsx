@@ -449,8 +449,12 @@ function AddCategorical({colours, palettes, setPalettes}) {
 function AddSequential({colours, palettes, setPalettes}) {
   function handleOnClick () {
     const selectedItems = colours.filter(element => element.selected === true);
+    
+    console.log('selectedItems', selectedItems)
+    const selectedColours = selectedItems.map(element => element.value)
+    console.log('selectedColours', selectedColours)
 
-    const paletteColours = utils.generateSequential(selectedItems)
+    const paletteColours = utils.generateSequential(selectedColours)
     console.log('paletteColours', paletteColours)
     const paletteItems = paletteColours.map(element => {
       return {

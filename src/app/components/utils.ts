@@ -94,7 +94,7 @@ export function parseColours(input: string) {
 export function generateSequential(colour, steps = 20) {
 
     if(colour.length == 1) {
-        let newColour = colour[0].value
+        let newColour = colour[0]
         let brightness = chroma(newColour).luminance();
         while (brightness < 0.75) {
             newColour = chroma(newColour).brighten().hex();  
@@ -115,11 +115,14 @@ export function generateSequential(colour, steps = 20) {
         console.log('newColours', newColours)
 
         let newScale = chroma.bezier(newColours).scale().correctLightness().colors(steps);
-console.log('newScale', newScale)
+        console.log('newScale', newScale)
         return newScale;
 
-    } else if (colour.length == 2) {
-
+    } else if (colour.length > 1) {
+        console.log('colour', colour)
+        let newScale = chroma.bezier(colour).scale().correctLightness().colors(steps);
+        console.log('newScale', newScale)
+        return newScale;
 
     }
    

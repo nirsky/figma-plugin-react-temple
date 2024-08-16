@@ -89,7 +89,7 @@ export default function ColourManager() {
     );
 }
 
-function Intro (palettes, setPalettes) {
+function Intro (palettes) {
   function handleOnFileChange(e) {
     e.preventDefault();
 
@@ -119,6 +119,9 @@ function Intro (palettes, setPalettes) {
               <p>For more details on what this tool is doing, visit <a href="https://help.tableau.com/current/pro/desktop/en-us/formatting_create_custom_colors.htm">the Tableau Knowledge Base</a></p>
           </div>
           <form id="upload">
+              <label htmlFor="file" className="uploadButton">
+                Upload Preferences.tps
+              </label>
               <input type="file" id="file" accept=".tps" onChange={handleOnFileChange}></input>
           </form>
       </div>
@@ -343,8 +346,8 @@ function Colours({colours}){
 function ColourActive({colour}){
   return(
     <div className="clr-field" style={{color: colour}}>
-      <button type="button" aria-labelledby="clr-open-label"></button>
       <input type="text" className="coloris colourField" value={colour} readOnly data-coloris></input>
+      <button type="button" aria-labelledby="clr-open-label"></button>
     </div>
   )
 }   
@@ -401,13 +404,13 @@ function AddPalettes({palettes, setPalettes}) {
   const deselectedColours = colours.filter(element => element.selected === false)
 
   if (colours.length > 0) {
-    selectButtons  =  <>Select 
+    selectButtons  =  <>
                         <button onClick={handleOnSelectClick} 
-                                    className={deselectedColours.length === 0 ? 'disabled' : ''}
-                                    disabled={deselectedColours.length === 0}>All</button>
+                                className={deselectedColours.length === 0 ? 'selectColour disabled' : 'selectColour'}
+                                disabled={deselectedColours.length === 0}>All</button>
                         <button onClick={handleOnSelectClick} 
-                                    className={selectedColours.length === 0 ? 'disabled' : ''}
-                                    disabled={selectedColours.length === 0}>None</button>
+                                className={selectedColours.length === 0 ? 'selectColour disabled' : 'selectColour'}
+                                disabled={selectedColours.length === 0}>None</button>
                       </>
   }
 
@@ -417,10 +420,11 @@ function AddPalettes({palettes, setPalettes}) {
               <div>You can insert any text with hexcodes, no need to clean them up. All found colours are displayed below.</div>
               {selectButtons}
               <div className="colours">{rows}</div>
+              {rows.length > 0 ? <>
               <div>Select the coloured boxes above to create palettes</div>
                   <AddCategorical colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
                   <AddSequential colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
-                  <AddDivergingBright colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
+                  <AddDivergingBright colours = {colours} palettes = {palettes} setPalettes = {setPalettes} /> </>: ''}
           </div>
     );
 }

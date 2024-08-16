@@ -1,33 +1,24 @@
+body {
+  padding: 1em;
+  background-color: #e9e3e6;
+  color: #01161E;
+  font-family: "Jost", sans-serif;
+}
+
 div {
   border: 1px solid #000;
-  margin: 4px;
+  margin: 0px;
 }
 
 div.palette {
-  border-bottom: 0px solid #c0babe;
-}
-
-div.colours {
-  display: inline-flex;
-  width: 100%
+  border-bottom: 1px solid #c0babe;
+  margin-bottom: 4px;
 }
 
 div.meta {
   display: flex;
   justify-content: space-between;
-}
-
-input.title {
-width: 300px;
-font-weight: bold;
-font-size: 20px;
-display: inline-block;
-vertical-align: top;
-background-color: #efebed;
-border: 1px solid #c3bec1;
-white-space: nowrap;
-overflow: hidden;
-border-radius: 4px;
+  margin-bottom: 4px;
 }
 
 div.type {
@@ -36,13 +27,8 @@ div.type {
   display: flex;
   align-items: center;
   padding-left: 4px;
-padding-right: 4px;
+  padding-right: 4px;
 } 
-
-textarea {
-  width: 100%;
-  height: 64px;
-}
 
 div.controls {
   display: flex;
@@ -53,27 +39,104 @@ div.control {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   margin: 0px;
 } 
 
-div.colour {
-  width: 32px;
-  height: 32px;
+div.colours {
+  display: inline-flex;
+  width: 100%;
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+}
+
+div.colour, div.clr-field {
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  box-shadow: 2px 2px 4px #6e6e6e;
+  margin-right: 2px;
 } 
+
+input.title {
+  width: 300px;
+  height: 30px;
+  font-weight: bold;
+  font-size: 20px;
+  display: inline-block;
+  vertical-align: top;
+  background-color: #efebed;
+  border: 1px solid #c3bec1;
+  white-space: nowrap;
+  overflow: hidden;
+  border-radius: 4px;
+}
 
 input.colourField, div.colourfield {
   width: 24px;
   height: 24px;
 }
 
-body {
-  padding: 1em;
-  background-color: #e9e3e6;
-  color: #01161E;
-  font-family: "Jost", sans-serif;
+#upload {
+  height:48px;
+  display:flex;
 }
+
+input[type="file"] {
+  display: none;
+}
+
+label.uploadButton {
+  display: flexbox;
+  justify-self: center;
+  align-self: center;
+  height: 32px; 
+  color: #E9E3E6;
+  background-color: #124559;
+  border: 0 solid #000;
+  border-radius: 10px;
+  font-weight: bold;
+  margin: 4px;
+  padding:4px;
+  cursor: pointer;
+}
+
+label.uploadButton:hover {
+  background-color: rgb(47, 93, 112);
+}
+
+textarea {
+  width: 100%;
+  height: 64px;
+}
+
+button {
+  height: 32px; 
+  color: #E9E3E6;
+  background-color: #124559;
+  border: 0 solid #000;
+  border-radius: 10px;
+  font-weight: bold;
+  margin: 4px;
+}
+
+button.selectColour {
+  width: 48px;
+  height:24px;
+  font-size: 12px;
+}
+
+button:hover {
+  background-color: rgb(47, 93, 112);
+}
+
+button:disabled {
+  color: #486774;
+  background-color: #c0babe;
+  border: 1px solid #2e424b;
+}
+
 .clr-field button {
   width: 100% !important;
 }
@@ -87,26 +150,3 @@ body {
   box-shadow: inset 0 0 0 1px black;
   outline: none;
 }*/
-
-#create {
-  box-shadow: none;
-  background: #18a0fb;
-  color: white;
-}
-input {
-  border: none;
-  outline: none;
-  padding: 8px;
-}
-input:hover {
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
-}
-button:focus {
-  box-shadow: inset 0 0 0 2px #18a0fb;
-}
-#create:focus {
-  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.3);
-}
-input:focus {
-  box-shadow: inset 0 0 0 2px #18a0fb;
-}

@@ -84,7 +84,7 @@ export default function ColourManager() {
           setPalettes = {setPalettes}/>
       <AddPalettes
           palettes = {palettes}
-          setPalettes = {setPalettes}/>
+          setPalettes = {setPalettes}/> 
     </div>
     );
 }
@@ -142,8 +142,11 @@ function Palettes ( {palettes, setPalettes}) {
       )
   })
   return (<>{rows}
-        <ExportXML 
-              palettes = {palettes}/>
+          {rows.length > 0 ? 
+            <>
+              <ExportXML 
+                  palettes = {palettes}/>
+            </>: ''}
           </>);
 }
 
@@ -622,4 +625,3 @@ function AddDivergingBright({colours, palettes, setPalettes}) {
       </>
   )
 }
-

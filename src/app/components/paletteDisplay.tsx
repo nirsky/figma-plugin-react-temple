@@ -357,23 +357,18 @@ function AddPalettes({palettes, setPalettes}) {
       )
   })
 
-  let selectButtons, btnAllDisabled, btnNoneDisabled
-
-  if (colours.filter(element => element.selected === true).length === 0) {
-    btnNoneDisabled = 'disabled'
-  } else {
-    btnNoneDisabled = ''
-  }
-
-  if (colours.filter(element => element.selected === false).length === 0) {
-    btnAllDisabled = 'disabled'
-  } else {
-    btnAllDisabled = ''
-  }
+  let selectButtons
+  const selectedColours = colours.filter(element => element.selected === true)
+  const deselectedColours = colours.filter(element => element.selected === false)
 
   if (colours.length > 0) {
-    selectButtons  = <>Select <button onClick={handleOnSelectClick} className={btnAllDisabled}>All</button>
-                        <button onClick={handleOnSelectClick} className={btnNoneDisabled}>None</button>
+    selectButtons  =  <>Select 
+                        <button onClick={handleOnSelectClick} 
+                                    className={deselectedColours.length === 0 ? 'disabled' : ''}
+                                    disabled={deselectedColours.length === 0}>All</button>
+                        <button onClick={handleOnSelectClick} 
+                                    className={selectedColours.length === 0 ? 'disabled' : ''}
+                                    disabled={selectedColours.length === 0}>None</button>
                       </>
   }
 
@@ -417,6 +412,8 @@ function ColourSelect({colour, colours, setColours}){
 }
 
 function AddCategorical({colours, palettes, setPalettes}) {
+
+
   function handleOnClick () {
     const selectedItems = colours.filter(element => element.selected === true);
     const selectedColours = selectedItems.map(element => {
@@ -440,8 +437,13 @@ function AddCategorical({colours, palettes, setPalettes}) {
     setPalettes(newPalettes)
   }
 
+  
+  const selectedItems = colours.filter(element => element.selected === true);
+
   return(<>
-            <button onClick={handleOnClick}>Categorical Palette</button>
+            <button onClick={handleOnClick}
+                                    className={selectedItems.length === 0 ? 'disabled' : ''}
+                                    disabled={selectedItems.length === 0}>Categorical Palette</button>
       </>
   )
 }
@@ -481,10 +483,78 @@ function AddSequential({colours, palettes, setPalettes}) {
     setPalettes(newPalettes)
   }
 
+
+  const selectedItems = colours.filter(element => element.selected === true);
+  console.log('selectedItems', selectedItems)
+  let sequential, diverging = ''
+  switch (selectedItems.length) {
+    case 0:
+      sequential = 'disabled'
+      diverging = 'disabled'
+    break;
+    case 1:
+      sequential = ''
+      diverging = 'disabled'
+    break;
+    case 2:
+      sequential = 'disabled'
+      diverging = ''
+    break;
+    default:
+      sequential = 'disabled'
+      diverging = 'disabled'
+  }
+  
+
+  return(<>
+            <button onClick={handleOnClick}
+                                    className={sequential}
+                                    disabled={sequential === 'disabled'}>Sequential Palette</button>
+            <button onClick={handleOnClick}
+                                    className={diverging}
+                                    disabled={diverging === 'disabled'}>Diverging Dark Palette</button>
+      </>
+  )
+}
+
+function AddDivergingBright({colours, palettes, setPalettes}) {
+  function handleOnClick () {
+    const selectedItems = colours.filter(element => element.selected === true);
+    
+    console.log('selectedItems', selectedItems)
+    const selectedColours = selectedItems.map(element => element.value)
+    console.log('selectedColours', selectedColours)
+
+    const paletteColours = utils.generateSequential(selectedColours)
+    console.log('paletteColours', paletteColours)
+    const paletteItems = paletteColours.map(element => {
+      return {
+          value: element,
+          id: utils.generateUUID()
+      };
+    });
+    
+    console.log('paletteItems', paletteItems)
+
+    let palette = {
+      meta: {
+          title: 'Sequential',
+          type: 'ordered-sequential',
+          seed: [],
+          comment: '',
+      },
+      colours: paletteItems
+    };
+    
+    console.log('palette', palette)
+    let newPalettes = palettes.slice()
+    newPalettes.push(palette)
+    setPalettes(newPalettes)
+  }
+
   return(<>
             <button onClick={handleOnClick}>Sequential Palette</button>
       </>
   )
 }
-
 

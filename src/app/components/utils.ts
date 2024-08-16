@@ -112,9 +112,10 @@ export function generateSequential(colour, steps = 20) {
         }
 
         newColours.push(newColour)
+        console.log('newColours', newColours)
 
-        let newScale = chroma.bezier(newColours).scale().correctLightness().colors(steps).hex();
-
+        let newScale = chroma.bezier(newColours).scale().correctLightness().colors(steps);
+console.log('newScale', newScale)
         return newScale;
 
     } else if (colour.length == 2) {

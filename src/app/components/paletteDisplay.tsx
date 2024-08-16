@@ -1,7 +1,7 @@
 import React from "react"
 import { useState } from 'react';
 import { useImmer } from 'use-immer'
-import { parseColours, parseXML, generateUUID, createXML } from './utils'
+import * as utils from './utils'
 import chroma from "chroma-js"
 
 
@@ -102,7 +102,7 @@ function Intro (palettes, setPalettes) {
 
     reader.readAsText(file);
     reader.onload = function() {
-        xml = parseXML(reader.result);
+        xml = utils.parseXML(reader.result);
         newPalettes = palettes.palettes.slice().concat(xml)
         palettes.setPalettes(newPalettes)
     };
@@ -146,7 +146,7 @@ function Palettes ( {palettes, setPalettes}) {
 
 function ExportXML({palettes}) {
   function handleOnClick() {
-    const xmlString = createXML(palettes)
+    const xmlString = utils.createXML(palettes)
     let filename = "preferences.tps";
     let pom = document.createElement('a');
     let bb = new Blob([xmlString], {type: 'text/plain'});
@@ -291,7 +291,7 @@ function Colours({colours}){
     rows.push( 
         <ColourActive 
             colour = {colour.value}
-            key = {colour.value}/>
+            key = {colour.id}/>
     )
   })
   return(
@@ -314,7 +314,7 @@ function AddPalettes({palettes, setPalettes}) {
   const [colours, setColours] = useState([]);
   function handleOnChange(e) {
     let newColours = []
-    const parsedColours = parseColours(e.target.value)
+    const parsedColours = utils.parseColours(e.target.value)
     parsedColours.forEach((parsedColour, index) => {
       newColours.push(
         {
@@ -385,6 +385,7 @@ function AddPalettes({palettes, setPalettes}) {
               <div className="colours">{rows}</div>
               <div>Select the coloured boxes above to create palettes</div>
                   <AddCategorical colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
+                  <AddSequential colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
           </div>
     );
 }
@@ -416,12 +417,12 @@ function ColourSelect({colour, colours, setColours}){
 }
 
 function AddCategorical({colours, palettes, setPalettes}) {
-  function handleOnCategoricalClick () {
+  function handleOnClick () {
     const selectedItems = colours.filter(element => element.selected === true);
     const selectedColours = selectedItems.map(element => {
       return {
           value: element.value,
-          id: generateUUID()
+          id: utils.generateUUID()
       };
     });
 
@@ -440,7 +441,46 @@ function AddCategorical({colours, palettes, setPalettes}) {
   }
 
   return(<>
-            <button onClick={handleOnCategoricalClick}>Categorical Palette</button>
+            <button onClick={handleOnClick}>Categorical Palette</button>
       </>
   )
 }
+
+function AddSequential({colours, palettes, setPalettes}) {
+  function handleOnClick () {
+    const selectedItems = colours.filter(element => element.selected === true);
+
+    const paletteColours = utils.generateSequential(selectedItems)
+    console.log('paletteColours', paletteColours)
+    const paletteItems = paletteColours.map(element => {
+      return {
+          value: element,
+          id: utils.generateUUID()
+      };
+    });
+    
+    console.log('paletteItems', paletteItems)
+
+    let palette = {
+      meta: {
+          title: 'Sequential',
+          type: 'ordered-sequential',
+          seed: [],
+          comment: '',
+      },
+      colours: paletteItems
+    };
+    
+    console.log('palette', palette)
+    let newPalettes = palettes.slice()
+    newPalettes.push(palette)
+    setPalettes(newPalettes)
+  }
+
+  return(<>
+            <button onClick={handleOnClick}>Sequential Palette</button>
+      </>
+  )
+}
+
+

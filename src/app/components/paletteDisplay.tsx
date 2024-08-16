@@ -5,12 +5,12 @@ import * as utils from './utils'
 import chroma from "chroma-js"
 
 
-const controls = [/*{
+const controls = [{
         "type": 'edit', 
         "name": 'edit', 
         "position": '1', 
         "tooltip": 'Edit Palette'
-      }, 
+      }, /*
       {
         "type": 'link', 
         "name": 'link', 
@@ -171,6 +171,7 @@ function ExportXML({palettes}) {
 
 function Palette({paletteContent, index, palettes, setPalettes}){
   const [palette, setPalette] = useImmer(paletteContent);
+  const [edit, setEdit] = useState(false);
   return(
       <div className="palette">
           <Meta 
@@ -179,13 +180,42 @@ function Palette({paletteContent, index, palettes, setPalettes}){
             palette = {palette}
             setPalette = {setPalette}
             palettes = {palettes}
-            setPalettes = {setPalettes}/>
+            setPalettes = {setPalettes}
+            edit = {edit}
+            setEdit = {setEdit}/>
+          {edit ? <EditPalette
+            palette = {palette}
+            setPalette = {setPalette}/> : ''}
           <Colours colours = {palette.colours}/>
+          
       </div>
   )
 }
 
-function Meta({index, meta, palette, setPalette, palettes, setPalettes}){
+function EditPalette({palette, setPalette}) {
+  let colours = palette.colours.map(element => element.value)
+  function handleOnChange(e) {
+    const parsedColours = utils.parseColours(e.target.value)
+    const newItems = parsedColours.map(element => {
+      return {
+          value: element,
+          id: utils.generateUUID()
+      };
+    });
+    
+    setPalette(draft => {
+      draft.colours = newItems
+    })
+  }
+
+
+  return(<>
+    <textarea onChange={handleOnChange} defaultValue={colours}></textarea>
+    </>
+  )
+}
+
+function Meta({index, meta, palette, setPalette, palettes, setPalettes, edit, setEdit}){
   function handleInputChange(e) {
     
     setPalette(draft => {
@@ -205,12 +235,14 @@ function Meta({index, meta, palette, setPalette, palettes, setPalettes}){
             palette = {palette}
             setPalette = {setPalette}
             palettes = {palettes}
-            setPalettes = {setPalettes}/>
+            setPalettes = {setPalettes}
+            edit = {edit}
+            setEdit = {setEdit}/>
       </div>
   )
 }
 
-function Controls({index, palette, setPalette, palettes, setPalettes}){
+function Controls({index, palette, setPalette, palettes, setPalettes, edit, setEdit}){
   const rows = []
   controls.forEach((control) => {
       rows.push(
@@ -221,7 +253,9 @@ function Controls({index, palette, setPalette, palettes, setPalettes}){
               palette = {palette}
               setPalette = {setPalette}
               palettes = {palettes}
-              setPalettes = {setPalettes} />
+              setPalettes = {setPalettes} 
+              edit = {edit}
+              setEdit = {setEdit}/>
       )
   })
 
@@ -232,11 +266,16 @@ function Controls({index, palette, setPalette, palettes, setPalettes}){
   )
 }
 
-function Control({index, control, palette, setPalette, palettes, setPalettes}){
+function Control({index, control, palette, setPalette, palettes, setPalettes, edit, setEdit}){
   function handleOnClick() {
     switch  (control.type) {
       case 'edit':
         console.log('edit')
+        if (edit === false ){
+          setEdit(true)
+        } else {
+          setEdit(false)
+        }
         break;
       case 'link':
         console.log('link')
@@ -491,7 +530,6 @@ function AddSequential({colours, palettes, setPalettes}) {
 
 
   const selectedItems = colours.filter(element => element.selected === true);
-  console.log('selectedItems', selectedItems)
   let sequential, diverging = ''
   switch (selectedItems.length) {
     case 0:
@@ -531,9 +569,7 @@ function AddDivergingBright({colours, palettes, setPalettes}) {
     const selectedColours = selectedItems.map(element => element.value)
 
     let paletteColours = utils.generateSequential([selectedColours[0]], 10).reverse()
-    console.log('paletteColours', paletteColours)
     paletteColours = paletteColours.concat(utils.generateSequential([selectedColours[1]], 10))
-    console.log('paletteColours', paletteColours)
 
     const paletteItems = paletteColours.map(element => {
       return {
@@ -559,7 +595,6 @@ function AddDivergingBright({colours, palettes, setPalettes}) {
 
 
   const selectedItems = colours.filter(element => element.selected === true);
-  console.log('selectedItems', selectedItems)
   let diverging = ''
   switch (selectedItems.length) {
     case 0:

@@ -92,7 +92,6 @@ export function parseColours(input: string) {
 }
 
 export function generateSequential(colour, steps = 20) {
-
     if(colour.length == 1) {
         let newColour = colour[0]
         let brightness = chroma(newColour).luminance();
@@ -102,8 +101,7 @@ export function generateSequential(colour, steps = 20) {
         } 
         let newColours = [newColour]
 
-        
-        newColour = colour[0].value
+        newColour = colour[0]
         brightness = chroma(newColour).luminance();
 
         while (brightness > 0.25) {
@@ -112,18 +110,12 @@ export function generateSequential(colour, steps = 20) {
         }
 
         newColours.push(newColour)
-        console.log('newColours', newColours)
-
         let newScale = chroma.bezier(newColours).scale().correctLightness().colors(steps);
-        console.log('newScale', newScale)
         return newScale;
 
     } else if (colour.length > 1) {
-        console.log('colour', colour)
         let newScale = chroma.bezier(colour).scale().correctLightness().colors(steps);
-        console.log('newScale', newScale)
         return newScale;
-
     }
    
 }
@@ -135,7 +127,7 @@ export function createXML(palettes) {
     
     let paletteNames = []
 
-    palettes.forEach(function(palette) {
+    palettes.forEach(palette => {
         let i = 1
         while (paletteNames.includes(palette.meta.title)) {
             if (i > 1) {

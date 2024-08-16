@@ -381,6 +381,7 @@ function AddPalettes({palettes, setPalettes}) {
               <div>Select the coloured boxes above to create palettes</div>
                   <AddCategorical colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
                   <AddSequential colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
+                  <AddDivergingBright colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
           </div>
     );
 }
@@ -449,35 +450,40 @@ function AddCategorical({colours, palettes, setPalettes}) {
 }
 
 function AddSequential({colours, palettes, setPalettes}) {
-  function handleOnClick () {
+  function handleOnClick (e) {
     const selectedItems = colours.filter(element => element.selected === true);
-    
-    console.log('selectedItems', selectedItems)
     const selectedColours = selectedItems.map(element => element.value)
-    console.log('selectedColours', selectedColours)
-
     const paletteColours = utils.generateSequential(selectedColours)
-    console.log('paletteColours', paletteColours)
     const paletteItems = paletteColours.map(element => {
       return {
           value: element,
           id: utils.generateUUID()
       };
     });
-    
-    console.log('paletteItems', paletteItems)
+    let type, title
+    switch (e.target.id) {
+      case 'seq':
+        type = 'ordered-sequential'
+        title = 'Sequential'
+        break;
+      case 'div_dark':
+        type = 'ordered-diverging'
+        title = 'Diverging Dark'
+        break;
+      default:
+        type = 'unexpected value'
+    }
 
     let palette = {
       meta: {
-          title: 'Sequential',
-          type: 'ordered-sequential',
+          title: title,
+          type: type,
           seed: [],
           comment: '',
       },
       colours: paletteItems
     };
     
-    console.log('palette', palette)
     let newPalettes = palettes.slice()
     newPalettes.push(palette)
     setPalettes(newPalettes)
@@ -508,11 +514,13 @@ function AddSequential({colours, palettes, setPalettes}) {
 
   return(<>
             <button onClick={handleOnClick}
-                                    className={sequential}
-                                    disabled={sequential === 'disabled'}>Sequential Palette</button>
+                    id='seq'
+                    className={sequential}
+                    disabled={sequential === 'disabled'}>Sequential Palette</button>
             <button onClick={handleOnClick}
-                                    className={diverging}
-                                    disabled={diverging === 'disabled'}>Diverging Dark Palette</button>
+                    id='div_dark'
+                    className={diverging}
+                    disabled={diverging === 'disabled'}>Diverging Dark Palette</button>
       </>
   )
 }
@@ -520,40 +528,58 @@ function AddSequential({colours, palettes, setPalettes}) {
 function AddDivergingBright({colours, palettes, setPalettes}) {
   function handleOnClick () {
     const selectedItems = colours.filter(element => element.selected === true);
-    
-    console.log('selectedItems', selectedItems)
     const selectedColours = selectedItems.map(element => element.value)
-    console.log('selectedColours', selectedColours)
 
-    const paletteColours = utils.generateSequential(selectedColours)
+    let paletteColours = utils.generateSequential([selectedColours[0]], 10).reverse()
     console.log('paletteColours', paletteColours)
+    paletteColours = paletteColours.concat(utils.generateSequential([selectedColours[1]], 10))
+    console.log('paletteColours', paletteColours)
+
     const paletteItems = paletteColours.map(element => {
       return {
           value: element,
           id: utils.generateUUID()
       };
     });
-    
-    console.log('paletteItems', paletteItems)
-
+   
     let palette = {
       meta: {
-          title: 'Sequential',
-          type: 'ordered-sequential',
+          title: 'Diverging Bright',
+          type: 'ordered-diverging',
           seed: [],
           comment: '',
       },
       colours: paletteItems
     };
     
-    console.log('palette', palette)
     let newPalettes = palettes.slice()
     newPalettes.push(palette)
     setPalettes(newPalettes)
   }
 
+
+  const selectedItems = colours.filter(element => element.selected === true);
+  console.log('selectedItems', selectedItems)
+  let diverging = ''
+  switch (selectedItems.length) {
+    case 0:
+      diverging = 'disabled'
+    break;
+    case 1:
+      diverging = 'disabled'
+    break;
+    case 2:
+      diverging = ''
+    break;
+    default:
+      diverging = 'disabled'
+  }
+  
+
   return(<>
-            <button onClick={handleOnClick}>Sequential Palette</button>
+            <button onClick={handleOnClick}
+                                    className={diverging}
+                                    disabled={diverging === 'disabled'}>Diverging Bright Palette</button>
       </>
   )
 }

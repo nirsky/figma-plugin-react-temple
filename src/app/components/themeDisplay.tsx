@@ -165,9 +165,11 @@ export default function ThemeManager() {
 
     return (
         <>
-            <input defaultValue='New Theme'></input>
-            <div>{theme.version}</div>
-            <div>{theme.name}</div>
+            <div className='controls'>
+                <input className='themeMeta' defaultValue='New Theme'></input>
+                <div className='themeMeta'>Version: {theme.version}</div>
+                <div className='themeMeta'>Base Theme: {theme.name}</div>
+            </div>
             <table id='attributes'>
                 <thead>
                     <Header 

@@ -140,16 +140,6 @@ button:disabled {
 .clr-field button {
   width: 100% !important;
 }
-/*button {
-  border-radius: 5px;
-  background: white;
-  color: black;
-  border: none;
-  padding: 8px 15px;
-  margin: 0 5px;
-  box-shadow: inset 0 0 0 1px black;
-  outline: none;
-}*/
 
 /*theme manager*/
 
@@ -157,20 +147,18 @@ button:disabled {
   margin-right: 16px;
 } 
 
-
-
-  #attributes.floatThead-table {
-    border-top: none;
-    border-bottom: none;
-    background-color: #fff;
+#attributes.floatThead-table {
+  border-top: none;
+  border-bottom: none;
+  background-color: #fff;
 }
 
-  #attributes {
-    border-collapse: collapse;
-    width: auto;
-  }
+#attributes {
+  border-collapse: collapse;
+  width: auto;
+}
 
-  #attributes td, #attributes th {
+#attributes td, #attributes th {
   border: 1px solid #cacaca;
   padding: 2px;
   width: auto;
@@ -189,4 +177,3 @@ button:disabled {
   color: #E9E3E6;
   position: sticky;
 }
-

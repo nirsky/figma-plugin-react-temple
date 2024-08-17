@@ -1,8 +1,5 @@
 import React from "react"
-import { useState } from 'react';
 import { useImmer } from 'use-immer'
-import * as utils from './utils'
-import chroma from "chroma-js"
 
 const jsonStructure = {
     "theme": {
@@ -154,15 +151,10 @@ export default function ThemeManager() {
   }
 
   function Intro() {
-    return (
-        <h1>Theme Manager for Tableau
-        </h1>
-        );
+    return (<h1>Theme Manager for Tableau</h1>);
   }
 
   function Theme({theme, setTheme}) {
-
-
     return (
         <>
             <div className='controls'>
@@ -214,10 +206,7 @@ export default function ThemeManager() {
                 setTheme={setTheme}/>
         )
     })
-    return (<>{rows}</>
-        
-        );
-    
+    return (<>{rows}</>); 
   }
 
   function Setting({style, theme, setTheme}) {
@@ -225,35 +214,30 @@ export default function ThemeManager() {
     
     attributeList.forEach(attr => {
         let output
-        
             switch (attr.type) {
                 case 'COLOR':
                     output = <ColourEdit 
                                 style={style}
                                 attribute={attr.attr}
                                 theme={theme}
-                                setTheme={setTheme}
-                            />
+                                setTheme={setTheme} />
                 break;
                 case 'STRING':
                     output = <StringEdit 
                                 style={style}
                                 attribute={attr.attr}
                                 theme={theme}
-                                setTheme={setTheme}
-                            />
+                                setTheme={setTheme} />
                 break;
                 case 'FLOAT':
                     output = <NumberEdit
                                 style={style} 
                                 attribute={attr.attr}
                                 theme={theme}
-                                setTheme={setTheme}
-                            />
+                                setTheme={setTheme} />
                 break;
             }
             //output = theme.styles[style][attr.attr]
-        
         columns.push(
           <td key={attr.attr}>{output}</td>
       )

@@ -4,7 +4,6 @@ import { useImmer } from 'use-immer'
 import * as utils from './utils'
 import chroma from "chroma-js"
 
-
 const controls = [{
         "type": 'edit', 
         "name": 'edit', 

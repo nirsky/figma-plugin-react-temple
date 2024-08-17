@@ -1,6 +1,7 @@
 import React from 'react';
 import '../styles/ui.css';
 import ColourManager from './paletteDisplay';
+import ThemeManager from './themeDisplay';
 
 
 /*const palettes = [
@@ -125,7 +126,13 @@ import ColourManager from './paletteDisplay';
 export default function App() {
   return( 
     <>
-      <ColourManager />
+      <ThemeManager />
     </>)
 
 }
+
+/*
+
+
+      <ColourManager />
+*/

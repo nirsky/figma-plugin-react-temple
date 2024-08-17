@@ -150,3 +150,42 @@ button:disabled {
   box-shadow: inset 0 0 0 1px black;
   outline: none;
 }*/
+
+/*theme manager*/
+
+
+
+
+
+  #attributes.floatThead-table {
+    border-top: none;
+    border-bottom: none;
+    background-color: #fff;
+}
+
+  #attributes {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: auto;
+  }
+
+  #attributes td, #attributes th {
+  border: 1px solid #cacaca;
+  padding: 8px;
+  width: auto;
+  height: auto;
+}
+
+#attributes tr:nth-child(even){
+  background-color: #f8f4f6;
+}
+
+#attributes th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #124559;
+  color: #E9E3E6;
+  position: sticky;
+}
+

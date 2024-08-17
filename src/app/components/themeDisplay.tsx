@@ -214,28 +214,30 @@ export default function ThemeManager() {
     
     attributeList.forEach(attr => {
         let output
-            switch (attr.type) {
-                case 'COLOR':
-                    output = <ColourEdit 
-                                style={style}
-                                attribute={attr.attr}
-                                theme={theme}
-                                setTheme={setTheme} />
-                break;
-                case 'STRING':
-                    output = <StringEdit 
-                                style={style}
-                                attribute={attr.attr}
-                                theme={theme}
-                                setTheme={setTheme} />
-                break;
-                case 'FLOAT':
-                    output = <NumberEdit
-                                style={style} 
-                                attribute={attr.attr}
-                                theme={theme}
-                                setTheme={setTheme} />
-                break;
+            if(jsonStructure.theme.styles[style].hasOwnProperty([attr.attr])) {
+                switch (attr.type) {
+                    case 'COLOR':
+                        output = <ColourEdit 
+                                    style={style}
+                                    attribute={attr.attr}
+                                    theme={theme}
+                                    setTheme={setTheme} />
+                    break;
+                    case 'STRING':
+                        output = <StringEdit 
+                                    style={style}
+                                    attribute={attr.attr}
+                                    theme={theme}
+                                    setTheme={setTheme} />
+                    break;
+                    case 'FLOAT':
+                        output = <NumberEdit
+                                    style={style} 
+                                    attribute={attr.attr}
+                                    theme={theme}
+                                    setTheme={setTheme} />
+                    break;
+                }
             }
             //output = theme.styles[style][attr.attr]
         columns.push(
@@ -252,6 +254,11 @@ export default function ThemeManager() {
   }
 
   function StringEdit({style, attribute, theme, setTheme}) {
+    function handleOnChange(e) {
+        setTheme(draft => {
+            draft.styles[style][attribute] = e.target.value
+          })
+    }
     const values = attributeList.find(attr => attr.attr === attribute)
     let options = [<option></option>]
     values.value.forEach(option => {
@@ -262,7 +269,7 @@ export default function ThemeManager() {
     
     return (
         <>
-            <select key={attribute} defaultValue={theme.styles.hasOwnProperty([style]) ? theme.styles[style][attribute] : ''}>
+            <select key={attribute} onChange={handleOnChange} value={theme.styles.hasOwnProperty([style]) ? theme.styles[style][attribute] : ''}>
                 {options}
             </select> 
         </>
@@ -270,6 +277,7 @@ export default function ThemeManager() {
   }
 
   function ColourEdit({style, attribute, theme, setTheme}) {
+
     return(
         <div key={attribute} className="clr-field" style={{color: theme.styles.hasOwnProperty([style]) ? theme.styles[style][attribute] : ''}}>
           <input type="text" className="coloris colourField" defaultValue={theme.styles.hasOwnProperty([style]) ? theme.styles[style][attribute] : ''} readOnly data-coloris></input>
@@ -279,15 +287,21 @@ export default function ThemeManager() {
   }
 
   function NumberEdit({style, attribute, theme, setTheme}) {
+    function handleOnChange(e) {
+        setTheme(draft => {
+            draft.styles[style][attribute] = e.target.value
+          })
+    }
     let options = [<option></option>] 
     for(let i = 0; i <=100; i++) {
         options.push(
             <option key={i}>{i}</option>
         )
     }
+    
     return (
         <>
-            <select defaultValue={theme.styles.hasOwnProperty([style]) ? theme.styles[style][attribute] : ''}>
+            <select onChange={handleOnChange} value={theme.styles.hasOwnProperty([style]) ? theme.styles[style][attribute] : ''}>
                 {options}
             </select> 
         </>

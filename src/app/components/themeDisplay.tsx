@@ -4,7 +4,7 @@ import { useImmer } from 'use-immer'
 import * as utils from './utils'
 import chroma from "chroma-js"
 
-const jsonStructureString = {
+const jsonStructure = {
     "theme": {
       "version": 1.0,
       "name": "my theme",
@@ -164,27 +164,31 @@ export default function ThemeManager() {
 
 
     return (
-
-        <table id='attributes'>
-            <thead>
-                <Header 
-                    theme={theme}
-                    setTheme={setTheme}/>
-            </thead>
-            <tbody>
-                <Settings 
-                    theme={theme}
-                    setTheme={setTheme}/>
-            </tbody>
-        </table>
+        <>
+            <input defaultValue='New Theme'></input>
+            <div>{theme.version}</div>
+            <div>{theme.name}</div>
+            <table id='attributes'>
+                <thead>
+                    <Header 
+                        theme={theme}
+                        setTheme={setTheme}/>
+                </thead>
+                <tbody>
+                    <Settings 
+                        theme={theme}
+                        setTheme={setTheme}/>
+                </tbody>
+            </table>
+        </>
         );
   }
 
-  function Header() {
+  function Header(theme, setTheme) {
     let columns = []
     attributeList.forEach(attr => {
         columns.push(
-          <th>{attr.name}</th>
+          <th key={attr.name}>{attr.name}</th>
       )
   })
 
@@ -197,9 +201,7 @@ export default function ThemeManager() {
   }
 
   function Settings({theme, setTheme}) {
-    console.log('theme', theme)
-    const styleKeys = Object.keys(theme.styles);
-    console.log('styleKeys', styleKeys)
+    const styleKeys = Object.keys(jsonStructure.theme.styles);
     let rows = []
     styleKeys.forEach(style => {
         rows.push(
@@ -221,7 +223,7 @@ export default function ThemeManager() {
     
     attributeList.forEach(attr => {
         let output
-        if(theme.styles[style]) {
+        
             switch (attr.type) {
                 case 'COLOR':
                     output = <ColourEdit 
@@ -249,10 +251,9 @@ export default function ThemeManager() {
                 break;
             }
             //output = theme.styles[style][attr.attr]
-            console.log('[attr]', attr)
-        }
+        
         columns.push(
-          <td>{output}</td>
+          <td key={attr.attr}>{output}</td>
       )
   })
 
@@ -267,17 +268,15 @@ export default function ThemeManager() {
   function StringEdit({style, attribute, theme, setTheme}) {
     const values = attributeList.find(attr => attr.attr === attribute)
     let options = [<option></option>]
-    console.log('values.value', values.value)
-    console.log('values', values)
     values.value.forEach(option => {
             options.push(
-                <option>{option}</option>
+                <option key={option}>{option}</option>
             )
         })
-        
+    
     return (
         <>
-            <select value={theme.styles[style][attribute]}>
+            <select key={attribute} defaultValue={theme.styles.hasOwnProperty([style]) ? theme.styles[style][attribute] : ''}>
                 {options}
             </select> 
         </>
@@ -286,8 +285,8 @@ export default function ThemeManager() {
 
   function ColourEdit({style, attribute, theme, setTheme}) {
     return(
-        <div className="clr-field" style={{color: theme.styles[style][attribute]}}>
-          <input type="text" className="coloris colourField" value={theme.styles[style][attribute]} readOnly data-coloris></input>
+        <div key={attribute} className="clr-field" style={{color: theme.styles.hasOwnProperty([style]) ? theme.styles[style][attribute] : ''}}>
+          <input type="text" className="coloris colourField" defaultValue={theme.styles.hasOwnProperty([style]) ? theme.styles[style][attribute] : ''} readOnly data-coloris></input>
           <button type="button" aria-labelledby="clr-open-label"></button>
         </div>
       )
@@ -297,12 +296,12 @@ export default function ThemeManager() {
     let options = [<option></option>] 
     for(let i = 0; i <=100; i++) {
         options.push(
-            <option>{i}</option>
+            <option key={i}>{i}</option>
         )
     }
     return (
         <>
-            <select value={theme.styles[style][attribute]}>
+            <select defaultValue={theme.styles.hasOwnProperty([style]) ? theme.styles[style][attribute] : ''}>
                 {options}
             </select> 
         </>

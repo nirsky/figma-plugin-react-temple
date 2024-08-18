@@ -3,77 +3,10 @@ import { useState } from 'react';
 import { useImmer } from 'use-immer'
 import * as utils from './utils'
 import chroma from "chroma-js"
-
-
-const controls = [{
-        "type": 'edit', 
-        "name": 'edit', 
-        "position": '1', 
-        "tooltip": 'Edit Palette'
-      }, /*
-      {
-        "type": 'link', 
-        "name": 'link', 
-        "position": '2', 
-        "tooltip": 'Create Linked Palettes'
-      }, */
-      {
-        "type": 'swap', 
-        "name": 'swap_horiz', 
-        "position": '3', 
-        "tooltip": 'Reveres Palette'
-      }, 
-      {
-        "type": 'up', 
-        "name": 'arrow_upward', 
-        "position": '4', 
-        "tooltip": 'Move Palette one up'
-      }, 
-      {
-        "type": 'down', 
-        "name": 'arrow_downward', 
-        "position": '5', 
-        "tooltip": 'Move Palette one down'
-      }, 
-      {
-        "type": 'delete', 
-        "name": 'delete', 
-        "position": '6', 
-        "tooltip": 'Delete Palette'
-      }]
-
- const testPalettes = [
-  {
-  "meta": {
-      "title": 'palette 1',
-      "type": 'regular',
-      "seed": ['123456'],
-      "comment": 'Thise is a test comment'
-      },  
-  "colours": [{"value": '#ff074e', "id": '123'}, {"value": '#fabcde', "id": '456789'}]
-  },
-  {
-  "meta": {
-      "title": 'palette 2',
-      "type": 'ordered-sequential',
-      "seed": ['123456'],
-      "comment": 'Thise is a test comment'
-  },  
-  "colours": [{"value": '#763916', "id": '123456'}, {"value": '#96fe11', "id": '456789'}]
-  },
-  {
-  "meta": {
-      "title": 'palette 3',
-      "type": 'ordered-diverging',
-      "seed": ['384321'],
-      "comment": 'Thise is a test comment'
-  },
-  "colours": [{"value": '#369852', "id": '46548'}, {"value": '#153874', "id": '318494'}]
-  }
-]  
+import * as conf from './config';
 
 export default function ColourManager() {
-  const [palettes, setPalettes] = useState(testPalettes);
+  const [palettes, setPalettes] = useState(conf.testPalettes);
   return (
     <div>
       <Intro 
@@ -250,7 +183,7 @@ function Meta({index, meta, palette, setPalette, palettes, setPalettes, edit, se
 
 function Controls({index, palette, setPalette, palettes, setPalettes, edit, setEdit}){
   const rows = []
-  controls.forEach((control) => {
+  conf.controls.forEach((control) => {
       rows.push(
           <Control 
               index = {index}

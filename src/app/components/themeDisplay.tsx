@@ -7,8 +7,7 @@ import * as conf from './config';
 import * as utils from './utils'
 
 
-export default function ThemeManager() {
-    const [theme, setTheme] = useImmer(conf.jsonStructure); 
+export default function ThemeManager({theme, setTheme}) {
     return (
       <div>
         <Intro 

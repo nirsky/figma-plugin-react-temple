@@ -4,9 +4,10 @@ import { useImmer } from 'use-immer'
 import * as utils from './utils'
 import chroma from "chroma-js"
 import * as conf from './config';
+import { SketchPicker } from 'react-color';
+import Tippy from '@tippyjs/react'
 
-export default function ColourManager() {
-  const [palettes, setPalettes] = useState(conf.testPalettes);
+export default function ColourManager({palettes, setPalettes}) {
   return (
     <div>
       <Intro 
@@ -281,10 +282,20 @@ function Colours({colours}){
 
 function ColourActive({colour}){
   return(
-    <div className="clr-field" style={{color: colour}}>
-      <input type="text" className="coloris colourField" value={colour} readOnly data-coloris></input>
-      <button type="button" aria-labelledby="clr-open-label"></button>
-    </div>
+<Tippy interactive={true}
+                placement='bottom'
+                duration={0}
+                arrow={false}
+                    content={
+                        <SketchPicker
+                            color={colour}
+                            />
+                    }>
+
+                <div className='colour'
+                        style={{backgroundColor: colour}}></div>
+            </Tippy>
+    
   )
 }   
   

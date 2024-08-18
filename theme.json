@@ -1,0 +1,28 @@
+{
+    "theme": {
+      "version": 1.0,
+      "name": "Theme One",
+      "base-theme": "Smooth",
+      "styles": {
+        "All": {
+          "saColor": "#136595",
+          "saFontFamily": "Arial"
+        },
+        "Worksheet": {
+          "saFontSize": "12",
+          "saColor": "#367928",
+          "saFontFamily": "Tableau Book"
+        },
+        "Title": {
+          "saFontFamily": "Helvetica",
+          "saFontSize": "24",
+          "saColor": "#138761"
+        },
+        "Tooltip": {
+          "saFontSize": "12",
+          "saColor": "#216795",
+          "saFontFamily": "Arial"
+        }
+      }
+    }
+  }

@@ -6,7 +6,7 @@ body {
 }
 
 div {
-  border: 1px solid #000;
+  border: 0px solid #000;
   margin: 0px;
 }
 
@@ -57,6 +57,7 @@ div.colour, div.clr-field {
   border-radius: 5px;
   box-shadow: 2px 2px 4px #6e6e6e;
   margin-right: 2px;
+  border: 1px solid #000;
 } 
 
 input.title {
@@ -85,6 +86,11 @@ input.colourField, div.colourfield {
 
 input[type="file"] {
   display: none;
+}
+
+input.colourValue {
+  width: 70px;
+  margin-left: 4px;
 }
 
 label.uploadButton {
@@ -176,4 +182,10 @@ button:disabled {
   background-color: #124559;
   color: #E9E3E6;
   position: sticky;
+}
+
+.transparent {
+  background: 
+    repeating-conic-gradient(#808080 0% 25%, transparent 0% 50%) 
+      50% / 10px 10px
 }

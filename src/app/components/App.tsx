@@ -4,6 +4,7 @@ import '../styles/ui.css';
 import ColourManager from './paletteDisplay';
 import ThemeManager from './themeDisplay';
 
+
 export default function App() {
   const [screen, setScreen] = useState('themeManager');
   function handleOnClick() {
@@ -13,7 +14,6 @@ export default function App() {
       setScreen('themeManager')
     }
   }
-
 
   return( 
     <>

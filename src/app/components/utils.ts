@@ -2,6 +2,7 @@
 //import { chroma } from 'chroma-js'
 import chroma from "chroma-js"
 
+
 type Control = {
     type: 'swap' | 'up' | 'down' | 'delete'; // Enumerate the possible types
     name: string;
@@ -175,3 +176,24 @@ export function createXML(palettes) {
     console.log(xmlString)
     return xmlString
 }
+
+export function removeEmptyValues(obj: Record<string, any>): Record<string, any> {
+    const cleanedObj: Record<string, any> = {};
+
+    // Recursive function to clean empty string values
+    const cleanObject = (o: Record<string, any>) => {
+      for (const key in o) {
+        if (typeof o[key] === 'object' && o[key] !== null) {
+          const nestedObj = cleanObject(o[key]); // Recursively clean nested objects
+          if (Object.keys(nestedObj).length > 0) {
+            cleanedObj[key] = nestedObj;
+          }
+        } else if (o[key] !== '') {
+          cleanedObj[key] = o[key]; // Only add key if value is not an empty string
+        }
+      }
+      return cleanedObj;
+    };
+  
+    return cleanObject(obj);
+  }

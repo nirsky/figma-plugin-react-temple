@@ -8,10 +8,10 @@ import * as conf from './config';
 
 
 export default function App() {
-  
   const [theme, setTheme] = useImmer(conf.jsonStructure);
   const [palettes, setPalettes] = useState(conf.testPalettes); 
   const [screen, setScreen] = useState('themeManager');
+
   function handleOnClick() {
     if (screen == 'themeManager') {
       setScreen('colourManager')
@@ -30,10 +30,11 @@ export default function App() {
         className={screen === 'themeManager' ? '' : 'disabled'}
         disabled={screen === 'themeManager'}
         onClick={handleOnClick}>Theme Manager</button>
-      {screen === 'themeManager' ? <ThemeManager
+      {screen === 'themeManager' 
+          ? <ThemeManager
             theme={theme}
             setTheme={setTheme} /> 
-            : <ColourManager 
+          : <ColourManager 
             palettes = {palettes}
             setPalettes = {setPalettes}/>}
     </>)

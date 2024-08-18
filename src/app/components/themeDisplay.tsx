@@ -1,10 +1,10 @@
 import React from "react"
 import { useState } from 'react';
-import { useImmer } from 'use-immer'
+//import { useImmer } from 'use-immer'
 import { SketchPicker } from 'react-color';
 import Tippy from '@tippyjs/react'
 import * as conf from './config';
-import * as utils from './utils'
+//import * as utils from './utils'
 
 
 export default function ThemeManager({theme, setTheme}) {
@@ -27,16 +27,14 @@ export default function ThemeManager({theme, setTheme}) {
     return (<>
                 <h1>Theme Manager for Tableau</h1>
                 <UploadJSON 
-                        theme={theme}
                         setTheme={setTheme} />
                 <DownloadJSON 
-                        theme={theme}
-                        setTheme={setTheme} />
+                        theme={theme} />
     
     </>);
   }
 
-  function UploadJSON({theme, setTheme}) {
+  function UploadJSON({setTheme}) {
     const [error, setError] = useState('');
     const handleOnFileChange = (event) => {
         const file = event.target.files[0];
@@ -82,7 +80,7 @@ export default function ThemeManager({theme, setTheme}) {
     </>);
   }
 
-  function DownloadJSON({theme, setTheme}) {
+  function DownloadJSON({theme}) {
   
       const handleOnClick = () => {
         const jsonString = JSON.stringify(theme, null, 2); // Convert object to JSON string with indentation
@@ -114,9 +112,7 @@ export default function ThemeManager({theme, setTheme}) {
                 setTheme={setTheme}/>
             <table id='attributes'>
                 <thead>
-                    <Header 
-                        theme={theme}
-                        setTheme={setTheme}/>
+                    <Header/>
                 </thead>
                 <tbody>
                     <Settings 
@@ -154,7 +150,7 @@ export default function ThemeManager({theme, setTheme}) {
         );
   }
 
-  function Header(theme, setTheme) {
+  function Header() {
     let columns = []
     conf.attributeList.forEach(attr => {
         columns.push(

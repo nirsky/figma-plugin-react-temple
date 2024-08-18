@@ -6,7 +6,6 @@ import Tippy from '@tippyjs/react'
 import * as conf from './config';
 //import * as utils from './utils'
 
-
 export default function ThemeManager({theme, setTheme}) {
     return (
       <div>
@@ -19,8 +18,6 @@ export default function ThemeManager({theme, setTheme}) {
       </div>
       );
   }
-
-  
 
   function Intro({theme, setTheme}) {
 
@@ -249,16 +246,6 @@ export default function ThemeManager({theme, setTheme}) {
         );
   }
 
- /* function ColourEdit({style, attribute, theme, setTheme}) {
-
-    return(
-        <div key={attribute} className="clr-field" style={{color: theme.styles.hasOwnProperty([style]) ? theme.styles[style][attribute] : ''}}>
-          <input type="text" className="coloris colourField" defaultValue={theme.styles.hasOwnProperty([style]) ? theme.styles[style][attribute] : ''} readOnly data-coloris></input>
-          <button type="button" aria-labelledby="clr-open-label"></button>
-        </div>
-      )
-  }*/
-
   function ColourEdit({style, attribute, theme, setTheme}) {
     function handleOnChange(e) {
         setTheme(draft => {
@@ -270,13 +257,14 @@ export default function ThemeManager({theme, setTheme}) {
                 placement='left'
                 duration={0}
                 arrow={false}
-                    content={
+                    content={<>
                         <SketchPicker
                             color={theme.theme.styles.hasOwnProperty([style]) ? theme.theme.styles[style][attribute] : ''}
+                            disableAlpha={true}
                             onChange={color => setTheme(draft => {
                                 draft.theme.styles[style][attribute] = color.hex
                               })}
-                            />
+                            /></>
                     }>
 
                 <div className={theme.theme.styles[style][attribute] == '' ? 'colour transparent' : 'colour'}

@@ -265,6 +265,8 @@ function Control({index, control, palette, setPalette, palettes, setPalettes, ed
 }
 
 function Colours({colours}){
+  
+  
   const rows = []
   colours.forEach((colour) => {
     rows.push( 
@@ -281,20 +283,27 @@ function Colours({colours}){
 }
 
 function ColourActive({colour}){
+  const [c, setC] = useState(colour);
   return(
-<Tippy interactive={true}
+            <Tippy interactive={true}
                 placement='bottom'
                 duration={0}
                 arrow={false}
                     content={
+                        
                         <SketchPicker
-                            color={colour}
-                            />
+                            color={c}
+                            disableAlpha={true}
+                            presetColors={[]}
+                            onChange={color => setC(color.hex)}/>
+                            
                     }>
 
                 <div className='colour'
-                        style={{backgroundColor: colour}}></div>
+                        style={{backgroundColor: c}}></div>
             </Tippy>
+            
+                           
     
   )
 }   

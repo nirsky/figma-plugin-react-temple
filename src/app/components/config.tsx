@@ -39,6 +39,7 @@ export const controls = [{
 export const testPalettes = [
     {
     "meta": {
+        "id": '123456',
         "title": 'palette 1',
         "type": 'regular',
         "seed": ['123456'],
@@ -48,6 +49,7 @@ export const testPalettes = [
     },
     {
     "meta": {
+        "id": '49846321',
         "title": 'palette 2',
         "type": 'ordered-sequential',
         "seed": ['123456'],
@@ -57,6 +59,7 @@ export const testPalettes = [
     },
     {
     "meta": {
+        "id": '31564',
         "title": 'palette 3',
         "type": 'ordered-diverging',
         "seed": ['384321'],
@@ -65,7 +68,7 @@ export const testPalettes = [
     "colours": [{"value": '#369852', "id": '46548'}, {"value": '#153874', "id": '318494'}]
     }
   ]  
-  
+
 //Theme Manager
 export const jsonStructure = {
     "theme": {

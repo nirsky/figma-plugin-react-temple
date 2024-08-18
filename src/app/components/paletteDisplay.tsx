@@ -112,6 +112,14 @@ function ExportXML({palettes}) {
 function Palette({paletteContent, index, palettes, setPalettes}){
   const [palette, setPalette] = useImmer(paletteContent);
   const [edit, setEdit] = useState(false);
+
+  setPalettes(draft => {
+    const index = draft.findIndex(oldPalette => oldPalette.meta.id === palette.meta.id);
+    if (index !== -1) {
+      draft[index] = palette;  
+    }
+  });
+
   return(
       <div className="palette">
           <Meta 
@@ -126,7 +134,8 @@ function Palette({paletteContent, index, palettes, setPalettes}){
           {edit ? <EditPalette
             palette = {palette}
             setPalette = {setPalette}/> : ''}
-          <Colours colours = {palette.colours}/>
+          <Colours colours = {palette.colours}
+            setPalette = {setPalette}/>
           
       </div>
   )
@@ -264,15 +273,14 @@ function Control({index, control, palette, setPalette, palettes, setPalettes, ed
   )
 }
 
-function Colours({colours}){
-  
-  
+function Colours({colours, setPalette}){
   const rows = []
   colours.forEach((colour) => {
     rows.push( 
         <ColourActive 
-            colour = {colour.value}
-            key = {colour.id}/>
+            colour = {colour}
+            key = {colour.id}
+            setPalette = {setPalette}/>
     )
   })
   return(
@@ -282,8 +290,14 @@ function Colours({colours}){
   )
 }
 
-function ColourActive({colour}){
+function ColourActive({colour, setPalette}){
   const [c, setC] = useState(colour);
+  setPalette(draft => {
+    const colorIndex = draft.colours.findIndex(color => color.id === colour.id);
+    if (colorIndex !== -1) {
+      draft.colours[colorIndex] = c;  // Replace the color
+    }
+  });
   return(
             <Tippy interactive={true}
                 placement='bottom'
@@ -292,15 +306,15 @@ function ColourActive({colour}){
                     content={
                         
                         <SketchPicker
-                            color={c}
+                            color={c.value}
                             disableAlpha={true}
                             presetColors={[]}
-                            onChange={color => setC(color.hex)}/>
+                            onChange={color => setC({value: color.hex, id: c.id})}/>
                             
                     }>
 
                 <div className='colour'
-                        style={{backgroundColor: c}}></div>
+                        style={{backgroundColor: c.value}}></div>
             </Tippy>
             
                            
@@ -405,7 +419,7 @@ function ColourSelect({colour, colours, setColours}){
   }
 
   return(
-        <div className="colourfield" style={{backgroundColor: colour.value, color: textcolour}} onClick={handleOnClick}>
+        <div className="colour" style={{backgroundColor: colour.value, color: textcolour}} onClick={handleOnClick}>
           <i className='material-symbols-outlined'>{selected}</i>
         </div>
   )

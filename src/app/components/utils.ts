@@ -11,6 +11,7 @@ type Control = {
 };
 
 type Meta = {
+    id: string,
     title: string;
     type: 'regular' | 'ordered-sequential' | 'ordered-diverging'; 
     seed: string[];
@@ -50,6 +51,7 @@ export function parseXML(doc) {
     while (node = result.iterateNext()) {
         let palette: Palette = {
             meta: {
+                id: generateUUID(),
                 title: node.getAttribute("name"),
                 type: node.getAttribute("type"),
                 seed: [],//node.getAttribute("seed").split(','),

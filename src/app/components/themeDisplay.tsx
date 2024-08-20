@@ -23,6 +23,17 @@ export default function ThemeManager({theme, setTheme}) {
       );
   }
 
+  function ShowTheme(theme) {
+    function handleOnClick() {
+        console.log('theme', theme)
+    }
+    return (<>  
+        <button onClick={handleOnClick}>
+            Show Theme   
+        </button>
+    </>);
+  }
+
   function Intro({theme, setTheme, sync, setSync}) {
 
     return (<>
@@ -33,9 +44,13 @@ export default function ThemeManager({theme, setTheme}) {
                         theme={theme} />
                 <SyncToFigma
                         theme={theme}
-                        setTheme={setTheme}
                         sync={sync}
                         setSync={setSync} />
+                <LoadFromFigma
+                        theme={theme}
+                        setTheme={setTheme} />
+                <ShowTheme
+                        theme={theme} />
     
     </>);
   }
@@ -110,18 +125,49 @@ export default function ThemeManager({theme, setTheme}) {
             </>);
   }
 
-  function SyncToFigma({theme, setTheme, sync, setSync}) {
+  function SyncToFigma({theme, sync, setSync}) {
     function handleOnClick() {
         if (sync === true ) {
             setSync(false)
         } else {
             setSync(true)
+            const styles = theme.theme.styles;
+            console.log('styles', styles);
+            for (const style in styles) {
+                if (styles.hasOwnProperty(style)) {
+                    console.log('Style:', style);
+            
+                    const attributes = styles[style];
+                    console.log('attributes:', attributes);
+                    
+                    for (const attribute in attributes) {
+                            console.log('attribute:', attribute);
+                            console.log('styles[style][attribute]', styles[style][attribute]);
+                            const value = styles[style][attribute];
+                            console.log('value:', value);
+                            
+                            utils.sendToFigma(style, attribute, value)
+                    }
+                }
+            }
         } 
      }
 
     return (<>  
         <button onClick={handleOnClick}>
-            {sync.toString()}
+            {sync ? 'Disable Sync to Figma' : 'Enable Sync to Figma'}   
+        </button>
+    </>);
+  }
+
+  function LoadFromFigma({theme, setTheme}) {
+    function handleOnClick() {
+        
+     }
+
+    return (<>  
+        <button onClick={handleOnClick}>
+            Load Settings From Figma   
         </button>
     </>);
   }
@@ -315,12 +361,11 @@ export default function ThemeManager({theme, setTheme}) {
             draft.theme.styles[style][attribute] = e.target.value
           })
         if(sync === true) {
-            let value = Number(e.target.value) || null;
-            utils.sendToFigma(style, attribute, value)
+            utils.sendToFigma(style, attribute, e.target.value)
         }
     }
     let options = [<option></option>] 
-    for(let i = 0; i <=100; i++) {
+    for(let i = 1; i <=100; i++) {
         options.push(
             <option key={i}>{i}</option>
         )

@@ -169,7 +169,7 @@ export const jsonStructure = {
   }
 
 export const attributeList = [
-    {name: 'Font Family', attr: 'saFontFamily', value: ['Comic Sans', 'Helvetica', 'Arial', 'Tableau Book'], type: 'STRING'},
+    {name: 'Font Family', attr: 'saFontFamily', value: ["Arial", "Calibri", "Courier New", "Georgia", "Poppins", "Roboto", "Tableau", "Times New Roman", "Trebuchet MS", "Verdana", "Meryio UI", "Noto CJK Sans", "Noto CJK Serif", "Noto Thai Sans", "Noto Thai Serif"], type: 'STRING'},
     {name: 'Font Size', attr: 'saFontSize', value: ['8', '12', '16'], type: 'FLOAT'},
     {name: 'Font Weight', attr: 'saFontWeight', value: ['Bold', 'Semi-Bold', 'Light'], type: 'STRING'},
     {name: 'Font Colour', attr: 'saColor', type: 'COLOR'},

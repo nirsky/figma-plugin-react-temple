@@ -208,8 +208,26 @@ export function sendToFigma(style, attribute, value) {
             value: value, 
             type: attributeMeta.type
         }
-        console.log('msg', msg)
-        console.log('sending msg')
         parent.postMessage({ pluginMessage: { type: 'save-variables', msg: msg} }, '*')
-        console.log('msg sent')
+}
+
+export function loopStyles(theme) {
+    const styles = theme.theme.styles;
+
+for (const style in styles) {
+    if (styles.hasOwnProperty(style)) {
+        console.log(`Style: ${style}`);
+
+        const attributes = styles[style];
+        
+        for (const attribute in attributes) {
+            if (style.hasOwnProperty(attribute)) {
+                const value = style[attribute];
+                console.log(`  Subkey: ${attribute}, Value: ${value}`);
+                
+                // Call your function here, e.g., test(value);
+            }
+        }
+    }
+}
 }

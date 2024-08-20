@@ -35,9 +35,15 @@ async function saveVariable(JSONvariable: JSONvariable) {
     collection = figma.variables.createVariableCollection(`themes-for-tableau`)
   }
     //Convert hex to Figma RGB
-  if (JSONvariable.type == 'COLOR') {
+  if (JSONvariable.type == 'COLOR' && JSONvariable.value != '') {
     colourRGB = chroma(JSONvariable.value).rgb()
+    console.log('JSONvariable.value', JSONvariable.value),
+    console.log('colourRGB', colourRGB),
     JSONvariable.value = {r: colourRGB[0] / 255, g: colourRGB[1] / 255, b: colourRGB[2] / 255}
+  }
+    //Convert String to number
+  if (JSONvariable.type == 'FLOAT') {
+    JSONvariable.value = Number(JSONvariable.value) || null;
   }
     //Loop through variables in collection until you find the right one and change the value
   collection.variableIds.forEach(async varID => {

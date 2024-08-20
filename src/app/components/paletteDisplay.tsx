@@ -401,6 +401,7 @@ function AddPalettes({palettes, setPalettes}) {
     );
 }
 
+
 function ColourSelect({colour, colours, setColours}){
   function handleOnClick() { 
     let newColours = colours.slice()

@@ -1,6 +1,7 @@
 
 //import { chroma } from 'chroma-js'
 import chroma from "chroma-js"
+import * as conf from './config';
 
 
 type Control = {
@@ -76,7 +77,6 @@ export function parseXML(doc) {
     console.log('loadedPalettes', loadedPalettes)
     return loadedPalettes
 }
-
 
 export function parseColours(input: string) {
     const hexColorRegex = /(?<=\W|x|^)([a-fA-F0-9]{8}|[a-fA-F0-9]{6}|#[a-fA-F0-9]{3})(?=\W|$)/g;
@@ -198,4 +198,18 @@ export function removeEmptyValues(obj: Record<string, any>): Record<string, any>
     };
   
     return cleanObject(obj);
-  }
+}
+
+export function sendToFigma(style, attribute, value) {
+        const attributeMeta = conf.attributeList.find(attr => attr.attr === attribute);
+        const msg = {
+            style: style, 
+            attribute: attribute, 
+            value: value, 
+            type: attributeMeta.type
+        }
+        console.log('msg', msg)
+        console.log('sending msg')
+        parent.postMessage({ pluginMessage: { type: 'save-variables', msg: msg} }, '*')
+        console.log('msg sent')
+}

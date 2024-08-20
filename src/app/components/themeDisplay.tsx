@@ -4,22 +4,26 @@ import { useState } from 'react';
 import { SketchPicker } from 'react-color';
 import Tippy from '@tippyjs/react'
 import * as conf from './config';
-//import * as utils from './utils'
+import * as utils from './utils'
 
 export default function ThemeManager({theme, setTheme}) {
+    const [sync, setSync] = useState('false');
     return (
       <div>
         <Intro 
             theme={theme}
-            setTheme={setTheme}/>
+            setTheme={setTheme}
+            sync={sync}
+            setSync={setSync}/>
         <Theme 
             theme={theme}
-            setTheme={setTheme}/>
+            setTheme={setTheme}
+            sync={sync}/>
       </div>
       );
   }
 
-  function Intro({theme, setTheme}) {
+  function Intro({theme, setTheme, sync, setSync}) {
 
     return (<>
                 <h1>Theme Manager for Tableau</h1>
@@ -27,6 +31,11 @@ export default function ThemeManager({theme, setTheme}) {
                         setTheme={setTheme} />
                 <DownloadJSON 
                         theme={theme} />
+                <SyncToFigma
+                        theme={theme}
+                        setTheme={setTheme}
+                        sync={sync}
+                        setSync={setSync} />
     
     </>);
   }
@@ -101,7 +110,23 @@ export default function ThemeManager({theme, setTheme}) {
             </>);
   }
 
-  function Theme({theme, setTheme}) {
+  function SyncToFigma({theme, setTheme, sync, setSync}) {
+    function handleOnClick() {
+        if (sync === true ) {
+            setSync(false)
+        } else {
+            setSync(true)
+        } 
+     }
+
+    return (<>  
+        <button onClick={handleOnClick}>
+            {sync.toString()}
+        </button>
+    </>);
+  }
+
+  function Theme({theme, setTheme, sync}) {
     return (
         <>
             <Meta 
@@ -114,7 +139,8 @@ export default function ThemeManager({theme, setTheme}) {
                 <tbody>
                     <Settings 
                         theme={theme}
-                        setTheme={setTheme}/>
+                        setTheme={setTheme}
+                        sync={sync}/>
                 </tbody>
             </table>
         </>
@@ -163,7 +189,7 @@ export default function ThemeManager({theme, setTheme}) {
         );
   }
 
-  function Settings({theme, setTheme}) {
+  function Settings({theme, setTheme, sync}) {
     const styleKeys = Object.keys(conf.jsonStructure.theme.styles);
     let rows = []
     styleKeys.forEach(style => {
@@ -172,13 +198,14 @@ export default function ThemeManager({theme, setTheme}) {
                 style={style}
                 key={style}
                 theme={theme}
-                setTheme={setTheme}/>
+                setTheme={setTheme}
+                sync={sync}/>
         )
     })
     return (<>{rows}</>); 
   }
 
-  function Setting({style, theme, setTheme}) {
+  function Setting({style, theme, setTheme, sync}) {
     let columns = []
     
     conf.attributeList.forEach(attr => {
@@ -190,21 +217,24 @@ export default function ThemeManager({theme, setTheme}) {
                                     style={style}
                                     attribute={attr.attr}
                                     theme={theme}
-                                    setTheme={setTheme} />
+                                    setTheme={setTheme}
+                                    sync={sync}/>
                     break;
                     case 'STRING':
                         output = <StringEdit 
                                     style={style}
                                     attribute={attr.attr}
                                     theme={theme}
-                                    setTheme={setTheme} />
+                                    setTheme={setTheme} 
+                                    sync={sync}/>
                     break;
                     case 'FLOAT':
                         output = <NumberEdit
                                     style={style} 
                                     attribute={attr.attr}
                                     theme={theme}
-                                    setTheme={setTheme} />
+                                    setTheme={setTheme}
+                                    sync={sync}/>
                     break;
                 }
             }
@@ -222,12 +252,14 @@ export default function ThemeManager({theme, setTheme}) {
         );
   }
 
-  function StringEdit({style, attribute, theme, setTheme}) {
+  function StringEdit({style, attribute, theme, setTheme, sync}) {
     function handleOnChange(e) {
-
         setTheme(draft => {
             draft.theme.styles[style][attribute] = e.target.value
           })
+          if(sync === true) {
+            utils.sendToFigma(style, attribute, e.target.value)
+          }
     }
     const values = conf.attributeList.find(attr => attr.attr === attribute)
     let options = [<option></option>]
@@ -246,11 +278,14 @@ export default function ThemeManager({theme, setTheme}) {
         );
   }
 
-  function ColourEdit({style, attribute, theme, setTheme}) {
-    function handleOnChange(e) {
+  function ColourEdit({style, attribute, theme, setTheme, sync}) {
+    function handleOnChange(color) {
         setTheme(draft => {
-            draft.theme.styles[style][attribute] = e.target.value
+            draft.theme.styles[style][attribute] = color.hex
           })
+        if(sync === true) {
+            utils.sendToFigma(style, attribute, color.hex)
+        }
     }
     return(<div className='controls'>
             <Tippy interactive={true}
@@ -261,9 +296,7 @@ export default function ThemeManager({theme, setTheme}) {
                         <SketchPicker
                             color={theme.theme.styles.hasOwnProperty([style]) ? theme.theme.styles[style][attribute] : ''}
                             disableAlpha={true}
-                            onChange={color => setTheme(draft => {
-                                draft.theme.styles[style][attribute] = color.hex
-                              })}
+                            onChange={handleOnChange}
                             /></>
                     }>
 
@@ -275,11 +308,16 @@ export default function ThemeManager({theme, setTheme}) {
       )
   }
 
-  function NumberEdit({style, attribute, theme, setTheme}) {
+  function NumberEdit({style, attribute, theme, setTheme, sync}) {
     function handleOnChange(e) {
+        console.log('e.target.value', e.target.value)
         setTheme(draft => {
             draft.theme.styles[style][attribute] = e.target.value
           })
+        if(sync === true) {
+            let value = Number(e.target.value) || null;
+            utils.sendToFigma(style, attribute, value)
+        }
     }
     let options = [<option></option>] 
     for(let i = 0; i <=100; i++) {

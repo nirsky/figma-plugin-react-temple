@@ -112,13 +112,15 @@ function ExportXML({palettes}) {
 function Palette({paletteContent, index, palettes, setPalettes}){
   const [palette, setPalette] = useImmer(paletteContent);
   const [edit, setEdit] = useState(false);
-
-  setPalettes(draft => {
-    const index = draft.findIndex(oldPalette => oldPalette.meta.id === palette.meta.id);
-    if (index !== -1) {
-      draft[index] = palette;  
-    }
-  });
+  const paletteIndex = palettes.findIndex(oldPalette => oldPalette.meta.id === palette.meta.id);
+  if (palettes[paletteIndex] !== palette) {
+    setPalettes(draft => {
+      if (paletteIndex !== -1) {
+        draft[paletteIndex] = palette;  
+      }
+    });
+  }
+  
 
   return(
       <div className="palette">

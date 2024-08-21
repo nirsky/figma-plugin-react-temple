@@ -240,7 +240,6 @@ export function loopStyles(theme) {
     }
 }
 
-
 export async function saveVariable(JSONvariable: JSONvariable) {
     let collections
     let collection
@@ -300,7 +299,7 @@ export async function saveVariable(JSONvariable: JSONvariable) {
         console.log('Variable could not be created', error)
       }
     }
-  }
+}
 
 export async function parseVariables() {
 let collections, collection

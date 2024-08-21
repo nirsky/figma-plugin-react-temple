@@ -1,14 +1,9 @@
 import React from "react"
 import { useState } from 'react';
-//import { useImmer } from 'use-immer'
 import { SketchPicker } from 'react-color';
 import Tippy from '@tippyjs/react'
 import * as conf from './config';
 import * as utils from './utils'
-
-
-
-
 
 
 export default function ThemeManager({theme, setTheme}) {
@@ -63,9 +58,7 @@ export default function ThemeManager({theme, setTheme}) {
                         theme={theme}
                         sync={sync}
                         setSync={setSync} />
-                <LoadFromFigma
-                        theme={theme}
-                        setTheme={setTheme} />
+                <LoadFromFigma />
                 <ShowTheme
                         theme={theme} />
     
@@ -112,7 +105,7 @@ export default function ThemeManager({theme, setTheme}) {
     if (sync === true ) {
         utils.loopStyles(theme)
     } 
-    
+
     return (<>
                 <form id="upload">
                     <label htmlFor="file" className="uploadButton">
@@ -165,7 +158,7 @@ export default function ThemeManager({theme, setTheme}) {
     </>);
   }
 
-  function LoadFromFigma({theme, setTheme}) {
+  function LoadFromFigma() {
     function handleOnClick() {
         const msg = ''
         parent.postMessage({ pluginMessage: { type: 'request-variables', msg: msg} }, '*')
@@ -314,7 +307,7 @@ export default function ThemeManager({theme, setTheme}) {
           }
     }
     const values = conf.attributeList.find(attr => attr.attr === attribute)
-    let options = [<option></option>]
+    let options = [<option key='thisisakey'></option>]
     values.value.forEach(option => {
             options.push(
                 <option key={option}>{option}</option>
@@ -323,7 +316,7 @@ export default function ThemeManager({theme, setTheme}) {
     
     return (
         <>
-            <select key={attribute} onChange={handleOnChange} value={theme.theme.styles.hasOwnProperty([style]) ? theme.theme.styles[style][attribute] : ''}>
+            <select onChange={handleOnChange} value={theme.theme.styles.hasOwnProperty([style]) ? theme.theme.styles[style][attribute] : ''}>
                 {options}
             </select> 
         </>
@@ -370,10 +363,10 @@ export default function ThemeManager({theme, setTheme}) {
             utils.sendToFigma(style, attribute, e.target.value)
         }
     }
-    let options = [<option></option>] 
+    let options = [<option key='thisisakey'></option>] 
     for(let i = 1; i <=100; i++) {
         options.push(
-            <option key={i}>{i}</option>
+            <option key={utils.generateUUID()}>{i}</option>
         )
     }
     

@@ -30,6 +30,13 @@ type Palette = {
     colours: Colour[];
 };
 
+interface JSONvariable {
+    style: string;
+    attribute: string;
+    value: any;
+    type: VariableResolvedDataType;
+  }
+
 export function generateUUID(length = 10) {
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let result = '';
@@ -213,21 +220,128 @@ export function sendToFigma(style, attribute, value) {
 
 export function loopStyles(theme) {
     const styles = theme.theme.styles;
-
-for (const style in styles) {
-    if (styles.hasOwnProperty(style)) {
-        console.log(`Style: ${style}`);
-
-        const attributes = styles[style];
-        
-        for (const attribute in attributes) {
-            if (style.hasOwnProperty(attribute)) {
-                const value = style[attribute];
-                console.log(`  Subkey: ${attribute}, Value: ${value}`);
-                
-                // Call your function here, e.g., test(value);
+    console.log('styles', styles);
+    for (const style in styles) {
+        if (styles.hasOwnProperty(style)) {
+            console.log('Style:', style);
+    
+            const attributes = styles[style];
+            console.log('attributes:', attributes);
+            
+            for (const attribute in attributes) {
+                    console.log('attribute:', attribute);
+                    console.log('styles[style][attribute]', styles[style][attribute]);
+                    const value = styles[style][attribute];
+                    console.log('value:', value);
+                    
+                    sendToFigma(style, attribute, value)
             }
         }
     }
 }
+
+
+export async function saveVariable(JSONvariable: JSONvariable) {
+    let collections
+    let collection
+    let variable: Variable | null
+    let saved = false
+    let colourRGB
+  
+      // Try to load existing collection
+    try {
+      collections = await figma.variables.getLocalVariableCollectionsAsync();
+      collection = collections.find(item => item.name === 'themes-for-tableau');
+    } catch (error) {
+      console.log("Collections couldn't be loaded")
+    }
+      // Create collection if it doesn't exist yet
+    if (!collection) {
+      collection = figma.variables.createVariableCollection(`themes-for-tableau`)
+    }
+      //Convert hex to Figma RGB
+    if (JSONvariable.type == 'COLOR' && JSONvariable.value != '') {
+      colourRGB = chroma(JSONvariable.value).rgb()
+      JSONvariable.value = {r: colourRGB[0] / 255, g: colourRGB[1] / 255, b: colourRGB[2] / 255}
+    }
+      //Convert String to number
+    if (JSONvariable.type == 'FLOAT') {
+      JSONvariable.value = Number(JSONvariable.value) || null;
+    }
+  
+      //Load fonts
+    if (JSONvariable.attribute == 'saFontFamily' && JSONvariable.value != '') {
+      try {
+        await figma.loadFontAsync({ family: JSONvariable.value, style: "Regular" });
+      } catch (error) {
+        console.log('Font could not be loaded')
+      }
+    }
+      //Loop through variables in collection until you find the right one and change the value
+    collection.variableIds.forEach(async varID => {
+        try {             
+          variable = await figma.variables.getVariableByIdAsync(varID);
+        } catch (error) { 
+          console.log("Variable couldn't be loaded")
+        }
+        if (variable != null &&  variable.name == JSONvariable.style + `/` + JSONvariable.attribute) {
+          if(JSONvariable.value !== '' && JSONvariable.value) {
+            variable.setValueForMode(collection.modes[0].modeId, JSONvariable.value) 
+          } 
+          saved = true
+        }  
+    }); 
+      // If Variable wasn't found, create new variable with value
+    if (saved === false && JSONvariable.value !== '' && JSONvariable.value) {
+      try {
+        variable = figma.variables.createVariable(JSONvariable.style + `/` + JSONvariable.attribute, collection, JSONvariable.type)
+        variable.setValueForMode(collection.modes[0].modeId, JSONvariable.value )
+      } catch (error) {
+        console.log('Variable could not be created', error)
+      }
+    }
+  }
+
+export async function parseVariables() {
+let collections, collection
+let variable
+    //check if collection exists
+    try {
+        collections = await figma.variables.getLocalVariableCollectionsAsync();
+        collection = collections.find(item => item.name === 'themes-for-tableau');
+      } catch (error) {
+        console.log("Collections couldn't be loaded")
+        
+      }
+    //return message if no collection is found
+    if (!collection) {
+        return('no collection')
+    }
+
+    collection.variableIds.forEach(async varID => {
+        try {             
+          variable = await figma.variables.getVariableByIdAsync(varID);
+        } catch (error) { 
+          console.log("Variable couldn't be loaded")
+        }
+
+        //Convert hex to Figma RGB
+        let value
+        if (variable.resolvedType == 'COLOR') {
+            let rgb = Object.values(variable['valuesByMode'])
+            value = chroma(rgb[0].r * 255,  rgb[0].g * 255, rgb[0].b * 255).hex()
+        } else {
+            value = Object.values(variable['valuesByMode'])[0]
+        }
+
+
+        let style = {
+            style: variable.name.split("/")[0],
+            attribute: variable.name.split("/")[1],
+            value: value,
+            type: variable.resolvedType
+        }
+        figma.ui.postMessage({ type: 'store-variable', style});
+    }); 
+
 }

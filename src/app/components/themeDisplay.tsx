@@ -6,8 +6,23 @@ import Tippy from '@tippyjs/react'
 import * as conf from './config';
 import * as utils from './utils'
 
+
+
+
+
+
 export default function ThemeManager({theme, setTheme}) {
     const [sync, setSync] = useState('false');
+
+    window.onmessage = async (message) => { 
+        const msg = message.data.pluginMessage
+        if (msg.type === 'store-variable') {
+            setTheme(draft => {
+                draft.theme.styles[msg.style.style][msg.style.attribute] = msg.style.value
+              })
+          }
+    }
+
     return (
       <div>
         <Intro 
@@ -39,7 +54,9 @@ export default function ThemeManager({theme, setTheme}) {
     return (<>
                 <h1>Theme Manager for Tableau</h1>
                 <UploadJSON 
-                        setTheme={setTheme} />
+                        theme={theme}
+                        setTheme={setTheme}
+                        sync={sync} />
                 <DownloadJSON 
                         theme={theme} />
                 <SyncToFigma
@@ -55,41 +72,47 @@ export default function ThemeManager({theme, setTheme}) {
     </>);
   }
 
-  function UploadJSON({setTheme}) {
+  function UploadJSON({theme, setTheme, sync}) {
     const [error, setError] = useState('');
     const handleOnFileChange = (event) => {
         const file = event.target.files[0];
     
         if (file) {
           const reader = new FileReader();
-          reader.onload = (e) => {
-            // Type guard to ensure the result is a string
-            const result = e.target.result;
-            if (typeof result === 'string') {
-              try {
-                const parsedData = JSON.parse(result);
-                setTheme(draft => {draft.theme = {
-                                        ...draft.theme,
-                                        ...parsedData.theme,
-                                        styles: {
-                                        ...draft.theme.styles,
-                                        ...parsedData.theme.styles,
-                                        },
-                                    };
-                                }
-                  )
-                setError('');
-              } catch (error) {
-                setError('Error parsing JSON file');
-              }
-            } else {
-                setError('Error: File content is not a string');
-            }
-          };
+            reader.onload = (e) => {
+                // Type guard to ensure the result is a string
+                const result = e.target.result;
+                if (typeof result === 'string') {
+                    try {
+                        const parsedData = JSON.parse(result);
+                        setTheme(draft => {draft.theme = {
+                                                ...draft.theme,
+                                                ...parsedData.theme,
+                                                styles: {
+                                                ...draft.theme.styles,
+                                                ...parsedData.theme.styles,
+                                                },
+                                            };
+                                        }
+                        )
+                        
+                        setError('');
+                    } catch (error) {
+                        setError('Error parsing JSON file');
+                    }
+                } else {
+                    setError('Error: File content is not a string');
+                }
+            };
           reader.readAsText(file);
         }
-      };
 
+    };
+
+    if (sync === true ) {
+        utils.loopStyles(theme)
+    } 
+    
     return (<>
                 <form id="upload">
                     <label htmlFor="file" className="uploadButton">
@@ -131,38 +154,21 @@ export default function ThemeManager({theme, setTheme}) {
             setSync(false)
         } else {
             setSync(true)
-            const styles = theme.theme.styles;
-            console.log('styles', styles);
-            for (const style in styles) {
-                if (styles.hasOwnProperty(style)) {
-                    console.log('Style:', style);
-            
-                    const attributes = styles[style];
-                    console.log('attributes:', attributes);
-                    
-                    for (const attribute in attributes) {
-                            console.log('attribute:', attribute);
-                            console.log('styles[style][attribute]', styles[style][attribute]);
-                            const value = styles[style][attribute];
-                            console.log('value:', value);
-                            
-                            utils.sendToFigma(style, attribute, value)
-                    }
-                }
-            }
+            utils.loopStyles(theme)
         } 
      }
 
     return (<>  
         <button onClick={handleOnClick}>
-            {sync ? 'Disable Sync to Figma' : 'Enable Sync to Figma'}   
+            {sync === true ? 'Disable Sync to Figma' : 'Enable Sync to Figma'} {sync.toString()}  
         </button>
     </>);
   }
 
   function LoadFromFigma({theme, setTheme}) {
     function handleOnClick() {
-        
+        const msg = ''
+        parent.postMessage({ pluginMessage: { type: 'request-variables', msg: msg} }, '*')
      }
 
     return (<>  

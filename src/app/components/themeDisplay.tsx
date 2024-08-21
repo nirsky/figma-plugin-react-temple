@@ -33,7 +33,7 @@ export default function ThemeManager({theme, setTheme}) {
       );
   }
 
-  function ShowTheme(theme) {
+  function ShowTheme({theme}) {
     function handleOnClick() {
         console.log('theme', theme)
     }

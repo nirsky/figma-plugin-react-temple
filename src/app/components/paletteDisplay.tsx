@@ -10,9 +10,12 @@ import Tippy from '@tippyjs/react'
 export default function ColourManager({palettes, setPalettes}) {
   return (
     <div>
-      <Intro 
-          palettes = {palettes}
-          setPalettes = {setPalettes}/>
+      <Intro />
+      <ImportXML 
+          palettes={palettes}
+          setPalettes={setPalettes}/>
+      <ShowPalettes
+          palettes={palettes} />
       <Palettes
           palettes = {palettes}
           setPalettes = {setPalettes}/>
@@ -23,7 +26,23 @@ export default function ColourManager({palettes, setPalettes}) {
     );
 }
 
-function Intro (palettes) {
+function Intro () {
+  return(
+    <>
+      <h1>Colour Manager for Tableau</h1>
+        <div>
+          <h2>Upload your preferences.tps (optional)</h2>
+          <div>
+              <p>Or add palettes below if you start from scratch.</p>
+              <p>You can find it in: C:\Users\..\Documents\My Tableau Repository.</p>
+              <p>For more details on what this tool is doing, visit <a href="https://help.tableau.com/current/pro/desktop/en-us/formatting_create_custom_colors.htm">the Tableau Knowledge Base</a></p>
+          </div>
+      </div>
+    </>
+  );
+}
+
+function ImportXML({palettes, setPalettes}) {
   function handleOnFileChange(e) {
     e.preventDefault();
 
@@ -37,30 +56,32 @@ function Intro (palettes) {
     reader.readAsText(file);
     reader.onload = function() {
         xml = utils.parseXML(reader.result);
-        newPalettes = palettes.palettes.slice().concat(xml)
-        palettes.setPalettes(newPalettes)
+        newPalettes = palettes.slice().concat(xml)
+        setPalettes(newPalettes)
     };
   }
 
   return(
     <>
-      <h1>Colour Manager for Tableau</h1>
-        <div>
-          <h2>Upload your preferences.tps (optional)</h2>
-          <div>
-              <p>Or add palettes below if you start from scratch.</p>
-              <p>You can find it in: C:\Users\..\Documents\My Tableau Repository.</p>
-              <p>For more details on what this tool is doing, visit <a href="https://help.tableau.com/current/pro/desktop/en-us/formatting_create_custom_colors.htm">the Tableau Knowledge Base</a></p>
-          </div>
           <form id="upload">
               <label htmlFor="file" className="uploadButton">
                 Upload Preferences.tps
               </label>
               <input type="file" id="file" accept=".tps" onChange={handleOnFileChange}></input>
           </form>
-      </div>
     </>
   );
+}
+
+function ShowPalettes({palettes}) {
+  function handleOnClick() {
+      console.log('palettes', palettes)
+  }
+  return (<>  
+      <button onClick={handleOnClick}>
+          Show Palettes   
+      </button>
+  </>);
 }
 
 function Palettes ( {palettes, setPalettes}) {
@@ -82,31 +103,6 @@ function Palettes ( {palettes, setPalettes}) {
                   palettes = {palettes}/>
             </>: ''}
           </>);
-}
-
-function ExportXML({palettes}) {
-  function handleOnClick() {
-    const xmlString = utils.createXML(palettes)
-    let filename = "preferences.tps";
-    let pom = document.createElement('a');
-    let bb = new Blob([xmlString], {type: 'text/plain'});
-  
-    pom.setAttribute('href', window.URL.createObjectURL(bb));
-    pom.setAttribute('download', filename);
-  
-    pom.dataset.downloadurl = ['text/plain', pom.download, pom.href].join(':');
-    pom.draggable = true; 
-    pom.classList.add('dragout');
-  
-    pom.click();
-  }
-
-
-
-  return (<>
-    <button onClick={handleOnClick}>Export Preferences</button>
-    </>
-  )
 }
 
 function Palette({paletteContent, index, palettes, setPalettes}){
@@ -140,29 +136,6 @@ function Palette({paletteContent, index, palettes, setPalettes}){
             setPalette = {setPalette}/>
           
       </div>
-  )
-}
-
-function EditPalette({palette, setPalette}) {
-  let colours = palette.colours.map(element => element.value)
-  function handleOnChange(e) {
-    const parsedColours = utils.parseColours(e.target.value)
-    const newItems = parsedColours.map(element => {
-      return {
-          value: element,
-          id: utils.generateUUID()
-      };
-    });
-    
-    setPalette(draft => {
-      draft.colours = newItems
-    })
-  }
-
-
-  return(<>
-    <textarea onChange={handleOnChange} defaultValue={colours}></textarea>
-    </>
   )
 }
 
@@ -275,6 +248,34 @@ function Control({index, control, palette, setPalette, palettes, setPalettes, ed
   )
 }
 
+function EditPalette({palette, setPalette}) {
+  let colours = palette.colours.map(element => element.value)
+  function handleOnChange(e) {
+    console.log('e.target.value', e.target.value)
+    const parsedColours = utils.parseColours(e.target.value)
+    console.log('parsedColours', parsedColours)
+    const newItems = parsedColours.map(element => {
+      return {
+          value: element,
+          id: utils.generateUUID()
+      };
+
+    });
+    console.log('newItems', newItems)
+    
+    setPalette(draft => {
+      draft.colours = newItems
+    })
+    console.log('done')
+  }
+
+
+  return(<>
+    <textarea onChange={handleOnChange} defaultValue={colours}></textarea>
+    </>
+  )
+}
+
 function Colours({colours, setPalette}){
   const rows = []
   colours.forEach((colour) => {
@@ -322,8 +323,33 @@ function ColourActive({colour, setPalette}){
                            
     
   )
-}   
+}  
+
+function ExportXML({palettes}) {
+  function handleOnClick() {
+    const xmlString = utils.createXML(palettes)
+    let filename = "preferences.tps";
+    let pom = document.createElement('a');
+    let bb = new Blob([xmlString], {type: 'text/plain'});
   
+    pom.setAttribute('href', window.URL.createObjectURL(bb));
+    pom.setAttribute('download', filename);
+  
+    pom.dataset.downloadurl = ['text/plain', pom.download, pom.href].join(':');
+    pom.draggable = true; 
+    pom.classList.add('dragout');
+  
+    pom.click();
+  }
+
+
+
+  return (<>
+    <button onClick={handleOnClick}>Export Preferences</button>
+    </>
+  )
+}
+
 function AddPalettes({palettes, setPalettes}) {
   const [colours, setColours] = useState([]);
   function handleOnChange(e) {
@@ -400,7 +426,6 @@ function AddPalettes({palettes, setPalettes}) {
           </div>
     );
 }
-
 
 function ColourSelect({colour, colours, setColours}){
   function handleOnClick() { 

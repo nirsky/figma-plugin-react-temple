@@ -1,15 +1,20 @@
 import React from "react"
 import { useState } from 'react';
-import { useImmer } from 'use-immer'
 import * as utils from './utils'
 import chroma from "chroma-js"
 import * as conf from './config';
-import { SketchPicker } from 'react-color';
+
+import Saturation from '@uiw/react-color-saturation';
+import Sketch from '@uiw/react-color-sketch';
+
+
+//import Saturation from '@uiw/react-color-saturation';
 import Tippy from '@tippyjs/react'
 
 export default function ColourManager({palettes, setPalettes}) {
   return (
     <div>
+      
       <Intro />
       <ImportXML 
           palettes={palettes}
@@ -26,7 +31,21 @@ export default function ColourManager({palettes, setPalettes}) {
     );
 }
 
-function Intro () {
+function ColourPicker() {
+  const [hsva, setHsva] = useState({ h: 0, s: 0, v: 68, a: 1 });
+  return (<>
+    <Saturation
+      hsva={hsva}
+      onChange={(newColor) => {
+        setHsva({ ...hsva, ...newColor, a: hsva.a });
+      }}
+    />
+    <Sketch />
+    </>
+  );
+}
+
+function Intro() {
   return(
     <>
       <h1>Colour Manager for Tableau</h1>
@@ -84,14 +103,14 @@ function ShowPalettes({palettes}) {
   </>);
 }
 
-function Palettes ( {palettes, setPalettes}) {
+function Palettes({palettes, setPalettes}) {
   const rows = []
   palettes.forEach((palette, index) => {
       rows.push(
           <Palette 
-              paletteContent = {palette}
               index = {index}
-              key = {palette.meta.title} 
+              palette = {palette}
+              key = {palette.meta.id} 
               palettes = {palettes}
               setPalettes = {setPalettes}/>
       )
@@ -105,46 +124,50 @@ function Palettes ( {palettes, setPalettes}) {
           </>);
 }
 
-function Palette({paletteContent, index, palettes, setPalettes}){
-  const [palette, setPalette] = useImmer(paletteContent);
+function Palette({index, palette, palettes, setPalettes}){
   const [edit, setEdit] = useState(false);
-  const paletteIndex = palettes.findIndex(oldPalette => oldPalette.meta.id === palette.meta.id);
-  if (palettes[paletteIndex] !== palette) {
-    setPalettes(draft => {
-      if (paletteIndex !== -1) {
-        draft[paletteIndex] = palette;  
-      }
-    });
-  }
-  
 
   return(
       <div className="palette">
           <Meta 
+            id = {palette.meta.id}
             index = {index}
             meta = {palette.meta}
-            palette = {palette}
-            setPalette = {setPalette}
             palettes = {palettes}
             setPalettes = {setPalettes}
             edit = {edit}
             setEdit = {setEdit}/>
           {edit ? <EditPalette
-            palette = {palette}
-            setPalette = {setPalette}/> : ''}
-          <Colours colours = {palette.colours}
-            setPalette = {setPalette}/>
+            id = {palette.meta.id}
+            palettes = {palettes}
+            setPalettes = {setPalettes}/> : ''}
+          <Colours 
+            id = {palette.meta.id}
+            colours = {palette.colours}
+            palettes = {palettes}
+            setPalettes = {setPalettes}/>
           
       </div>
   )
 }
 
-function Meta({index, meta, palette, setPalette, palettes, setPalettes, edit, setEdit}){
+function Meta({id, index, meta, palettes, setPalettes, edit, setEdit}){
   function handleInputChange(e) {
     
-    setPalette(draft => {
-      draft.meta.title = e.target.value;
-    })
+    const updatedPalettes = palettes.map(palette => {
+      if (palette.meta.id === id) {
+        return {
+          ...palette,
+          meta: {
+              ...palette.meta,
+              title: e.target.value
+          }
+        };
+      }
+      return palette;
+    });
+
+    setPalettes(updatedPalettes)
   }
   return(
       <div className="meta">
@@ -155,9 +178,8 @@ function Meta({index, meta, palette, setPalette, palettes, setPalettes, edit, se
             onChange={handleInputChange}></input>
           <div className="type">{meta.type}</div>
           <Controls 
+            id = {id}
             index = {index}
-            palette = {palette}
-            setPalette = {setPalette}
             palettes = {palettes}
             setPalettes = {setPalettes}
             edit = {edit}
@@ -166,16 +188,15 @@ function Meta({index, meta, palette, setPalette, palettes, setPalettes, edit, se
   )
 }
 
-function Controls({index, palette, setPalette, palettes, setPalettes, edit, setEdit}){
+function Controls({id, index, palettes, setPalettes, edit, setEdit}){
   const rows = []
   conf.controls.forEach((control) => {
       rows.push(
           <Control 
+              id = {id}
               index = {index}
               control = {control}
               key = {control.name}
-              palette = {palette}
-              setPalette = {setPalette}
               palettes = {palettes}
               setPalettes = {setPalettes} 
               edit = {edit}
@@ -190,8 +211,9 @@ function Controls({index, palette, setPalette, palettes, setPalettes, edit, setE
   )
 }
 
-function Control({index, control, palette, setPalette, palettes, setPalettes, edit, setEdit}){
+function Control({id, index, control, palettes, setPalettes, edit, setEdit}){
   function handleOnClick() {
+    let updatedPalettes
     switch  (control.type) {
       case 'edit':
         console.log('edit')
@@ -205,9 +227,16 @@ function Control({index, control, palette, setPalette, palettes, setPalettes, ed
         console.log('link')
         break;
       case 'swap':
-        setPalette(draft => {
-          draft.colours = palette.colours.toReversed()
-        })
+        updatedPalettes = palettes.map(palette => {
+          if (palette.meta.id === id) {
+              return {
+                  ...palette,
+                  colours: [...palette.colours].reverse()
+              };
+          }
+          return palette;
+      });
+        setPalettes(updatedPalettes)
         break;
       case 'up':
         if (index <= 0 || index > palettes.length - 1) {
@@ -230,9 +259,8 @@ function Control({index, control, palette, setPalette, palettes, setPalettes, ed
         }
         break;
       case 'delete':
-        let newPalettes = palettes.slice()
-        newPalettes.splice(index, 1)
-        setPalettes(newPalettes)
+        updatedPalettes = palettes.filter(palette => palette.meta.id !== id);
+        setPalettes(updatedPalettes)
         break;
     }
   }
@@ -247,9 +275,11 @@ function Control({index, control, palette, setPalette, palettes, setPalettes, ed
       </div>
   )
 }
-
-function EditPalette({palette, setPalette}) {
-  let colours = palette.colours.map(element => element.value)
+// CHECK THIS ONE!
+function EditPalette({id, palettes, setPalettes}) {
+  const colours = palettes
+                      .find(palette => palette.meta.id === id)?.colours
+                      .map(colour => colour.value) || [];
   function handleOnChange(e) {
     console.log('e.target.value', e.target.value)
     const parsedColours = utils.parseColours(e.target.value)
@@ -263,9 +293,18 @@ function EditPalette({palette, setPalette}) {
     });
     console.log('newItems', newItems)
     
-    setPalette(draft => {
-      draft.colours = newItems
-    })
+    const newPalettes = (newColours) => {
+      return palettes.map(palette => {
+          if (palette.meta.id === id) {
+              return {
+                  ...palette,
+                  colours: newItems
+              };
+          }
+          return palette;
+      });
+  };
+    setPalettes(newPalettes)
     console.log('done')
   }
 
@@ -276,14 +315,16 @@ function EditPalette({palette, setPalette}) {
   )
 }
 
-function Colours({colours, setPalette}){
+function Colours({id, colours, palettes, setPalettes}){
   const rows = []
   colours.forEach((colour) => {
     rows.push( 
         <ColourActive 
+            id = {id}
             colour = {colour}
             key = {colour.id}
-            setPalette = {setPalette}/>
+            palettes = {palettes}
+            setPalettes = {setPalettes}/>
     )
   })
   return(
@@ -293,14 +334,32 @@ function Colours({colours, setPalette}){
   )
 }
 
-function ColourActive({colour, setPalette}){
-  const [c, setC] = useState(colour);
-  setPalette(draft => {
-    const colorIndex = draft.colours.findIndex(color => color.id === colour.id);
-    if (colorIndex !== -1) {
-      draft.colours[colorIndex] = c;  // Replace the color
-    }
-  });
+function ColourActive({id, colour, palettes, setPalettes}){
+  const [colourPicker, setColourPicker] = useState(colour.value);
+  function handleOnChange(newColour) {
+    
+    setColourPicker(newColour.hex)
+    const updatedPalettes = palettes.map(palette => {
+      if (palette.meta.id === id) {
+          return {
+              ...palette,
+              colours: palette.colours.map(c => {
+                  if (c.id === colour.id) {
+                      return {
+                          ...c,
+                          value: newColour.hex
+                      };
+                  }
+                  return c;
+              })
+          };
+      }
+      return palette;
+    });
+    setPalettes(updatedPalettes);
+  }
+/*return(<><div className='colour'
+  style={{backgroundColor: colour.value}}></div></>)*/
   return(
             <Tippy interactive={true}
                 placement='bottom'
@@ -308,16 +367,16 @@ function ColourActive({colour, setPalette}){
                 arrow={false}
                     content={
                         
-                        <SketchPicker
-                            color={c.value}
+                        <Sketch
+                            color={colourPicker}
                             disableAlpha={true}
                             presetColors={[]}
-                            onChange={color => setC({value: color.hex, id: c.id})}/>
+                            onChange={handleOnChange}/>
                             
                     }>
 
                 <div className='colour'
-                        style={{backgroundColor: c.value}}></div>
+                        style={{backgroundColor: colourPicker}}></div>
             </Tippy>
             
                            
@@ -341,8 +400,6 @@ function ExportXML({palettes}) {
   
     pom.click();
   }
-
-
 
   return (<>
     <button onClick={handleOnClick}>Export Preferences</button>
@@ -467,6 +524,7 @@ function AddCategorical({colours, palettes, setPalettes}) {
 
     let palette = {
       meta: {
+          id: utils.generateUUID(),
           title: 'Categorical',
           type: 'regular',
           seed: [],
@@ -517,6 +575,7 @@ function AddSequential({colours, palettes, setPalettes}) {
 
     let palette = {
       meta: {
+          id: utils.generateUUID(),
           title: title,
           type: type,
           seed: [],
@@ -582,6 +641,7 @@ function AddDivergingBright({colours, palettes, setPalettes}) {
    
     let palette = {
       meta: {
+          id: utils.generateUUID(),
           title: 'Diverging Bright',
           type: 'ordered-diverging',
           seed: [],

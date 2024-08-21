@@ -4,6 +4,7 @@ import { SketchPicker } from 'react-color';
 import Tippy from '@tippyjs/react'
 import * as conf from './config';
 import * as utils from './utils'
+import Sketch from '@uiw/react-color-sketch';
 
 
 export default function ThemeManager({theme, setTheme}) {
@@ -324,21 +325,31 @@ export default function ThemeManager({theme, setTheme}) {
   }
 
   function ColourEdit({style, attribute, theme, setTheme, sync}) {
+    const [colour, setColour] = useState(theme.theme.styles[style][attribute]);
     function handleOnChange(color) {
         setTheme(draft => {
             draft.theme.styles[style][attribute] = color.hex
           })
+        setColour(color.hex)
         if(sync === true) {
             utils.sendToFigma(style, attribute, color.hex)
         }
     }
+ /*   return(
+        <div className='controls'>
+            <div className={theme.theme.styles[style][attribute] == '' ? 'colour transparent' : 'colour'}
+                style={{backgroundColor: theme.theme.styles.hasOwnProperty([style]) ? theme.theme.styles[style][attribute] : ''}}>
+            </div>
+            <input className='colourValue' onChange={handleOnChange} value={theme.theme.styles.hasOwnProperty([style]) ? theme.theme.styles[style][attribute] : ''}>
+            </input>
+        </div>)   */ 
     return(<div className='controls'>
             <Tippy interactive={true}
                 placement='left'
                 duration={0}
                 arrow={false}
                     content={<>
-                        <SketchPicker
+                        <Sketch
                             color={theme.theme.styles.hasOwnProperty([style]) ? theme.theme.styles[style][attribute] : ''}
                             disableAlpha={true}
                             onChange={handleOnChange}
@@ -346,9 +357,9 @@ export default function ThemeManager({theme, setTheme}) {
                     }>
 
                 <div className={theme.theme.styles[style][attribute] == '' ? 'colour transparent' : 'colour'}
-                        style={{backgroundColor: theme.theme.styles.hasOwnProperty([style]) ? theme.theme.styles[style][attribute] : ''}}></div>
+                        style={{backgroundColor: theme.theme.styles.hasOwnProperty([style]) ? colour : ''}}></div>
             </Tippy>
-            <input className='colourValue' onChange={handleOnChange} value={theme.theme.styles.hasOwnProperty([style]) ? theme.theme.styles[style][attribute] : ''}></input>
+            <input className='colourValue' onChange={handleOnChange} value={theme.theme.styles.hasOwnProperty([style]) ? colour : ''}></input>
         </div>
       )
   }

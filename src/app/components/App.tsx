@@ -9,7 +9,7 @@ import * as conf from './config';
 
 export default function App() {
   const [theme, setTheme] = useImmer(conf.jsonStructure);
-  const [palettes, setPalettes] = useImmer(conf.testPalettes); 
+  const [palettes, setPalettes] = useState(conf.testPalettes); 
   const [screen, setScreen] = useState('colourManager');
 
   function handleOnClick() {

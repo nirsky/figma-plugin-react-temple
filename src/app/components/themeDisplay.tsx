@@ -6,10 +6,14 @@ import * as utils from './utils'
 import Sketch from '@uiw/react-color-sketch';
 import Select from '@mui/joy/Select';
 import Option from '@mui/joy/Option';
+import Switch from '@mui/joy/Switch';
+import Button from '@mui/joy/Button';
+import Input from '@mui/joy/Input';
+import Table from '@mui/joy/Table';
 
 
 export default function ThemeManager({theme, setTheme, palettes}) {
-    const [sync, setSync] = useState('false');
+    const [sync, setSync] = useState(false);
 
     window.onmessage = async (message) => { 
         const msg = message.data.pluginMessage
@@ -41,9 +45,11 @@ export default function ThemeManager({theme, setTheme, palettes}) {
         console.log('theme', theme)
     }
     return (<>  
-        <button onClick={handleOnClick}>
+        <Button 
+            size="sm"
+            onClick={handleOnClick}>
             Show Theme   
-        </button>
+        </Button>
     </>);
   }
 
@@ -182,9 +188,11 @@ export default function ThemeManager({theme, setTheme, palettes}) {
       };
 
     return (<>  
-                <button className='vizku' onClick={handleOnClick}>
+                <Button
+                    size="sm" 
+                    onClick={handleOnClick}>
                     Download JSON
-                </button>
+                </Button>
             </>);
   }
 
@@ -198,10 +206,14 @@ export default function ThemeManager({theme, setTheme, palettes}) {
         } 
      }
 
-    return (<>  
-        <button className='vizku' onClick={handleOnClick}>
-            {sync === true ? 'Disable Sync to Figma' : 'Enable Sync to Figma'} {sync.toString()}  
-        </button>
+    return (<> Sync to Figma: 
+        <Switch
+            checked={sync}
+            onChange={handleOnClick}
+            sx={{
+                "--Switch-trackWidth": "48px"
+              }}
+            />
     </>);
   }
 
@@ -212,9 +224,11 @@ export default function ThemeManager({theme, setTheme, palettes}) {
      }
 
     return (<>  
-        <button className='vizku' onClick={handleOnClick}>
+        <Button
+            size="sm"  
+            onClick={handleOnClick}>
             Load Settings From Figma   
-        </button>
+        </Button>
     </>);
   }
 
@@ -225,7 +239,13 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                 theme={theme}
                 setTheme={setTheme}
                 palettes={palettes}/>
-            <table id='attributes'>
+            <Table
+                borderAxis="xBetween"
+                color="neutral"
+                size="sm"
+                stickyHeader
+                variant="plain" 
+                id='attributes'>
                 <thead>
                     <Header/>
                 </thead>
@@ -235,7 +255,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                         setTheme={setTheme}
                         sync={sync}/>
                 </tbody>
-            </table>
+            </Table>
         </>
         );
   }
@@ -249,18 +269,27 @@ export default function ThemeManager({theme, setTheme, palettes}) {
     let options = []
     conf.baseThemes.forEach(option => {
             options.push(
-                <option key={option}>{option}</option>
+                <Option 
+                    key={option}
+                    value={option}>{option}</Option>
             )
         })
     return (
         <>
             <div className='controls'>
-                <input className='themeMeta' defaultValue='New Theme'></input>
+                <Input 
+                    color="primary"
+                    size="sm"
+                    defaultValue='New Theme'></Input>
                 <div className='themeMeta'>Version: {theme.theme.version}</div>
                 Base Theme: 
-                <select onChange={handleOnChange} value={theme.theme['base-theme']}>
+                <Select 
+                    size="sm"
+                    color="primary"
+                    onChange={handleOnChange} 
+                    value={theme.theme['base-theme']}>
                     {options}
-                </select> 
+                </Select> 
                 
                 <SelectPalette
                         palettes={palettes} />

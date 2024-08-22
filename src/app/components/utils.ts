@@ -81,7 +81,6 @@ export function parseXML(doc) {
         }
         loadedPalettes.push(palette)
     }
-    console.log('loadedPalettes', loadedPalettes)
     return loadedPalettes
 }
 
@@ -220,19 +219,13 @@ export function sendToFigma(style, attribute, value) {
 
 export function loopStyles(theme) {
     const styles = theme.theme.styles;
-    console.log('styles', styles);
     for (const style in styles) {
         if (styles.hasOwnProperty(style)) {
-            console.log('Style:', style);
     
             const attributes = styles[style];
-            console.log('attributes:', attributes);
             
             for (const attribute in attributes) {
-                    console.log('attribute:', attribute);
-                    console.log('styles[style][attribute]', styles[style][attribute]);
                     const value = styles[style][attribute];
-                    console.log('value:', value);
                     
                     sendToFigma(style, attribute, value)
             }

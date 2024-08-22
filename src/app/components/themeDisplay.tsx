@@ -7,7 +7,7 @@ import * as utils from './utils'
 import Sketch from '@uiw/react-color-sketch';
 
 
-export default function ThemeManager({theme, setTheme}) {
+export default function ThemeManager({theme, setTheme, palettes}) {
     const [sync, setSync] = useState('false');
 
     window.onmessage = async (message) => { 
@@ -25,7 +25,8 @@ export default function ThemeManager({theme, setTheme}) {
             theme={theme}
             setTheme={setTheme}
             sync={sync}
-            setSync={setSync}/>
+            setSync={setSync}
+            palettes={palettes} />
         <Theme 
             theme={theme}
             setTheme={setTheme}
@@ -45,7 +46,7 @@ export default function ThemeManager({theme, setTheme}) {
     </>);
   }
 
-  function Intro({theme, setTheme, sync, setSync}) {
+  function Intro({theme, setTheme, sync, setSync, palettes}) {
 
     return (<>
                 <h1>Theme Manager for Tableau</h1>
@@ -62,8 +63,35 @@ export default function ThemeManager({theme, setTheme}) {
                 <LoadFromFigma />
                 <ShowTheme
                         theme={theme} />
-    
+                <SelectPalette
+                        palettes={palettes} />
+
     </>);
+  }
+
+  function SelectPalette({palettes}) {
+    function handleOnChange() {
+
+    }
+    let options = [<option key='thisisakey'>test1<div className='colour' 
+        style={{backgroundColor: '#ff0000'}}></div></option>] 
+    palettes.forEach(palette => {
+
+        options.push(
+            <option key={palette.meta.id}>{palette.meta.title} 
+                <div className='colour' 
+                    style={{backgroundColor: '#ff0000'}}></div>
+            </option>
+        )
+    });
+    
+    return (
+        <>
+            <select onChange={handleOnChange} value={''}>
+                {options}
+            </select> 
+        </>
+        );
   }
 
   function UploadJSON({theme, setTheme, sync}) {
@@ -326,6 +354,11 @@ export default function ThemeManager({theme, setTheme}) {
 
   function ColourEdit({style, attribute, theme, setTheme, sync}) {
     const [colour, setColour] = useState(theme.theme.styles[style][attribute]);
+    console.log('style', style)
+    console.log('attribute', attribute)
+    console.log('colour', colour)
+    console.log('theme.theme.styles[style][attribute]', theme.theme.styles[style][attribute])
+    console.log('theme', theme)
     function handleOnChange(color) {
         setTheme(draft => {
             draft.theme.styles[style][attribute] = color.hex
@@ -335,14 +368,6 @@ export default function ThemeManager({theme, setTheme}) {
             utils.sendToFigma(style, attribute, color.hex)
         }
     }
- /*   return(
-        <div className='controls'>
-            <div className={theme.theme.styles[style][attribute] == '' ? 'colour transparent' : 'colour'}
-                style={{backgroundColor: theme.theme.styles.hasOwnProperty([style]) ? theme.theme.styles[style][attribute] : ''}}>
-            </div>
-            <input className='colourValue' onChange={handleOnChange} value={theme.theme.styles.hasOwnProperty([style]) ? theme.theme.styles[style][attribute] : ''}>
-            </input>
-        </div>)   */ 
     return(<div className='controls'>
             <Tippy interactive={true}
                 placement='left'
@@ -357,16 +382,15 @@ export default function ThemeManager({theme, setTheme}) {
                     }>
 
                 <div className={theme.theme.styles[style][attribute] == '' ? 'colour transparent' : 'colour'}
-                        style={{backgroundColor: theme.theme.styles.hasOwnProperty([style]) ? colour : ''}}></div>
+                        style={{backgroundColor: theme.theme.styles[style][attribute]}}></div>
             </Tippy>
-            <input className='colourValue' onChange={handleOnChange} value={theme.theme.styles.hasOwnProperty([style]) ? colour : ''}></input>
+            <input className='colourValue' onChange={handleOnChange} value={theme.theme.styles[style][attribute]}></input>
         </div>
       )
   }
 
   function NumberEdit({style, attribute, theme, setTheme, sync}) {
     function handleOnChange(e) {
-        console.log('e.target.value', e.target.value)
         setTheme(draft => {
             draft.theme.styles[style][attribute] = e.target.value
           })

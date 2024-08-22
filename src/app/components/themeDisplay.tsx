@@ -10,6 +10,8 @@ import Switch from '@mui/joy/Switch';
 import Button from '@mui/joy/Button';
 import Input from '@mui/joy/Input';
 import Table from '@mui/joy/Table';
+import Typography from '@mui/joy/Typography';
+import Sheet from '@mui/joy/Sheet';
 
 
 export default function ThemeManager({theme, setTheme, palettes}) {
@@ -17,7 +19,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
 
     window.onmessage = async (message) => { 
         const msg = message.data.pluginMessage
-        if (msg.type === 'store-variable') {
+        if (msg && msg.type === 'store-variable') {
             setTheme(draft => {
                 draft.theme.styles[msg.style.style][msg.style.attribute] = msg.style.value
               })
@@ -56,7 +58,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
   function Intro({theme, setTheme, sync, setSync}) {
 
     return (<>
-                <h1>Theme Manager for Tableau</h1>
+                <Typography color="primary" level="h1" >Theme Manager for Tableau</Typography>
                 <UploadJSON 
                         theme={theme}
                         setTheme={setTheme}
@@ -81,12 +83,9 @@ export default function ThemeManager({theme, setTheme, palettes}) {
     }
     let options = [<Option key='thisisakey' value=''></Option>] 
     
-    console.log('palettes', palettes)
     palettes.forEach(palette => {
-        console.log('palette.colours', palette.colours)
         let colours = []
         palette.colours.forEach(colour => {
-            console.log('colour', colour)
             colours.push(<div className='colourSmall' 
                             key={colour.value}
                 style={{backgroundColor: colour.value}}></div>)
@@ -239,13 +238,19 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                 theme={theme}
                 setTheme={setTheme}
                 palettes={palettes}/>
+            <Sheet sx={{ height: 300, overflow: 'auto' }}>
             <Table
                 borderAxis="xBetween"
                 color="neutral"
                 size="sm"
                 stickyHeader
                 variant="plain" 
-                id='attributes'>
+                id='attributes'
+                sx={{ '& thead th:nth-child(3)': { width: '64px' },
+                      '& thead th:nth-child(4)': { width: '96px' },
+                      '& thead th:nth-child(5)': { width: '96px' },
+                      '& thead th:nth-child(6)': { width: '96px' },
+                      '& thead th:nth-child(7)': { width: '96px' }}}>
                 <thead>
                     <Header/>
                 </thead>
@@ -256,6 +261,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                         sync={sync}/>
                 </tbody>
             </Table>
+            </Sheet>
         </>
         );
   }
@@ -378,38 +384,43 @@ export default function ThemeManager({theme, setTheme, palettes}) {
   }
 
   function StringEdit({style, attribute, theme, setTheme, sync}) {
-    function handleOnChange(e) {
+    const handleOnChange = (event, newValue) => {
         setTheme(draft => {
-            draft.theme.styles[style][attribute] = e.target.value
+            draft.theme.styles[style][attribute] = newValue
           })
           if(sync === true) {
-            utils.sendToFigma(style, attribute, e.target.value)
+            utils.sendToFigma(style, attribute, newValue)
           }
     }
+
     const values = conf.attributeList.find(attr => attr.attr === attribute)
-    let options = [<option key='thisisakey'></option>]
+    let options = [<Option 
+                        key='thisisakey'
+                        value=''></Option>]
     values.value.forEach(option => {
             options.push(
-                <option key={option}>{option}</option>
+                <Option 
+                    key={option}
+                    value={option}>{option}</Option>
             )
         })
     
     return (
         <>
-            <select onChange={handleOnChange} value={theme.theme.styles.hasOwnProperty([style]) ? theme.theme.styles[style][attribute] : ''}>
+            <Select
+                color="primary"
+                size="sm" 
+                onChange={handleOnChange} 
+                value={theme.theme.styles[style][attribute]}
+                defaultValue=''>
                 {options}
-            </select> 
+            </Select> 
         </>
         );
   }
 
   function ColourEdit({style, attribute, theme, setTheme, sync}) {
     const [colour, setColour] = useState(theme.theme.styles[style][attribute]);
-    console.log('style', style)
-    console.log('attribute', attribute)
-    console.log('colour', colour)
-    console.log('theme.theme.styles[style][attribute]', theme.theme.styles[style][attribute])
-    console.log('theme', theme)
     function handleOnChange(color) {
         setTheme(draft => {
             draft.theme.styles[style][attribute] = color.hex
@@ -435,32 +446,45 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                 <div className={theme.theme.styles[style][attribute] == '' ? 'colour transparent' : 'colour'}
                         style={{backgroundColor: theme.theme.styles[style][attribute]}}></div>
             </Tippy>
-            <input className='colourValue' onChange={handleOnChange} value={theme.theme.styles[style][attribute]}></input>
+            <Input 
+                color="primary"
+                size="sm"
+                onChange={handleOnChange} 
+                value={theme.theme.styles[style][attribute]}></Input>
         </div>
       )
   }
 
   function NumberEdit({style, attribute, theme, setTheme, sync}) {
-    function handleOnChange(e) {
+    const handleOnChange = (event, newValue) => {
         setTheme(draft => {
-            draft.theme.styles[style][attribute] = e.target.value
+            draft.theme.styles[style][attribute] = newValue
           })
-        if(sync === true) {
-            utils.sendToFigma(style, attribute, e.target.value)
-        }
+          if(sync === true) {
+            utils.sendToFigma(style, attribute, newValue)
+          }
     }
-    let options = [<option key='thisisakey'></option>] 
+    let options = [<Option 
+                        key='thisisakey'
+                        value=''></Option>] 
     for(let i = 1; i <=100; i++) {
         options.push(
-            <option key={utils.generateUUID()}>{i}</option>
+            <Option 
+                key={utils.generateUUID()}
+                value={i}>{i}</Option>
         )
     }
     
     return (
         <>
-            <select onChange={handleOnChange} value={theme.theme.styles.hasOwnProperty([style]) ? theme.theme.styles[style][attribute] : ''}>
+            <Select
+                color="primary"
+                size="sm" 
+                onChange={handleOnChange} 
+                value={theme.theme.styles[style][attribute]}
+                defaultValue=''>
                 {options}
-            </select> 
+            </Select>
         </>
         );
   }

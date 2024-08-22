@@ -5,6 +5,11 @@ import '../styles/ui.css';
 import ColourManager from './paletteDisplay';
 import ThemeManager from './themeDisplay';
 import * as conf from './config';
+import Tabs from '@mui/joy/Tabs';
+import TabList from '@mui/joy/TabList';
+import Tab from '@mui/joy/Tab';
+import TabPanel from '@mui/joy/TabPanel';
+
 
 
 export default function App() {
@@ -22,21 +27,26 @@ export default function App() {
 
   return( 
     <>
-      <button 
-        className={screen === 'themeManager' ? 'disabled vizku' : ' vizku'}
-        disabled={screen === 'colourManager'}
-        onClick={handleOnClick}>Colour Manager</button>
-      <button 
-        className={screen === 'themeManager' ? ' vizku' : 'disabled vizku'}
-        disabled={screen === 'themeManager'}
-        onClick={handleOnClick}>Theme Manager</button>
-      {screen === 'themeManager' 
-          ? <ThemeManager
-            theme={theme}
-            setTheme={setTheme}
-            palettes = {palettes} /> 
-          : <ColourManager 
-            palettes = {palettes}
-            setPalettes = {setPalettes}/>}
+      <Tabs 
+        aria-label="Basic tabs" 
+        defaultValue={0}
+        sx={{ width: 798 }}>
+      <TabList sx={{justifyContent: 'center'}}>
+        <Tab>Colour Manager</Tab>
+        <Tab>Theme Manager</Tab>
+      </TabList>
+      <TabPanel value={0}>
+        <ColourManager 
+              palettes = {palettes}
+              setPalettes = {setPalettes}/>
+      </TabPanel>
+      <TabPanel value={1}>
+        <ThemeManager
+              theme={theme}
+              setTheme={setTheme}
+              palettes = {palettes} /> 
+      </TabPanel>
+    </Tabs>
+      
     </>)
 }

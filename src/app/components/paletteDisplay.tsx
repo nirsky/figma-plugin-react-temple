@@ -3,12 +3,8 @@ import { useState } from 'react';
 import * as utils from './utils'
 import chroma from "chroma-js"
 import * as conf from './config';
-
 import Saturation from '@uiw/react-color-saturation';
 import Sketch from '@uiw/react-color-sketch';
-
-
-//import Saturation from '@uiw/react-color-saturation';
 import Tippy from '@tippyjs/react'
 
 export default function ColourManager({palettes, setPalettes}) {

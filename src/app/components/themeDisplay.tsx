@@ -26,8 +26,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
             theme={theme}
             setTheme={setTheme}
             sync={sync}
-            setSync={setSync}
-            palettes={palettes} />
+            setSync={setSync} />
         <Theme 
             theme={theme}
             setTheme={setTheme}
@@ -48,7 +47,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
     </>);
   }
 
-  function Intro({theme, setTheme, sync, setSync, palettes}) {
+  function Intro({theme, setTheme, sync, setSync}) {
 
     return (<>
                 <h1>Theme Manager for Tableau</h1>
@@ -183,7 +182,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
       };
 
     return (<>  
-                <button onClick={handleOnClick}>
+                <button className='vizku' onClick={handleOnClick}>
                     Download JSON
                 </button>
             </>);
@@ -200,7 +199,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
      }
 
     return (<>  
-        <button onClick={handleOnClick}>
+        <button className='vizku' onClick={handleOnClick}>
             {sync === true ? 'Disable Sync to Figma' : 'Enable Sync to Figma'} {sync.toString()}  
         </button>
     </>);
@@ -213,7 +212,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
      }
 
     return (<>  
-        <button onClick={handleOnClick}>
+        <button className='vizku' onClick={handleOnClick}>
             Load Settings From Figma   
         </button>
     </>);

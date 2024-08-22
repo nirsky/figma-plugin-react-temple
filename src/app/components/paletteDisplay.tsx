@@ -97,7 +97,7 @@ function ShowPalettes({palettes}) {
       console.log('palettes', palettes)
   }
   return (<>  
-      <button onClick={handleOnClick}>
+      <button className='vizku' onClick={handleOnClick}>
           Show Palettes   
       </button>
   </>);
@@ -402,7 +402,7 @@ function ExportXML({palettes}) {
   }
 
   return (<>
-    <button onClick={handleOnClick}>Export Preferences</button>
+    <button className='vizku' onClick={handleOnClick}>Export Preferences</button>
     </>
   )
 }
@@ -461,10 +461,10 @@ function AddPalettes({palettes, setPalettes}) {
   if (colours.length > 0) {
     selectButtons  =  <>
                         <button onClick={handleOnSelectClick} 
-                                className={deselectedColours.length === 0 ? 'selectColour disabled' : 'selectColour'}
+                                className='vizku'
                                 disabled={deselectedColours.length === 0}>All</button>
                         <button onClick={handleOnSelectClick} 
-                                className={selectedColours.length === 0 ? 'selectColour disabled' : 'selectColour'}
+                                className='vizku'
                                 disabled={selectedColours.length === 0}>None</button>
                       </>
   }
@@ -542,7 +542,7 @@ function AddCategorical({colours, palettes, setPalettes}) {
 
   return(<>
             <button onClick={handleOnClick}
-                                    className={selectedItems.length === 0 ? 'disabled' : ''}
+                                    className='vizku'
                                     disabled={selectedItems.length === 0}>Categorical Palette</button>
       </>
   )
@@ -614,11 +614,11 @@ function AddSequential({colours, palettes, setPalettes}) {
   return(<>
             <button onClick={handleOnClick}
                     id='seq'
-                    className={sequential}
+                    className='vizku'
                     disabled={sequential === 'disabled'}>Sequential Palette</button>
             <button onClick={handleOnClick}
                     id='div_dark'
-                    className={diverging}
+                    className='vizku'
                     disabled={diverging === 'disabled'}>Diverging Dark Palette</button>
       </>
   )
@@ -675,7 +675,7 @@ function AddDivergingBright({colours, palettes, setPalettes}) {
 
   return(<>
             <button onClick={handleOnClick}
-                                    className={diverging}
+                                    className='vizku'
                                     disabled={diverging === 'disabled'}>Diverging Bright Palette</button>
       </>
   )

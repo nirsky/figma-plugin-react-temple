@@ -23,11 +23,11 @@ export default function App() {
   return( 
     <>
       <button 
-        className={screen === 'themeManager' ? 'disabled' : ''}
+        className={screen === 'themeManager' ? 'disabled vizku' : ' vizku'}
         disabled={screen === 'colourManager'}
         onClick={handleOnClick}>Colour Manager</button>
       <button 
-        className={screen === 'themeManager' ? '' : 'disabled'}
+        className={screen === 'themeManager' ? ' vizku' : 'disabled vizku'}
         disabled={screen === 'themeManager'}
         onClick={handleOnClick}>Theme Manager</button>
       {screen === 'themeManager' 

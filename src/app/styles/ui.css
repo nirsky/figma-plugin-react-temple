@@ -60,6 +60,30 @@ div.colour, div.clr-field {
   border: 1px solid #000;
 } 
 
+div.colourSmall {
+  width: 12px;
+  height: 24px;
+  border-radius: 5px;
+  margin-right: 2px;
+  border: 1px solid #000;
+} 
+
+div.paletteDropdown {
+  display: flex;
+  justify-content: space-between;
+  width: 100%
+}
+div.paletteTitle {
+ width:fit-content;
+ width: 50%;
+}
+
+div.paletteContent {
+  width: 50%;
+  display: inline-flex;
+  align-items: flex-end;
+}
+
 input.title {
   width: 300px;
   height: 30px;
@@ -117,7 +141,7 @@ textarea {
   height: 64px;
 }
 
-button {
+button.vizku {
   height: 32px; 
   color: #E9E3E6;
   background-color: #124559;
@@ -133,11 +157,11 @@ button.selectColour {
   font-size: 12px;
 }
 
-button:hover {
+button.vizku:hover {
   background-color: rgb(47, 93, 112);
 }
 
-button:disabled {
+button.vizku:disabled {
   color: #486774;
   background-color: #c0babe;
   border: 1px solid #2e424b;

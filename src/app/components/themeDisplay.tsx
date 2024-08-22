@@ -1,10 +1,11 @@
 import React from "react"
 import { useState } from 'react';
-import { SketchPicker } from 'react-color';
 import Tippy from '@tippyjs/react'
 import * as conf from './config';
 import * as utils from './utils'
 import Sketch from '@uiw/react-color-sketch';
+import Select from '@mui/joy/Select';
+import Option from '@mui/joy/Option';
 
 
 export default function ThemeManager({theme, setTheme, palettes}) {
@@ -30,7 +31,8 @@ export default function ThemeManager({theme, setTheme, palettes}) {
         <Theme 
             theme={theme}
             setTheme={setTheme}
-            sync={sync}/>
+            sync={sync}
+            palettes={palettes}/>
       </div>
       );
   }
@@ -63,8 +65,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                 <LoadFromFigma />
                 <ShowTheme
                         theme={theme} />
-                <SelectPalette
-                        palettes={palettes} />
+                        
 
     </>);
   }
@@ -73,23 +74,41 @@ export default function ThemeManager({theme, setTheme, palettes}) {
     function handleOnChange() {
 
     }
-    let options = [<option key='thisisakey'>test1<div className='colour' 
-        style={{backgroundColor: '#ff0000'}}></div></option>] 
+    let options = [<Option key='thisisakey' value=''></Option>] 
+    
+    console.log('palettes', palettes)
     palettes.forEach(palette => {
-
+        console.log('palette.colours', palette.colours)
+        let colours = []
+        palette.colours.forEach(colour => {
+            console.log('colour', colour)
+            colours.push(<div className='colourSmall' 
+                            key={colour.value}
+                style={{backgroundColor: colour.value}}></div>)
+        })
         options.push(
-            <option key={palette.meta.id}>{palette.meta.title} 
-                <div className='colour' 
-                    style={{backgroundColor: '#ff0000'}}></div>
-            </option>
+            <Option key={palette.meta.id}
+                    value={palette.meta.title} > 
+                <div className='paletteDropdown'>
+                    <div className='paletteTitle' >{palette.meta.title}</div>
+                    <div className='paletteContent' >{colours}</div>
+                </div>
+            </Option>
         )
     });
     
     return (
         <>
-            <select onChange={handleOnChange} value={''}>
+            <Select onChange={handleOnChange} 
+                    defaultValue=''
+                    placeholder="Select Palette"
+                    color="primary"
+                    size="sm"
+                    variant="outlined"
+                    sx={{ width: 240 }}
+                    >
                 {options}
-            </select> 
+            </Select> 
         </>
         );
   }
@@ -200,12 +219,13 @@ export default function ThemeManager({theme, setTheme, palettes}) {
     </>);
   }
 
-  function Theme({theme, setTheme, sync}) {
+  function Theme({theme, setTheme, sync, palettes}) {
     return (
         <>
             <Meta 
                 theme={theme}
-                setTheme={setTheme}/>
+                setTheme={setTheme}
+                palettes={palettes}/>
             <table id='attributes'>
                 <thead>
                     <Header/>
@@ -221,7 +241,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
         );
   }
 
-  function Meta({theme, setTheme}) {
+  function Meta({theme, setTheme, palettes}) {
     function handleOnChange(e) {
         setTheme(draft => {
             draft.theme['base-theme'] = e.target.value
@@ -242,6 +262,9 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                 <select onChange={handleOnChange} value={theme.theme['base-theme']}>
                     {options}
                 </select> 
+                
+                <SelectPalette
+                        palettes={palettes} />
             </div>
         </>
         );

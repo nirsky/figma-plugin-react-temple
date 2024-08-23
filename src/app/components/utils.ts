@@ -337,3 +337,25 @@ let variable
     }); 
 
 }
+
+export function getSectionDetails(section, theme) {
+    // Extract the list of styles in the 'text' section
+const styleNames = conf.styleSections.find(sec => sec.section === section).styles;
+// Extract the keys from the styles object
+const allStyleKeys = Object.keys(theme.theme.styles);
+// Filter and return the keys that match the 'text' section
+const  sectionStyles = allStyleKeys.filter(styleKey => styleNames.includes(styleKey));
+
+// get all objects
+const styleObjects = sectionStyles.map(name => theme.theme.styles[name] || {});
+//extract all attributes
+const allAttr = styleObjects.flatMap(style => Object.keys(style));
+// get unique attributes
+let sectionAttr = []
+sectionAttr = [...new Set(allAttr)];
+
+return {
+    styles: sectionStyles,
+    attributes: sectionAttr
+}
+}

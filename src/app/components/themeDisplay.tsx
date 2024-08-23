@@ -12,7 +12,10 @@ import Input from '@mui/joy/Input';
 import Table from '@mui/joy/Table';
 import Typography from '@mui/joy/Typography';
 import Sheet from '@mui/joy/Sheet';
-
+import Tabs from '@mui/joy/Tabs';
+import TabList from '@mui/joy/TabList';
+import Tab from '@mui/joy/Tab';
+import TabPanel from '@mui/joy/TabPanel';
 
 export default function ThemeManager({theme, setTheme, palettes}) {
     const [sync, setSync] = useState(false);
@@ -58,7 +61,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
   function Intro({theme, setTheme, sync, setSync}) {
 
     return (<>
-                <Typography color="primary" level="h1" >Theme Manager for Tableau</Typography>
+                
                 <UploadJSON 
                         theme={theme}
                         setTheme={setTheme}
@@ -232,6 +235,23 @@ export default function ThemeManager({theme, setTheme, palettes}) {
   }
 
   function Theme({theme, setTheme, sync, palettes}) {
+    let rows = []
+    let tabs = []
+    conf.styleSections.forEach((sectionName, index) => {
+        console.log('sectionName', sectionName)
+        tabs.push(<Tab >{sectionName.section}</Tab>)
+        rows.push(
+            <TabPanel value={index} key={index}>
+                <Section 
+                    sectionName={sectionName.section}
+                    theme={theme}
+                    setTheme={setTheme}
+                    sync={sync} /> 
+            </TabPanel>
+        )
+    })
+
+
     return (
         <>
             <Meta 
@@ -239,31 +259,74 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                 setTheme={setTheme}
                 palettes={palettes}/>
             <Sheet sx={{ height: 300, overflow: 'auto' }}>
-            <Table
-                borderAxis="xBetween"
-                color="neutral"
-                size="sm"
-                stickyHeader
-                variant="plain" 
-                id='attributes'
-                sx={{ '& thead th:nth-child(3)': { width: '64px' },
-                      '& thead th:nth-child(4)': { width: '96px' },
-                      '& thead th:nth-child(5)': { width: '96px' },
-                      '& thead th:nth-child(6)': { width: '96px' },
-                      '& thead th:nth-child(7)': { width: '96px' }}}>
-                <thead>
-                    <Header/>
-                </thead>
-                <tbody>
-                    <Settings 
-                        theme={theme}
-                        setTheme={setTheme}
-                        sync={sync}/>
-                </tbody>
-            </Table>
+            
+
+    <Tabs 
+        aria-label="Basic tabs" 
+        defaultValue={'0'}
+        sx={{ width: 725 }}>
+      <TabList  sticky='top' 
+                sx={{justifyContent: 'center'}}>
+        {tabs}
+      </TabList>
+      {rows}
+    </Tabs>
+
             </Sheet>
         </>
         );
+  }
+
+  function Section({sectionName, theme, setTheme, sync}) {
+
+  const section = utils.getSectionDetails(sectionName, theme)
+
+
+return( <Table
+    borderAxis="xBetween"
+    color="neutral"
+    size="sm"
+    variant="plain" 
+    id='attributes'
+    sx={{ 
+          mt: 0}}>
+    <thead>
+        <Header
+                section={section}/>
+    </thead>
+    <tbody>
+        <Settings 
+            section={section}
+            theme={theme}
+            setTheme={setTheme}
+            sync={sync}/>
+    </tbody>
+</Table>)
+  }
+
+  function SectionLines({theme, setTheme, sync}) {
+    const section = utils.getSectionDetails('lines', theme)
+
+    return( <Table
+        borderAxis="xBetween"
+        color="neutral"
+        size="sm"
+        stickyHeader
+        variant="plain" 
+        id='attributes'
+        sx={{ }}>
+        <thead>
+            <Header
+                section={section}/>
+        </thead>
+        <tbody>
+            <Settings 
+                section={section}
+                theme={theme}
+                setTheme={setTheme}
+                sync={sync}/>
+        </tbody>
+    </Table>)
   }
 
   function Meta({theme, setTheme, palettes}) {
@@ -304,14 +367,17 @@ export default function ThemeManager({theme, setTheme, palettes}) {
         );
   }
 
-  function Header() {
-    let columns = []
-    conf.attributeList.forEach(attr => {
-        columns.push(
-          <th key={attr.name}>{attr.name}</th>
-      )
-  })
+  function Header({section}) {
 
+    let columns = []
+    section.attributes.forEach(key => {
+        //const styleObjects = key.attributes.map(attr => conf.attributeList || {});
+        const item = conf.attributeList.find(item => item.attr === key);
+        const attrName = item ? item.name : null;
+        columns.push(
+            <th key={attrName}>{attrName}</th>
+        )
+    })
     return (
         <tr>
           <th>Settings</th>
@@ -320,12 +386,13 @@ export default function ThemeManager({theme, setTheme, palettes}) {
         );
   }
 
-  function Settings({theme, setTheme, sync}) {
-    const styleKeys = Object.keys(conf.jsonStructure.theme.styles);
+  function Settings({section, theme, setTheme, sync}) {
+    
     let rows = []
-    styleKeys.forEach(style => {
+    section.styles.forEach(style => {
         rows.push(
             <Setting 
+                section={section}
                 style={style}
                 key={style}
                 theme={theme}
@@ -336,10 +403,13 @@ export default function ThemeManager({theme, setTheme, palettes}) {
     return (<>{rows}</>); 
   }
 
-  function Setting({style, theme, setTheme, sync}) {
+  function Setting({section, style, theme, setTheme, sync}) {
     let columns = []
-    
-    conf.attributeList.forEach(attr => {
+    console.log('section',section)
+    section.attributes.forEach(key => {
+        console.log('key',key)
+        const attr = conf.attributeList.find(item => item.attr === key);
+        console.log('attr', attr)
         let output
             if(conf.jsonStructure.theme.styles[style].hasOwnProperty([attr.attr])) {
                 switch (attr.type) {
@@ -377,7 +447,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
 
     return (
         <tr>
-            <td>{style}</td>
+            <td key={style}>{style}</td>
             {columns}
         </tr>
         );

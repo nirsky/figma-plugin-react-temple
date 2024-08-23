@@ -158,8 +158,26 @@ export const jsonStructure = {
           "saFontSize": "",
           "saFontFamily": ""
         },
+        "PageCardTitle": {
+          "saColor": "",
+          "saFontFamily": ""
+        },
         "Table": {
           "saBackgroundColor": ""
+        },
+        "Gridline": {
+          "saLineVisibility": "",
+          "saLinePatternOnly": "",
+          "saLinePattern": "",
+          "saStrokeColor": "",
+          "saStrokeSize": "",
+        },
+        "Zeroline": {
+          "saLineVisibility": "",
+          "saLinePatternOnly": "",
+          "saLinePattern": "",
+          "saStrokeColor": "",
+          "saStrokeSize": "",
         },
         "Mark": {
           "saMarkColor": ""
@@ -168,13 +186,58 @@ export const jsonStructure = {
     }
   }
 
+export const styleSections = [
+    {
+        section: 'Text',
+        styles: [
+            "All",
+            "Worksheet",
+            "Title",
+            "Tooltip",
+            "DashTitle",
+            "StoryTitle",
+            "Header"
+          ]},
+    {
+        section: 'Cards',
+        styles: [
+            "Legend",
+            "LegendTitle",
+            "QuickFilter",
+            "QuickFilterTitle",
+            "ParameterCtrl",
+            "ParameterCtrlTitle",
+            "DataHighlighter",
+            "DataHighlighterTitle",
+            "PageCardBody",
+            "PageCardTitle"
+        ]},
+    {
+        section: 'Content',
+        styles: [
+            "Table",
+            "Mark"
+        ]},
+    {
+        section: 'Lines',
+        styles: [
+            "Gridline",
+            "Zeroline"
+        ]}
+]
+
 export const attributeList = [
     {name: 'Font Family', attr: 'saFontFamily', value: ["Arial", "Calibri", "Courier New", "Georgia", "Poppins", "Roboto", "Tableau Book", "Times New Roman", "Trebuchet MS", "Verdana", "Meryio UI", "Noto CJK Sans", "Noto CJK Serif", "Noto Thai Sans", "Noto Thai Serif"], type: 'STRING'},
     {name: 'Font Size', attr: 'saFontSize', value: ['8', '12', '16'], type: 'FLOAT'},
     {name: 'Font Weight', attr: 'saFontWeight', value: ['Bold', 'Semi-Bold', 'Light'], type: 'STRING'},
     {name: 'Font Colour', attr: 'saColor', type: 'COLOR'},
     {name: 'Bg Colour', attr: 'saBackgroundColor', type: 'COLOR'},
-    {name: 'Mark Colour', attr: 'saMarkColor', type: 'COLOR'}
+    {name: 'Mark Colour', attr: 'saMarkColor', type: 'COLOR'},
+    {name: 'Line Visibility', attr: 'saLineVisibility', value: ['on', 'off'], type: 'STRING'},
+    {name: 'Line Pattern Only', attr: 'saLinePatternOnly', value: ['solid', 'dashed'], type: 'STRING'},
+    {name: 'Line Pattern', attr: 'saLinePattern', value: ['none', 'dotted'], type: 'STRING'},
+    {name: 'Stroke Colour', attr: 'saStrokeColor', type: 'COLOR'},
+    {name: 'Stroke Size', attr: 'saStrokeSize', value: ['8', '12', '16'], type: 'FLOAT'}
   ]
 
 export const baseThemes = ['default', 'previous', 'modern', 'classic']

@@ -6,6 +6,23 @@ import * as conf from './config';
 import Saturation from '@uiw/react-color-saturation';
 import Sketch from '@uiw/react-color-sketch';
 import Tippy from '@tippyjs/react'
+import Select from '@mui/joy/Select';
+import Option from '@mui/joy/Option';
+import Switch from '@mui/joy/Switch';
+import Button from '@mui/joy/Button';
+import Input from '@mui/joy/Input';
+import Table from '@mui/joy/Table';
+import Typography from '@mui/joy/Typography';
+import Sheet from '@mui/joy/Sheet';
+import Textarea from '@mui/joy/Textarea';
+import Chip from '@mui/joy/Chip';
+import IconButton from '@mui/joy/IconButton';
+import Edit from '@mui/icons-material/Edit';
+import SwapHoriz from '@mui/icons-material/SwapHoriz';
+import ArrowUpward from '@mui/icons-material/ArrowUpward';
+import ArrowDownward from '@mui/icons-material/ArrowDownward';
+import Delete from '@mui/icons-material/Delete';
+import Check from '@mui/icons-material/Check';
 
 export default function ColourManager({palettes, setPalettes}) {
   return (
@@ -44,15 +61,11 @@ function ColourPicker() {
 function Intro() {
   return(
     <>
-      <h1>Colour Manager for Tableau</h1>
-        <div>
-          <h2>Upload your preferences.tps (optional)</h2>
-          <div>
-              <p>Or add palettes below if you start from scratch.</p>
-              <p>You can find it in: C:\Users\..\Documents\My Tableau Repository.</p>
-              <p>For more details on what this tool is doing, visit <a href="https://help.tableau.com/current/pro/desktop/en-us/formatting_create_custom_colors.htm">the Tableau Knowledge Base</a></p>
-          </div>
-      </div>
+      <Typography color="neutral" level="body-md">
+              Or add palettes below if you start from scratch.
+              You can find it in: C:\Users\..\Documents\My Tableau Repository.
+              For more details on what this tool is doing, visit <a href="https://help.tableau.com/current/pro/desktop/en-us/formatting_create_custom_colors.htm">the Tableau Knowledge Base</a>
+      </Typography>
     </>
   );
 }
@@ -78,6 +91,8 @@ function ImportXML({palettes, setPalettes}) {
 
   return(
     <>
+
+    
           <form id="upload">
               <label htmlFor="file" className="uploadButton">
                 Upload Preferences.tps
@@ -167,12 +182,12 @@ function Meta({id, index, meta, palettes, setPalettes, edit, setEdit}){
   }
   return(
       <div className="meta">
-          <input 
-            type="text" 
-            className="title" 
-            value={meta.title}
-            onChange={handleInputChange}></input>
-          <div className="type">{meta.type}</div>
+          <Input 
+              color="primary"
+              size="sm"
+              defaultValue={meta.title}
+              onChange={handleInputChange}></Input>
+          <Typography color="neutral" level="body-md">{meta.type}</Typography>
           <Controls 
             id = {id}
             index = {index}
@@ -260,18 +275,36 @@ function Control({id, index, control, palettes, setPalettes, edit, setEdit}){
         break;
     }
   }
-  
+  let button
+  switch(control.type) {
+    case 'edit':
+      button = <Edit />
+    break;
+    case 'swap':
+      button = <SwapHoriz />
+    break;
+    case 'up':
+      button = <ArrowUpward />
+    break;
+    case 'down':
+      button = <ArrowDownward />
+    break;
+    case 'delete':
+      button = <Delete />
+    break;
+  }
+
   return(
-      <div className="control">
-          <i 
-            className="material-symbols-outlined"
-            title={control.tooltip} 
-            onClick={handleOnClick} >
-            {control.name}</i>
+      <div>
+            <IconButton
+              variant="plain"
+              color={control.type === 'delete' ? "danger" : "primary" }
+              size='sm'
+              onClick={handleOnClick}>{button}</IconButton>
       </div>
   )
 }
-// CHECK THIS ONE!
+
 function EditPalette({id, palettes, setPalettes}) {
   const colours = palettes
                       .find(palette => palette.meta.id === id)?.colours
@@ -306,7 +339,15 @@ function EditPalette({id, palettes, setPalettes}) {
 
 
   return(<>
-    <textarea onChange={handleOnChange} defaultValue={colours}></textarea>
+  <Textarea
+                minRows={2}
+                size="sm"
+                id="colourstring"
+                variant="outlined"
+                onInput={handleOnChange} 
+                onLoad={handleOnChange} 
+                defaultValue={colours}
+              />
     </>
   )
 }
@@ -356,7 +397,7 @@ function ColourActive({id, colour, palettes, setPalettes}){
   }
 /*return(<><div className='colour'
   style={{backgroundColor: colour.value}}></div></>)*/
-  return(
+  return(<>
             <Tippy interactive={true}
                 placement='bottom'
                 duration={0}
@@ -370,13 +411,12 @@ function ColourActive({id, colour, palettes, setPalettes}){
                             onChange={handleOnChange}/>
                             
                     }>
-
-                <div className='colour'
-                        style={{backgroundColor: colourPicker}}></div>
-            </Tippy>
-            
-                           
-    
+                    <Sheet  
+                        color="neutral" 
+                        variant="outlined" 
+                        sx={{ bgcolor: colourPicker, width:24, height:24, borderRadius: 5 }}/> 
+            </Tippy>            
+    </>
   )
 }  
 
@@ -398,7 +438,11 @@ function ExportXML({palettes}) {
   }
 
   return (<>
-    <button className='vizku' onClick={handleOnClick}>Export Preferences</button>
+            <Button
+                size="sm" 
+                onClick={handleOnClick}>
+                Export Preferences
+            </Button>
     </>
   )
 }
@@ -420,14 +464,15 @@ function AddPalettes({palettes, setPalettes}) {
     setColours(newColours)
   }
 
-  function handleOnSelectClick(e) {
+  function handleOnSelectClick(button) {
     let select = false
-    switch (e.target.textContent){
-      case 'All':
-        select = true
-        break;
-      case 'None':
+    console.log('button', button)
+    switch (button){
+      case 'none':
         select = false
+        break;
+      case 'all':
+        select = true
         break;
     }
     const newColours = colours.map(element => {
@@ -450,28 +495,38 @@ function AddPalettes({palettes, setPalettes}) {
       )
   })
 
-  let selectButtons
   const selectedColours = colours.filter(element => element.selected === true)
   const deselectedColours = colours.filter(element => element.selected === false)
 
-  if (colours.length > 0) {
-    selectButtons  =  <>
-                        <button onClick={handleOnSelectClick} 
-                                className='vizku'
-                                disabled={deselectedColours.length === 0}>All</button>
-                        <button onClick={handleOnSelectClick} 
-                                className='vizku'
-                                disabled={selectedColours.length === 0}>None</button>
-                      </>
-  }
-
   return (
     <div>
-              <textarea id="colourstring" placeholder="eg.: https://coolors.co/fb5012-#01fdf6 (cbbaed,#e9df00)#03fcba" onInput={handleOnChange} onLoad={handleOnChange} defaultValue='https://coolors.co/01161e-8dadb9-124559-e9e3e6-c4d6b0'></textarea>
+              <Textarea
+                minRows={2}
+                size="sm"
+                id="colourstring"
+                variant="outlined"
+                onInput={handleOnChange} 
+                onLoad={handleOnChange} 
+                defaultValue="https://coolors.co/01161e-8dadb9-124559-e9e3e6-c4d6b0"
+              />
               <div>You can insert any text with hexcodes, no need to clean them up. All found colours are displayed below.</div>
-              {selectButtons}
-              <div className="colours">{rows}</div>
+              
               {rows.length > 0 ? <>
+                  <Chip
+                    onClick={() => handleOnSelectClick('all')}
+                    color="primary"
+                    size="md"
+                    variant="solid"
+                    disabled={deselectedColours.length === 0}>All </Chip> 
+
+                  <Chip
+                    onClick={() => handleOnSelectClick('none')}
+                    color="primary"
+                    size="md"
+                    variant="solid"
+                    disabled={selectedColours.length === 0}>None </Chip>
+
+                <div className="colours">{rows}</div>
               <div>Select the coloured boxes above to create palettes</div>
                   <AddCategorical colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
                   <AddSequential colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
@@ -486,12 +541,11 @@ function ColourSelect({colour, colours, setColours}){
       newColours[colour.index].selected = !colour.selected
       setColours(newColours)
   }
-  let selected = ''
+  let selected = false
   if (colour.selected === true) {
-    selected = 'check'
-  } else {
-    selected = ''
-  }
+    selected = true
+  } 
+
   let textcolour = ''
   if (chroma.contrast(colour.value, '#ffffff') < 4.5 ) {
     textcolour = '#000000'
@@ -500,9 +554,13 @@ function ColourSelect({colour, colours, setColours}){
   }
 
   return(
-        <div className="colour" style={{backgroundColor: colour.value, color: textcolour}} onClick={handleOnClick}>
-          <i className='material-symbols-outlined'>{selected}</i>
-        </div>
+        <Sheet  
+        color="primary" 
+        onClick={handleOnClick}
+        sx={{ bgcolor: colour.value, color: textcolour, width:24, height:24, borderRadius: 5 }}> 
+        {selected ? <Check /> : <></>}
+        
+        </Sheet>
   )
 }
 
@@ -537,9 +595,13 @@ function AddCategorical({colours, palettes, setPalettes}) {
   const selectedItems = colours.filter(element => element.selected === true);
 
   return(<>
-            <button onClick={handleOnClick}
-                                    className='vizku'
-                                    disabled={selectedItems.length === 0}>Categorical Palette</button>
+            <Button
+                size="sm" 
+                onClick={handleOnClick}
+                disabled={selectedItems.length === 0}>
+                Categorical Palette
+            </Button>
+            
       </>
   )
 }
@@ -608,14 +670,20 @@ function AddSequential({colours, palettes, setPalettes}) {
   
 
   return(<>
-            <button onClick={handleOnClick}
-                    id='seq'
-                    className='vizku'
-                    disabled={sequential === 'disabled'}>Sequential Palette</button>
-            <button onClick={handleOnClick}
-                    id='div_dark'
-                    className='vizku'
-                    disabled={diverging === 'disabled'}>Diverging Dark Palette</button>
+            <Button
+                size="sm" 
+                id='seq'
+                onClick={handleOnClick}
+                disabled={sequential === 'disabled'}>
+                Sequential Palette
+            </Button>
+            <Button
+                size="sm" 
+                id='div_dark'
+                onClick={handleOnClick}
+                disabled={diverging === 'disabled'}>
+                Categorical Palette
+            </Button>
       </>
   )
 }
@@ -670,9 +738,13 @@ function AddDivergingBright({colours, palettes, setPalettes}) {
   
 
   return(<>
-            <button onClick={handleOnClick}
-                                    className='vizku'
-                                    disabled={diverging === 'disabled'}>Diverging Bright Palette</button>
+            <Button
+                size="sm" 
+                id='div_dark'
+                onClick={handleOnClick}
+                disabled={diverging === 'disabled'}>
+                Diverging Bright Palette
+            </Button>
       </>
   )
 }

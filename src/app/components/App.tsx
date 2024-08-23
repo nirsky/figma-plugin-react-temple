@@ -9,24 +9,16 @@ import Tabs from '@mui/joy/Tabs';
 import TabList from '@mui/joy/TabList';
 import Tab from '@mui/joy/Tab';
 import TabPanel from '@mui/joy/TabPanel';
+import Typography from '@mui/joy/Typography';
 
 
 
 export default function App() {
   const [theme, setTheme] = useImmer(conf.jsonStructure);
   const [palettes, setPalettes] = useState(conf.testPalettes); 
-  const [screen, setScreen] = useState('themeManager');
-
-  function handleOnClick() {
-    if (screen == 'themeManager') {
-      setScreen('colourManager')
-    } else {
-      setScreen('themeManager')
-    }
-  }
 
   return( 
-    <>
+    <><Typography color="primary" level="h1" >Style Manager for Tableau</Typography>
       <Tabs 
         aria-label="Basic tabs" 
         defaultValue={0}

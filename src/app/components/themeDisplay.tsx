@@ -17,6 +17,8 @@ import TabList from '@mui/joy/TabList';
 import Tab from '@mui/joy/Tab';
 import TabPanel from '@mui/joy/TabPanel';
 
+import { SwatchPresetColor } from '@uiw/react-color-swatch';
+
 export default function ThemeManager({theme, setTheme, palettes}) {
     const [sync, setSync] = useState(false);
 
@@ -35,7 +37,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
             theme={theme}
             setTheme={setTheme}
             sync={sync}
-            setSync={setSync} />
+            setSync={setSync}/>
         <Theme 
             theme={theme}
             setTheme={setTheme}
@@ -43,19 +45,6 @@ export default function ThemeManager({theme, setTheme, palettes}) {
             palettes={palettes}/>
       </div>
       );
-  }
-
-  function ShowTheme({theme}) {
-    function handleOnClick() {
-        console.log('theme', theme)
-    }
-    return (<>  
-        <Button 
-            size="sm"
-            onClick={handleOnClick}>
-            Show Theme   
-        </Button>
-    </>);
   }
 
   function Intro({theme, setTheme, sync, setSync}) {
@@ -78,46 +67,6 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                         
 
     </>);
-  }
-
-  function SelectPalette({palettes}) {
-    function handleOnChange() {
-
-    }
-    let options = [<Option key='thisisakey' value=''></Option>] 
-    
-    palettes.forEach(palette => {
-        let colours = []
-        palette.colours.forEach(colour => {
-            colours.push(<div className='colourSmall' 
-                            key={colour.value}
-                style={{backgroundColor: colour.value}}></div>)
-        })
-        options.push(
-            <Option key={palette.meta.id}
-                    value={palette.meta.title} > 
-                <div className='paletteDropdown'>
-                    <div className='paletteTitle' >{palette.meta.title}</div>
-                    <div className='paletteContent' >{colours}</div>
-                </div>
-            </Option>
-        )
-    });
-    
-    return (
-        <>
-            <Select onChange={handleOnChange} 
-                    defaultValue=''
-                    placeholder="Select Palette"
-                    color="primary"
-                    size="sm"
-                    variant="outlined"
-                    sx={{ width: 240 }}
-                    >
-                {options}
-            </Select> 
-        </>
-        );
   }
 
   function UploadJSON({theme, setTheme, sync}) {
@@ -233,8 +182,23 @@ export default function ThemeManager({theme, setTheme, palettes}) {
         </Button>
     </>);
   }
+  
+  function ShowTheme({theme}) {
+    function handleOnClick() {
+        console.log('theme', theme)
+    }
+    return (<>  
+        <Button 
+            size="sm"
+            onClick={handleOnClick}>
+            Show Theme   
+        </Button>
+    </>);
+  }
 
   function Theme({theme, setTheme, sync, palettes}) {
+    
+    const [palette, setPalette] = useState([])
     let rows = []
     let tabs = []
     conf.styleSections.forEach((sectionName, index) => {
@@ -246,7 +210,8 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                     sectionName={sectionName.section}
                     theme={theme}
                     setTheme={setTheme}
-                    sync={sync} /> 
+                    sync={sync}
+                    palette={palette} /> 
             </TabPanel>
         )
     })
@@ -257,13 +222,14 @@ export default function ThemeManager({theme, setTheme, palettes}) {
             <Meta 
                 theme={theme}
                 setTheme={setTheme}
-                palettes={palettes}/>
+                palettes={palettes}
+                setPalette={setPalette}/>
             <Sheet sx={{ height: 300, overflow: 'auto' }}>
             
 
     <Tabs 
         aria-label="Basic tabs" 
-        defaultValue={'0'}
+        defaultValue='0'
         sx={{ width: 725 }}>
       <TabList  sticky='top' 
                 sx={{justifyContent: 'center'}}>
@@ -277,59 +243,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
         );
   }
 
-  function Section({sectionName, theme, setTheme, sync}) {
-
-  const section = utils.getSectionDetails(sectionName, theme)
-
-
-return( <Table
-    borderAxis="xBetween"
-    color="neutral"
-    size="sm"
-    variant="plain" 
-    id='attributes'
-    sx={{ 
-          mt: 0}}>
-    <thead>
-        <Header
-                section={section}/>
-    </thead>
-    <tbody>
-        <Settings 
-            section={section}
-            theme={theme}
-            setTheme={setTheme}
-            sync={sync}/>
-    </tbody>
-</Table>)
-  }
-
-  function SectionLines({theme, setTheme, sync}) {
-    const section = utils.getSectionDetails('lines', theme)
-
-    return( <Table
-        borderAxis="xBetween"
-        color="neutral"
-        size="sm"
-        stickyHeader
-        variant="plain" 
-        id='attributes'
-        sx={{ }}>
-        <thead>
-            <Header
-                section={section}/>
-        </thead>
-        <tbody>
-            <Settings 
-                section={section}
-                theme={theme}
-                setTheme={setTheme}
-                sync={sync}/>
-        </tbody>
-    </Table>)
-  }
-
-  function Meta({theme, setTheme, palettes}) {
+  function Meta({theme, setTheme, palettes, setPalette}) {
     function handleOnChange(e) {
         setTheme(draft => {
             draft.theme['base-theme'] = e.target.value
@@ -361,10 +275,80 @@ return( <Table
                 </Select> 
                 
                 <SelectPalette
-                        palettes={palettes} />
+                        palettes={palettes}
+                        setPalette={setPalette} />
             </div>
         </>
         );
+  }
+
+  function SelectPalette({palettes, setPalette}) {
+    const handleOnChange = (event, newValue) => {
+        const palette = palettes.find(palette => palette.meta.id === newValue);
+        setPalette(palette.colours.map(colour => colour.value))
+      };
+    let options = [<Option key='thisisakey' value=''></Option>] 
+    
+    palettes.forEach(palette => {
+        let colours = []
+        palette.colours.forEach(colour => {
+            colours.push(<div className='colourSmall' 
+                            key={colour.value}
+                style={{backgroundColor: colour.value}}></div>)
+        })
+        options.push(
+            <Option key={palette.meta.id}
+                    value={palette.meta.id} > 
+                <div className='paletteDropdown'>
+                    <div className='paletteTitle' >{palette.meta.title}</div>
+                    <div className='paletteContent' >{colours}</div>
+                </div>
+            </Option>
+        )
+    });
+    
+    return (
+        <>
+            <Select onChange={handleOnChange} 
+                    defaultValue=''
+                    placeholder="Select Palette"
+                    color="primary"
+                    size="sm"
+                    variant="outlined"
+                    sx={{ width: 240 }}
+                    >
+                {options}
+            </Select> 
+        </>
+        );
+  }
+
+  function Section({sectionName, theme, setTheme, sync, palette}) {
+
+    const section = utils.getSectionDetails(sectionName, theme)
+  
+  
+  return( <Table
+      borderAxis="xBetween"
+      color="neutral"
+      size="sm"
+      variant="plain" 
+      id='attributes'
+      sx={{ 
+            mt: 0}}>
+      <thead>
+          <Header
+                  section={section}/>
+      </thead>
+      <tbody>
+          <Settings 
+              section={section}
+              theme={theme}
+              setTheme={setTheme}
+              sync={sync}
+              palette={palette}/>
+      </tbody>
+  </Table>)
   }
 
   function Header({section}) {
@@ -386,7 +370,7 @@ return( <Table
         );
   }
 
-  function Settings({section, theme, setTheme, sync}) {
+  function Settings({section, theme, setTheme, sync, palette}) {
     
     let rows = []
     section.styles.forEach(style => {
@@ -397,13 +381,14 @@ return( <Table
                 key={style}
                 theme={theme}
                 setTheme={setTheme}
-                sync={sync}/>
+                sync={sync}
+                palette={palette}/>
         )
     })
     return (<>{rows}</>); 
   }
 
-  function Setting({section, style, theme, setTheme, sync}) {
+  function Setting({section, style, theme, setTheme, sync, palette}) {
     let columns = []
     console.log('section',section)
     section.attributes.forEach(key => {
@@ -419,7 +404,8 @@ return( <Table
                                     attribute={attr.attr}
                                     theme={theme}
                                     setTheme={setTheme}
-                                    sync={sync}/>
+                                    sync={sync}
+                                    palette={palette}/>
                     break;
                     case 'STRING':
                         output = <StringEdit 
@@ -489,7 +475,7 @@ return( <Table
         );
   }
 
-  function ColourEdit({style, attribute, theme, setTheme, sync}) {
+  function ColourEdit({style, attribute, theme, setTheme, sync, palette}) {
     const [colour, setColour] = useState(theme.theme.styles[style][attribute]);
     function handleOnChange(color) {
         setTheme(draft => {
@@ -500,6 +486,7 @@ return( <Table
             utils.sendToFigma(style, attribute, color.hex)
         }
     }
+
     return(<div className='controls'>
             <Tippy interactive={true}
                 placement='left'
@@ -510,6 +497,7 @@ return( <Table
                             color={theme.theme.styles.hasOwnProperty([style]) ? theme.theme.styles[style][attribute] : ''}
                             disableAlpha={true}
                             onChange={handleOnChange}
+                            presetColors={palette}
                             /></>
                     }>
 

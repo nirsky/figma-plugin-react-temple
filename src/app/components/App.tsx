@@ -21,7 +21,7 @@ export default function App() {
     <><Typography color="primary" level="h1" >Style Manager for Tableau</Typography>
       <Tabs 
         aria-label="Basic tabs" 
-        defaultValue={0}
+        defaultValue={1}
         sx={{ width: 798 }}>
       <TabList sx={{justifyContent: 'center'}}>
         <Tab>Colour Manager</Tab>

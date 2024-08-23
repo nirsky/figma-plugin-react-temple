@@ -16,6 +16,10 @@ import Tabs from '@mui/joy/Tabs';
 import TabList from '@mui/joy/TabList';
 import Tab from '@mui/joy/Tab';
 import TabPanel from '@mui/joy/TabPanel';
+import Upload from '@mui/icons-material/Upload';
+import Download from '@mui/icons-material/Download';
+import { styled } from '@mui/joy';
+import ButtonGroup from '@mui/joy/ButtonGroup';
 
 import { SwatchPresetColor } from '@uiw/react-color-swatch';
 
@@ -50,23 +54,29 @@ export default function ThemeManager({theme, setTheme, palettes}) {
   function Intro({theme, setTheme, sync, setSync}) {
 
     return (<>
+                <ButtonGroup
+                    color="primary"
+                    orientation="horizontal"
+                    size="sm"
+                    variant="solid">
+                        <UploadJSON 
+                                theme={theme}
+                                setTheme={setTheme}
+                                sync={sync} />
+                        <DownloadJSON 
+                                theme={theme} />
+                </ButtonGroup>
                 
-                <UploadJSON 
-                        theme={theme}
-                        setTheme={setTheme}
-                        sync={sync} />
-                <DownloadJSON 
-                        theme={theme} />
                 <SyncToFigma
                         theme={theme}
                         sync={sync}
                         setSync={setSync} />
                 <LoadFromFigma />
-                <ShowTheme
-                        theme={theme} />
+                
                         
 
-    </>);
+    </>);//<ShowTheme theme={theme} />
+                        
   }
 
   function UploadJSON({theme, setTheme, sync}) {
@@ -110,14 +120,24 @@ export default function ThemeManager({theme, setTheme, palettes}) {
         utils.loopStyles(theme)
     } 
 
-    return (<>
-                <form id="upload">
-                    <label htmlFor="file" className="uploadButton">
-                        Upload Theme.json
-                    </label>
-                    <input type="file" id="file" accept=".json" onChange={handleOnFileChange}></input>
-                    {error && <p style={{ color: 'red' }}>{error}</p>}
-                </form>
+    const VisuallyHiddenInput = styled('input')`
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    white-space: nowrap;
+    width: 1px;
+  `;
+
+    return (<> <Button 
+                    component='label'
+                    startDecorator={<Upload />} >
+                        Upload 
+                        <VisuallyHiddenInput type="file" onChange={handleOnFileChange} />
+                </Button>
     </>);
   }
 
@@ -140,9 +160,9 @@ export default function ThemeManager({theme, setTheme, palettes}) {
 
     return (<>  
                 <Button
-                    size="sm" 
-                    onClick={handleOnClick}>
-                    Download JSON
+                    onClick={handleOnClick}
+                    startDecorator={<Download />}>
+                    Download
                 </Button>
             </>);
   }
@@ -178,7 +198,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
         <Button
             size="sm"  
             onClick={handleOnClick}>
-            Load Settings From Figma   
+            Load From Figma   
         </Button>
     </>);
   }
@@ -202,8 +222,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
     let rows = []
     let tabs = []
     conf.styleSections.forEach((sectionName, index) => {
-        console.log('sectionName', sectionName)
-        tabs.push(<Tab >{sectionName.section}</Tab>)
+        tabs.push(<Tab key={sectionName.section}>{sectionName.section}</Tab>)
         rows.push(
             <TabPanel value={index} key={index}>
                 <Section 
@@ -229,7 +248,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
 
     <Tabs 
         aria-label="Basic tabs" 
-        defaultValue='0'
+        defaultValue={0}
         sx={{ width: 725 }}>
       <TabList  sticky='top' 
                 sx={{justifyContent: 'center'}}>
@@ -390,11 +409,8 @@ export default function ThemeManager({theme, setTheme, palettes}) {
 
   function Setting({section, style, theme, setTheme, sync, palette}) {
     let columns = []
-    console.log('section',section)
     section.attributes.forEach(key => {
-        console.log('key',key)
         const attr = conf.attributeList.find(item => item.attr === key);
-        console.log('attr', attr)
         let output
             if(conf.jsonStructure.theme.styles[style].hasOwnProperty([attr.attr])) {
                 switch (attr.type) {

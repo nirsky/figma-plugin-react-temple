@@ -20,6 +20,8 @@ import Upload from '@mui/icons-material/Upload';
 import Download from '@mui/icons-material/Download';
 import { styled } from '@mui/joy';
 import ButtonGroup from '@mui/joy/ButtonGroup';
+import Stack from '@mui/joy/Stack';
+import Divider from '@mui/joy/Divider';
 
 import { SwatchPresetColor } from '@uiw/react-color-swatch';
 
@@ -36,47 +38,60 @@ export default function ThemeManager({theme, setTheme, palettes}) {
     }
 
     return (
-      <div>
-        <Intro 
-            theme={theme}
-            setTheme={setTheme}
-            sync={sync}
-            setSync={setSync}/>
-        <Theme 
-            theme={theme}
-            setTheme={setTheme}
-            sync={sync}
-            palettes={palettes}/>
-      </div>
+        <Stack
+            direction="column"
+            justifyContent="space-between"
+            alignItems="flex-start"
+            spacing={2}
+            divider={<Divider orientation="horizontal" />}>
+            <Intro 
+                theme={theme}
+                setTheme={setTheme}
+                sync={sync}
+                setSync={setSync}/>
+            <Theme 
+                theme={theme}
+                setTheme={setTheme}
+                sync={sync}
+                palettes={palettes}/>
+      </Stack>
       );
   }
 
   function Intro({theme, setTheme, sync, setSync}) {
 
-    return (<>
-                <ButtonGroup
-                    color="primary"
-                    orientation="horizontal"
-                    size="sm"
-                    variant="solid">
-                        <UploadJSON 
-                                theme={theme}
-                                setTheme={setTheme}
-                                sync={sync} />
-                        <DownloadJSON 
-                                theme={theme} />
-                </ButtonGroup>
-                
-                <SyncToFigma
-                        theme={theme}
-                        sync={sync}
-                        setSync={setSync} />
-                <LoadFromFigma />
-                
-                        
-
-    </>);//<ShowTheme theme={theme} />
-                        
+    return (<Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="flex-start"
+                spacing={2}
+                divider={<Divider orientation="vertical" />}>
+                    <ButtonGroup
+                        color="primary"
+                        orientation="horizontal"
+                        size="sm"
+                        variant="solid">
+                            <UploadJSON 
+                                    theme={theme}
+                                    setTheme={setTheme}
+                                    sync={sync} />
+                            <DownloadJSON 
+                                    theme={theme} />
+                    </ButtonGroup>
+                    <Stack
+                        direction="row"
+                        justifyContent="flex-end"
+                        alignItems="flex-start"
+                        spacing={2}
+                        divider={<Divider orientation="vertical" />}>
+                            <SyncToFigma
+                                    theme={theme}
+                                    sync={sync}
+                                    setSync={setSync} />
+                            <LoadFromFigma />
+                    </Stack>
+                </Stack>
+    );//<ShowTheme theme={theme} />                     
   }
 
   function UploadJSON({theme, setTheme, sync}) {
@@ -177,7 +192,13 @@ export default function ThemeManager({theme, setTheme, palettes}) {
         } 
      }
 
-    return (<> Sync to Figma: 
+    return ( <Stack
+                    direction="row"
+                    justifyContent="center"
+                    alignItems="flex-start"
+                    spacing={1}>
+        <Sheet>Sync to Figma: </Sheet>
+        
         <Switch
             checked={sync}
             onChange={handleOnClick}
@@ -185,7 +206,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                 "--Switch-trackWidth": "48px"
               }}
             />
-    </>);
+    </Stack>);
   }
 
   function LoadFromFigma() {
@@ -278,25 +299,35 @@ export default function ThemeManager({theme, setTheme, palettes}) {
         })
     return (
         <>
-            <div className='controls'>
+            <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="flex-start"
+                spacing={2}
+                divider={<Divider orientation="vertical" />}>
                 <Input 
                     color="primary"
                     size="sm"
                     defaultValue='New Theme'></Input>
-                <div className='themeMeta'>Version: {theme.theme.version}</div>
-                Base Theme: 
-                <Select 
-                    size="sm"
-                    color="primary"
-                    onChange={handleOnChange} 
-                    value={theme.theme['base-theme']}>
-                    {options}
-                </Select> 
-                
+                <Sheet>Version: {theme.theme.version}</Sheet>
+                <Stack
+                    direction="row"
+                    justifyContent="center"
+                    alignItems="flex-start"
+                    spacing={1}>
+                    <Sheet>Base Theme:</Sheet>
+                    <Select 
+                        size="sm"
+                        color="primary"
+                        onChange={handleOnChange} 
+                        value={theme.theme['base-theme']}>
+                        {options}
+                    </Select> 
+                </Stack>
                 <SelectPalette
                         palettes={palettes}
                         setPalette={setPalette} />
-            </div>
+            </Stack>
         </>
         );
   }

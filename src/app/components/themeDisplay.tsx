@@ -582,7 +582,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
     let options = [<Option 
                         key='thisisakey'
                         value=''></Option>] 
-    for(let i = 1; i <=100; i++) {
+    for(let i = 1; i <=99; i++) {
         options.push(
             <Option 
                 key={utils.generateUUID()}

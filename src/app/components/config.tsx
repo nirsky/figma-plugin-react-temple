@@ -224,7 +224,7 @@ export const styleSections = [
 
 export const attributeList = [
     {name: 'Font Family', attr: "font-family", value: ["Arial", "Calibri", "Courier New", "Georgia", "Poppins", "Roboto", "Tableau Book", "Times New Roman", "Trebuchet MS", "Verdana", "Meryio UI", "Noto CJK Sans", "Noto CJK Serif", "Noto Thai Sans", "Noto Thai Serif"], type: 'STRING'},
-    {name: 'Font Size', attr: "font-size", value: ["1"], type: 'FLOAT'},
+    {name: 'Font Size', attr: "font-size", type: 'FLOAT'},
     {name: 'Font Weight', attr: 'font-weight', value: ["normal", "bold"], type: 'STRING'},
     {name: 'Font Colour', attr: "font-color", type: 'COLOR'},
     {name: 'Bg Colour', attr: "background-color", type: 'COLOR'},
@@ -232,7 +232,7 @@ export const attributeList = [
     {name: 'Line Visibility', attr: "line-visibility", value: ['on', 'off'], type: 'STRING'},
     {name: 'Line Pattern', attr: "line-pattern", value: ["dotted", "dashed", "solid"], type: 'STRING'},
     {name: 'Line Colour', attr: "line-color", type: 'COLOR'},
-    {name: 'Line Width', attr: "line-width", value: ["1"], type: 'FLOAT'}
+    {name: 'Line Width', attr: "line-width", type: 'FLOAT'}
   ]
 
 export const baseThemes = ["default", "classic", "modern", "clean", "smooth"]

@@ -1,0 +1,412 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]{0,}\\.[0-9]{1,}\\.[0-9]{1,}$"
+    },
+    "base-theme": {
+      "type": "string",
+      "enum": ["default", "classic", "modern", "clean", "smooth"]
+    },
+    "styles": {
+      "type": "object",
+      "properties": {
+        "all": {
+          "type": "object",
+          "properties": {
+            "font-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            },
+            "font-family": {
+              "type": "string",
+              "pattern": "^.{1,50}$"
+            }
+          },
+          "additionalProperties": false
+        },
+        "worksheet": {
+          "type": "object",
+          "properties": {
+            "font-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            },
+            "font-family": {
+              "type": "string",
+              "pattern": "^.{1,50}$"
+            },
+            "font-size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 99
+            }
+          },
+          "additionalProperties": false
+        },
+        "worksheet-title": {
+          "type": "object",
+          "properties": {
+            "font-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            },
+            "font-family": {
+              "type": "string",
+              "pattern": "^.{1,50}$"
+            },
+            "font-size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 99
+            }
+          },
+          "additionalProperties": false
+        },
+        "tooltip": {
+          "type": "object",
+          "properties": {
+            "font-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            },
+            "font-family": {
+              "type": "string",
+              "pattern": "^.{1,50}$"
+            },
+            "font-size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 99
+            }
+          },
+          "additionalProperties": false
+        },
+        "dashboard-title": {
+          "type": "object",
+          "properties": {
+            "font-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            },
+            "font-family": {
+              "type": "string",
+              "pattern": "^.{1,50}$"
+            },
+            "font-size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 99
+            },
+            "font-weight": {
+              "type": "string",
+              "enum": ["normal", "bold"]
+            }
+          },
+          "additionalProperties": false
+        },
+        "story-title": {
+          "type": "object",
+          "properties": {
+            "font-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            },
+            "font-family": {
+              "type": "string",
+              "pattern": "^.{1,50}$"
+            },
+            "font-size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 99
+            }
+          },
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "font-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            },
+            "font-family": {
+              "type": "string",
+              "pattern": "^.{1,50}$"
+            }
+          },
+          "additionalProperties": false
+        },
+        "legend": {
+          "type": "object",
+          "properties": {
+            "font-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            },
+            "font-family": {
+              "type": "string",
+              "pattern": "^.{1,50}$"
+            },
+            "font-size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 99
+            },
+            "background-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            }
+          },
+          "additionalProperties": false
+        },
+        "legend-title": {
+          "type": "object",
+          "properties": {
+            "font-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            },
+            "font-family": {
+              "type": "string",
+              "pattern": "^.{1,50}$"
+            },
+            "font-size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 99
+            }
+          },
+          "additionalProperties": false
+        },
+        "filter": {
+          "type": "object",
+          "properties": {
+            "font-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            },
+            "font-family": {
+              "type": "string",
+              "pattern": "^.{1,50}$"
+            },
+            "font-size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 99
+            },
+            "background-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            }
+          },
+          "additionalProperties": false
+        },
+        "filter-title": {
+          "type": "object",
+          "properties": {
+            "font-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            },
+            "font-family": {
+              "type": "string",
+              "pattern": "^.{1,50}$"
+            },
+            "font-size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 99
+            }
+          },
+          "additionalProperties": false
+        },
+        "parameter-ctrl": {
+          "type": "object",
+          "properties": {
+            "font-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            },
+            "font-family": {
+              "type": "string",
+              "pattern": "^.{1,50}$"
+            },
+            "font-size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 99
+            },
+            "background-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            }
+          },
+          "additionalProperties": false
+        },
+        "parameter-ctrl-title": {
+          "type": "object",
+          "properties": {
+            "font-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            },
+            "font-family": {
+              "type": "string",
+              "pattern": "^.{1,50}$"
+            },
+            "font-size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 99
+            }
+          },
+          "additionalProperties": false
+        },
+        "highlighter": {
+          "type": "object",
+          "properties": {
+            "font-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            },
+            "font-family": {
+              "type": "string",
+              "pattern": "^.{1,50}$"
+            },
+            "font-size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 99
+            },
+            "background-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            }
+          },
+          "additionalProperties": false
+        },
+        "highlighter-title": {
+          "type": "object",
+          "properties": {
+            "font-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            },
+            "font-family": {
+              "type": "string",
+              "pattern": "^.{1,50}$"
+            },
+            "font-size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 99
+            }
+          },
+          "additionalProperties": false
+        },
+        "page-ctrl-title": {
+          "type": "object",
+          "properties": {
+            "font-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            },
+            "font-family": {
+              "type": "string",
+              "pattern": "^.{1,50}$"
+            }
+          },
+          "additionalProperties": false
+        },
+        "page-ctrl": {
+          "type": "object",
+          "properties": {
+            "font-family": {
+              "type": "string",
+              "pattern": "^.{1,50}$"
+            },
+            "font-size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 99
+            }
+          },
+          "additionalProperties": false
+        },
+        "view": {
+          "type": "object",
+          "properties": {
+            "background-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            }
+          },
+          "additionalProperties": false
+        },
+        "gridline": {
+          "type": "object",
+          "properties": {
+            "line-visibility": {
+              "type": "string",
+              "enum": ["on", "off"]
+            },
+            "line-pattern": {
+              "type": "string",
+              "enum": ["dotted", "dashed", "solid"]
+            },
+            "line-size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "line-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            }
+          },
+          "additionalProperties": false
+        },
+        "zeroline": {
+          "type": "object",
+          "properties": {
+            "line-visibility": {
+              "type": "string",
+              "enum": ["on", "off"]
+            },
+            "line-pattern": {
+              "type": "string",
+              "enum": ["dotted", "dashed", "solid"]
+            },
+            "line-size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "line-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            }
+          },
+          "additionalProperties": false
+        },
+        "mark": {
+          "type": "object",
+          "properties": {
+            "mark-color": {
+              "type": "string",
+              "pattern": "^#[a-zA-Z0-9]{6}$"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": ["version", "base-theme", "styles"],
+  "additionalProperties": false
+}

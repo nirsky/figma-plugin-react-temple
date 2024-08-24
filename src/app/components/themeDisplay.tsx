@@ -309,7 +309,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                     color="primary"
                     size="sm"
                     defaultValue='New Theme'></Input>
-                <Sheet>Version: {theme.theme.version}</Sheet>
+                <Sheet>Version: {theme.version}</Sheet>
                 <Stack
                     direction="row"
                     justifyContent="center"
@@ -320,7 +320,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                         size="sm"
                         color="primary"
                         onChange={handleOnChange} 
-                        value={theme.theme['base-theme']}>
+                        value={theme['base-theme']}>
                         {options}
                     </Select> 
                 </Stack>
@@ -441,9 +441,17 @@ export default function ThemeManager({theme, setTheme, palettes}) {
   function Setting({section, style, theme, setTheme, sync, palette}) {
     let columns = []
     section.attributes.forEach(key => {
+        console.log('section', section)
+        console.log('key', key)
+        console.log('style', style)
         const attr = conf.attributeList.find(item => item.attr === key);
+        console.log('attr', attr)
         let output
-            if(conf.jsonStructure.theme.styles[style].hasOwnProperty([attr.attr])) {
+        console.log('conf.jsonStructure', conf.jsonStructure)
+        console.log('conf.jsonStructure.styles', conf.jsonStructure.styles)
+        console.log('conf.jsonStructure.styles[style]', conf.jsonStructure.styles[style])
+            if(conf.jsonStructure.styles[style].hasOwnProperty([attr.attr])) {
+                console.log('test')
                 switch (attr.type) {
                     case 'COLOR':
                         output = <ColourEdit 
@@ -472,6 +480,8 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                     break;
                 }
             }
+            
+        console.log('output', output)
             //output = theme.styles[style][attr.attr]
         columns.push(
           <td key={attr.attr}>{output}</td>
@@ -514,7 +524,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                 color="primary"
                 size="sm" 
                 onChange={handleOnChange} 
-                value={theme.theme.styles[style][attribute]}
+                value={theme.styles[style][attribute]}
                 defaultValue=''>
                 {options}
             </Select> 
@@ -523,7 +533,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
   }
 
   function ColourEdit({style, attribute, theme, setTheme, sync, palette}) {
-    const [colour, setColour] = useState(theme.theme.styles[style][attribute]);
+    const [colour, setColour] = useState(theme.styles[style][attribute]);
     function handleOnChange(color) {
         setTheme(draft => {
             draft.theme.styles[style][attribute] = color.hex
@@ -541,21 +551,21 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                 arrow={false}
                     content={<>
                         <Sketch
-                            color={theme.theme.styles.hasOwnProperty([style]) ? theme.theme.styles[style][attribute] : ''}
+                            color={theme.styles.hasOwnProperty([style]) ? theme.styles[style][attribute] : ''}
                             disableAlpha={true}
                             onChange={handleOnChange}
                             presetColors={palette}
                             /></>
                     }>
 
-                <div className={theme.theme.styles[style][attribute] == '' ? 'colour transparent' : 'colour'}
-                        style={{backgroundColor: theme.theme.styles[style][attribute]}}></div>
+                <div className={theme.styles[style][attribute] == '' ? 'colour transparent' : 'colour'}
+                        style={{backgroundColor: theme.styles[style][attribute]}}></div>
             </Tippy>
             <Input 
                 color="primary"
                 size="sm"
                 onChange={handleOnChange} 
-                value={theme.theme.styles[style][attribute]}></Input>
+                value={theme.styles[style][attribute]}></Input>
         </div>
       )
   }
@@ -586,7 +596,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                 color="primary"
                 size="sm" 
                 onChange={handleOnChange} 
-                value={theme.theme.styles[style][attribute]}
+                value={theme.styles[style][attribute]}
                 defaultValue=''>
                 {options}
             </Select>

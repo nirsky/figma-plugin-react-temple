@@ -71,173 +71,168 @@ export const testPalettes = [
 
 //Theme Manager
 export const jsonStructure = {
-    "theme": {
-      "version": 1.0,
-      "name": "New Theme",
-      "base-theme": "default",
-      "styles": {
-        "All": {
-          "saColor": "",
-          "saFontFamily": ""
-        },
-        "Worksheet": {
-          "saFontSize": "",
-          "saColor": "",
-          "saFontFamily": ""
-        },
-        "Title": {
-          "saFontFamily": "",
-          "saFontSize": "",
-          "saColor": ""
-        },
-        "Tooltip": {
-          "saFontSize": "",
-          "saColor": "",
-          "saFontFamily": ""
-        },
-        "DashTitle": {
-          "saFontSize": "",
-          "saColor": "",
-          "saFontFamily": "",
-          "saFontWeight": ""
-        },
-        "StoryTitle": {
-          "saFontFamily": "",
-          "saFontSize": "",
-          "saColor": ""
-        },
-        "Header": {
-          "saColor": "",
-          "saFontFamily": ""
-        },
-        "Legend": {
-          "saFontSize": "",
-          "saColor": "",
-          "saFontFamily": "",
-          "saBackgroundColor": ""
-        },
-        "LegendTitle": {
-          "saFontFamily": "",
-          "saFontSize": "",
-          "saColor": ""
-        },
-        "QuickFilter": {
-          "saFontSize": "",
-          "saColor": "",
-          "saFontFamily": "",
-          "saBackgroundColor": ""
-        },
-        "QuickFilterTitle": {
-          "saFontFamily": "",
-          "saFontSize": "",
-          "saColor": ""
-        },
-        "ParameterCtrl": {
-          "saFontFamily": "",
-          "saFontSize": "",
-          "saColor": "",
-          "saBackgroundColor": ""
-        },
-        "ParameterCtrlTitle": {
-          "saFontFamily": "",
-          "saColor": "",
-          "saFontSize": ""
-        },
-        "DataHighlighter": {
-          "saFontSize": "",
-          "saColor": "",
-          "saFontFamily": "",
-          "saBackgroundColor": ""
-        },
-        "DataHighlighterTitle": {
-          "saFontSize": "",
-          "saFontFamily": "",
-          "saColor": ""
-        },
-        "PageCardBody": {
-          "saFontSize": "",
-          "saFontFamily": ""
-        },
-        "PageCardTitle": {
-          "saColor": "",
-          "saFontFamily": ""
-        },
-        "Table": {
-          "saBackgroundColor": ""
-        },
-        "Gridline": {
-          "saLineVisibility": "",
-          "saLinePatternOnly": "",
-          "saLinePattern": "",
-          "saStrokeColor": "",
-          "saStrokeSize": "",
-        },
-        "Zeroline": {
-          "saLineVisibility": "",
-          "saLinePatternOnly": "",
-          "saLinePattern": "",
-          "saStrokeColor": "",
-          "saStrokeSize": "",
-        },
-        "Mark": {
-          "saMarkColor": ""
-        }
-      }
+  "version": 1,
+  "base-theme": "default",
+  "name": "New Theme 2",
+  "styles": {
+    "all": {
+      "font-family": "",
+      "font-color": ""
+    },
+    "worksheet": {
+      "font-family": "",
+      "font-color": "",
+      "font-size": ""
+    },
+    "worksheet-title": {
+      "font-family": "",
+      "font-color": "",
+      "font-size": ""
+    },
+    "tooltip": {
+      "font-family": "",
+      "font-color": "",
+      "font-size": ""
+    },
+    "dashboard-title": {
+      "font-family": "",
+      "font-color": "",
+      "font-size": "",
+      "font-weight": ""
+    },
+    "story-title": {
+      "font-family": "",
+      "font-color": "",
+      "font-size": ""
+    },
+    "header": {
+      "font-family": "",
+      "font-color": ""
+    },
+    "legend": {
+      "font-family": "",
+      "font-color": "",
+      "font-size": "",
+      "background-color": ""
+    },
+    "legend-title": {
+      "font-family": "",
+      "font-color": "",
+      "font-size": ""
+    },
+    "filter": {
+      "font-family": "",
+      "font-color": "",
+      "font-size": "",
+      "background-color": ""
+    },
+    "filter-title": {
+      "font-family": "",
+      "font-color": "",
+      "font-size": ""
+    },
+    "parameter-ctrl": {
+      "font-family": "",
+      "font-color": "",
+      "font-size": "",
+      "background-color": ""
+    },
+    "parameter-ctrl-title": {
+      "font-family": "",
+      "font-color": "",
+      "font-size": ""
+    },
+    "highlighter": {
+      "font-family": "",
+      "font-color": "",
+      "font-size": "",
+      "background-color": ""
+    },
+    "highlighter-title": {
+      "font-family": "",
+      "font-color": "",
+      "font-size": ""
+    },
+    "page-ctrl": {
+      "font-family": "",
+      "font-size": ""
+    },
+    "page-ctrl-title": {
+      "font-color": "",
+      "font-family": ""
+    },
+    "view": {
+      "background-color": ""
+    },
+    "gridline": {
+      "line-visibility": "",
+      "line-pattern": "",
+      "line-color": "",
+      "line-width": ""
+    },
+    "zeroline": {
+      "line-visibility": "",
+      "line-pattern": "",
+      "line-color": "",
+      "line-width": ""
+    },
+    "mark": {
+      "mark-color": ""
     }
   }
+}
 
 export const styleSections = [
     {
         section: 'Text',
-        styles: [
-            "All",
-            "Worksheet",
-            "Title",
-            "Tooltip",
-            "DashTitle",
-            "StoryTitle",
-            "Header"
+        styles: ["all",
+            "worksheet",
+            "worksheet-title",
+            "tooltip",
+            "dashboard-title",
+            "story-title",
+            "header",
+            "view",
           ]},
     {
         section: 'Cards',
         styles: [
-            "Legend",
-            "LegendTitle",
-            "QuickFilter",
-            "QuickFilterTitle",
-            "ParameterCtrl",
-            "ParameterCtrlTitle",
-            "DataHighlighter",
-            "DataHighlighterTitle",
-            "PageCardBody",
-            "PageCardTitle"
+          "legend",
+          "legend-title",
+          "filter",
+          "filter-title",
+          "parameter-ctrl",
+          "parameter-ctrl-title",
+          "highlighter",
+          "highlighter-title",
+          "page-ctrl",
+          "page-ctrl-title",
         ]},
     {
         section: 'Content',
         styles: [
-            "Table",
-            "Mark"
+          "mark"
         ]},
     {
         section: 'Lines',
         styles: [
-            "Gridline",
-            "Zeroline"
+          "gridline",
+          "zeroline"
         ]}
 ]
 
+
 export const attributeList = [
-    {name: 'Font Family', attr: 'saFontFamily', value: ["Arial", "Calibri", "Courier New", "Georgia", "Poppins", "Roboto", "Tableau Book", "Times New Roman", "Trebuchet MS", "Verdana", "Meryio UI", "Noto CJK Sans", "Noto CJK Serif", "Noto Thai Sans", "Noto Thai Serif"], type: 'STRING'},
-    {name: 'Font Size', attr: 'saFontSize', value: ['8', '12', '16'], type: 'FLOAT'},
-    {name: 'Font Weight', attr: 'saFontWeight', value: ['Bold', 'Semi-Bold', 'Light'], type: 'STRING'},
-    {name: 'Font Colour', attr: 'saColor', type: 'COLOR'},
-    {name: 'Bg Colour', attr: 'saBackgroundColor', type: 'COLOR'},
-    {name: 'Mark Colour', attr: 'saMarkColor', type: 'COLOR'},
-    {name: 'Line Visibility', attr: 'saLineVisibility', value: ['on', 'off'], type: 'STRING'},
-    {name: 'Line Pattern Only', attr: 'saLinePatternOnly', value: ['solid', 'dashed'], type: 'STRING'},
-    {name: 'Line Pattern', attr: 'saLinePattern', value: ['none', 'dotted'], type: 'STRING'},
-    {name: 'Stroke Colour', attr: 'saStrokeColor', type: 'COLOR'},
-    {name: 'Stroke Size', attr: 'saStrokeSize', value: ['8', '12', '16'], type: 'FLOAT'}
+    {name: 'Font Family', attr: "font-family", value: ["Arial", "Calibri", "Courier New", "Georgia", "Poppins", "Roboto", "Tableau Book", "Times New Roman", "Trebuchet MS", "Verdana", "Meryio UI", "Noto CJK Sans", "Noto CJK Serif", "Noto Thai Sans", "Noto Thai Serif"], type: 'STRING'},
+    {name: 'Font Size', attr: "font-size", value: ["1"], type: 'FLOAT'},
+    {name: 'Font Weight', attr: 'font-weight', value: ["normal", "bold"], type: 'STRING'},
+    {name: 'Font Colour', attr: "font-color", type: 'COLOR'},
+    {name: 'Bg Colour', attr: "background-color", type: 'COLOR'},
+    {name: 'Mark Colour', attr: "mark-color", type: 'COLOR'},
+    {name: 'Line Visibility', attr: "line-visibility", value: ['on', 'off'], type: 'STRING'},
+    {name: 'Line Pattern', attr: "line-pattern", value: ["dotted", "dashed", "solid"], type: 'STRING'},
+    {name: 'Line Colour', attr: "line-color", type: 'COLOR'},
+    {name: 'Line Width', attr: "line-width", value: ["1"], type: 'FLOAT'}
   ]
 
-export const baseThemes = ['default', 'previous', 'modern', 'classic']
+export const baseThemes = ["default", "classic", "modern", "clean", "smooth"]

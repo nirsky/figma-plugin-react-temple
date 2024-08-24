@@ -71,7 +71,7 @@ export const testPalettes = [
 
 //Theme Manager
 export const jsonStructure = {
-  "version": 1,
+  "version": "1.0.0",
   "base-theme": "default",
   "name": "New Theme 2",
   "styles": {

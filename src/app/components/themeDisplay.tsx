@@ -32,7 +32,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
         const msg = message.data.pluginMessage
         if (msg && msg.type === 'store-variable') {
             setTheme(draft => {
-                draft.theme.styles[msg.style.style][msg.style.attribute] = msg.style.value
+                draft.styles[msg.style.style][msg.style.attribute] = msg.style.value
               })
           }
     }
@@ -107,12 +107,12 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                 if (typeof result === 'string') {
                     try {
                         const parsedData = JSON.parse(result);
-                        setTheme(draft => {draft.theme = {
-                                                ...draft.theme,
-                                                ...parsedData.theme,
+                        setTheme(draft => {draft = {
+                                                ...draft,
+                                                ...parsedData,
                                                 styles: {
-                                                ...draft.theme.styles,
-                                                ...parsedData.theme.styles,
+                                                ...draft.styles,
+                                                ...parsedData.styles,
                                                 },
                                             };
                                         }
@@ -284,9 +284,9 @@ export default function ThemeManager({theme, setTheme, palettes}) {
   }
 
   function Meta({theme, setTheme, palettes, setPalette}) {
-    function handleOnChange(e) {
+    const handleOnChange = (event, newValue) => {
         setTheme(draft => {
-            draft.theme['base-theme'] = e.target.value
+            draft['base-theme'] = newValue
           })
     }
     let options = []
@@ -441,17 +441,9 @@ export default function ThemeManager({theme, setTheme, palettes}) {
   function Setting({section, style, theme, setTheme, sync, palette}) {
     let columns = []
     section.attributes.forEach(key => {
-        console.log('section', section)
-        console.log('key', key)
-        console.log('style', style)
         const attr = conf.attributeList.find(item => item.attr === key);
-        console.log('attr', attr)
         let output
-        console.log('conf.jsonStructure', conf.jsonStructure)
-        console.log('conf.jsonStructure.styles', conf.jsonStructure.styles)
-        console.log('conf.jsonStructure.styles[style]', conf.jsonStructure.styles[style])
             if(conf.jsonStructure.styles[style].hasOwnProperty([attr.attr])) {
-                console.log('test')
                 switch (attr.type) {
                     case 'COLOR':
                         output = <ColourEdit 
@@ -481,8 +473,6 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                 }
             }
             
-        console.log('output', output)
-            //output = theme.styles[style][attr.attr]
         columns.push(
           <td key={attr.attr}>{output}</td>
       )
@@ -499,7 +489,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
   function StringEdit({style, attribute, theme, setTheme, sync}) {
     const handleOnChange = (event, newValue) => {
         setTheme(draft => {
-            draft.theme.styles[style][attribute] = newValue
+            draft.styles[style][attribute] = newValue
           })
           if(sync === true) {
             utils.sendToFigma(style, attribute, newValue)
@@ -536,7 +526,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
     const [colour, setColour] = useState(theme.styles[style][attribute]);
     function handleOnChange(color) {
         setTheme(draft => {
-            draft.theme.styles[style][attribute] = color.hex
+            draft.styles[style][attribute] = color.hex
           })
         setColour(color.hex)
         if(sync === true) {
@@ -573,7 +563,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
   function NumberEdit({style, attribute, theme, setTheme, sync}) {
     const handleOnChange = (event, newValue) => {
         setTheme(draft => {
-            draft.theme.styles[style][attribute] = newValue
+            draft.styles[style][attribute] = newValue
           })
           if(sync === true) {
             utils.sendToFigma(style, attribute, newValue)

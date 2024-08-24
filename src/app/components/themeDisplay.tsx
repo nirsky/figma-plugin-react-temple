@@ -89,6 +89,8 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                                     sync={sync}
                                     setSync={setSync} />
                             <LoadFromFigma />
+                            <ShowTheme
+                                    theme={theme} />
                     </Stack>
                 </Stack>
     );//<ShowTheme theme={theme} />                     
@@ -101,21 +103,17 @@ export default function ThemeManager({theme, setTheme, palettes}) {
     
         if (file) {
           const reader = new FileReader();
+          console.log('1')
             reader.onload = (e) => {
                 // Type guard to ensure the result is a string
                 const result = e.target.result;
                 if (typeof result === 'string') {
                     try {
+                        
+          console.log('2')
                         const parsedData = JSON.parse(result);
-                        setTheme(draft => {draft = {
-                                                ...draft,
-                                                ...parsedData,
-                                                styles: {
-                                                ...draft.styles,
-                                                ...parsedData.styles,
-                                                },
-                                            };
-                                        }
+                        console.log('parsedData', parsedData)
+                        setTheme(parsedData
                         )
                         
                         setError('');
@@ -125,9 +123,13 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                 } else {
                     setError('Error: File content is not a string');
                 }
+                
+          console.log('3')
             };
           reader.readAsText(file);
         }
+        
+        console.log('4')
 
     };
 

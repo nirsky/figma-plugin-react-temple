@@ -259,6 +259,9 @@ export async function saveVariable(JSONvariable: JSONvariable) {
       //Convert String to number
     if (JSONvariable.type == 'FLOAT') {
       JSONvariable.value = Number(JSONvariable.value) || null;
+      if (JSONvariable.attribute == "font-size") {
+        JSONvariable.value = JSONvariable.value * 1.3333
+      }
     }
   
       //Load fonts
@@ -317,6 +320,9 @@ let variable
           console.log("Variable couldn't be loaded")
         }
 
+
+
+        
         //Convert hex to Figma RGB
         let value
         if (variable.resolvedType == 'COLOR') {
@@ -325,6 +331,12 @@ let variable
         } else {
             value = Object.values(variable['valuesByMode'])[0]
         }
+
+        if (variable.resolvedType == 'FLOAT') {
+          if (variable.name.split("/")[1] == "font-size") {
+            value = value / 1.3333
+          }
+      }
 
 
         let style = {

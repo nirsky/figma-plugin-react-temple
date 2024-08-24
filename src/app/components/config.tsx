@@ -1,3 +1,6 @@
+
+import { styled } from '@mui/joy';
+
 //Colour Manager
 export const controls = [{
     "type": 'edit', 
@@ -221,7 +224,6 @@ export const styleSections = [
         ]}
 ]
 
-
 export const attributeList = [
     {name: 'Font Family', attr: "font-family", value: ["Arial", "Calibri", "Courier New", "Georgia", "Poppins", "Roboto", "Tableau Book", "Times New Roman", "Trebuchet MS", "Verdana", "Meryio UI", "Noto CJK Sans", "Noto CJK Serif", "Noto Thai Sans", "Noto Thai Serif"], type: 'STRING'},
     {name: 'Font Size', attr: "font-size", type: 'FLOAT'},
@@ -236,3 +238,15 @@ export const attributeList = [
   ]
 
 export const baseThemes = ["default", "classic", "modern", "clean", "smooth"]
+
+export const VisuallyHiddenInput = styled('input')`
+clip: rect(0 0 0 0);
+clip-path: inset(50%);
+height: 1px;
+overflow: hidden;
+position: absolute;
+bottom: 0;
+left: 0;
+white-space: nowrap;
+width: 1px;
+`;

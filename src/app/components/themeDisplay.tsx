@@ -18,7 +18,6 @@ import Tab from '@mui/joy/Tab';
 import TabPanel from '@mui/joy/TabPanel';
 import Upload from '@mui/icons-material/Upload';
 import Download from '@mui/icons-material/Download';
-import { styled } from '@mui/joy';
 import ButtonGroup from '@mui/joy/ButtonGroup';
 import Stack from '@mui/joy/Stack';
 import Divider from '@mui/joy/Divider';
@@ -137,23 +136,13 @@ export default function ThemeManager({theme, setTheme, palettes}) {
         utils.loopStyles(theme)
     } 
 
-    const VisuallyHiddenInput = styled('input')`
-    clip: rect(0 0 0 0);
-    clip-path: inset(50%);
-    height: 1px;
-    overflow: hidden;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    white-space: nowrap;
-    width: 1px;
-  `;
+
 
     return (<> <Button 
                     component='label'
                     startDecorator={<Upload />} >
                         Upload 
-                        <VisuallyHiddenInput type="file" onChange={handleOnFileChange} />
+                        <conf.VisuallyHiddenInput type="file" onChange={handleOnFileChange} />
                 </Button>
     </>);
   }

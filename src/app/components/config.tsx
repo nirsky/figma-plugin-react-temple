@@ -72,6 +72,12 @@ export const testPalettes = [
     }
   ]  
 
+export const paletteTypes ={
+  'regular': 'Categorical',
+  'ordered-sequential': 'Sequential',
+  'ordered-diverging': 'Diverging'
+}
+
 //Theme Manager
 export const jsonStructure = {
   "version": "1.0.0",

@@ -371,3 +371,27 @@ return {
     attributes: sectionAttr
 }
 }
+
+
+export function createPalette(colours, type) {
+  console.log('colours', colours)
+  
+  const colourItems = colours.map(element => {
+    return {
+        value: element,
+        id: generateUUID()
+    };
+  });
+
+  let palette = {
+    meta: {
+        id: generateUUID(),
+        title: 'New ' + type + ' palette',
+        type: type,
+        seed: [],
+        comment: '',
+    },
+    colours: colourItems
+  };
+  return palette
+}

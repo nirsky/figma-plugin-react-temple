@@ -348,8 +348,13 @@ function AddSequential({colours, palettes, setPalettes}) {
     let type, title
     switch (e.target.id) {
       case 'seq':
-        type = 'ordered-sequential'
-        title = 'Sequential'
+        if(selectedItems.length === 1) {
+          type = 'ordered-sequential'
+          title = 'Sequential'
+        } else {
+          type = 'ordered-diverging'
+          title = 'Diverging'
+        }
         break;
       case 'div_dark':
         type = 'ordered-diverging'
@@ -377,23 +382,13 @@ function AddSequential({colours, palettes, setPalettes}) {
 
 
   const selectedItems = colours.filter(element => element.selected === true);
-  let sequential, diverging = ''
+  let sequential = ''
   switch (selectedItems.length) {
     case 0:
       sequential = 'disabled'
-      diverging = 'disabled'
-    break;
-    case 1:
-      sequential = ''
-      diverging = 'disabled'
-    break;
-    case 2:
-      sequential = 'disabled'
-      diverging = ''
     break;
     default:
-      sequential = 'disabled'
-      diverging = 'disabled'
+      sequential = ''
   }
   
 
@@ -404,13 +399,6 @@ function AddSequential({colours, palettes, setPalettes}) {
                 onClick={handleOnClick}
                 disabled={sequential === 'disabled'}>
                 Sequential
-            </Button>
-            <Button
-                size="sm" 
-                id='div_dark'
-                onClick={handleOnClick}
-                disabled={diverging === 'disabled'}>
-                Diverging (Dark) 
             </Button>
       </>
   )
@@ -726,6 +714,7 @@ function EditPalette({id, palettes, setPalettes}) {
                 onInput={handleOnChange} 
                 onLoad={handleOnChange} 
                 defaultValue={colours}
+                sx={{width: 1}}
               />)
 }
 

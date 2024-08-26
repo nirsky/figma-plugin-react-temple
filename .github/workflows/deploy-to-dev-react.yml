@@ -24,7 +24,7 @@ jobs:
           remote_path: $remote_path
           remote_host: $remote_host
           remote_user: $remote_user
-          remote_key: $remote_key
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Configure SSH
         run: |
           echo oooooooooooooooooo current   

@@ -1,0 +1,19 @@
+name: Deploy TCM to TEST
+on:
+  push:
+    branches:
+      - 'test*'
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy using Rsync
+        uses: burnett01/rsync-deployments@6.0.0
+        with:
+          switches: -avrh --delete
+          path: ./
+          remote_path: /var/www/virtual/${{ vars.SSH_USERNAME }}/html/dev/tcm/test/
+          remote_host: ${{ vars.SSH_HOST }}
+          remote_user: ${{ vars.SSH_USERNAME }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}

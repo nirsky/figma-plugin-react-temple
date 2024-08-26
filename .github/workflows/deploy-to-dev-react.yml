@@ -45,7 +45,7 @@ jobs:
       - name: current dir content
         run: ssh deploy 'ls -a'
       - name: Install
-        run: ssh deploy 'cd /html/dev/tcm/dev/'
+        run: ssh deploy 'cd html/dev/tcm/dev/'
       - name: Install
         run: ssh deploy 'npm install'
       - name: build react

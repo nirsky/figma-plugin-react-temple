@@ -40,6 +40,12 @@ jobs:
           SSH_USER: ${{ vars.SSH_USERNAME }}
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_HOST: ${{ vars.SSH_HOST }}
+      - name: current dir
+        run: ssh deploy 'pwd'
+      - name: current dir content
+        run: ssh deploy 'ls -a'
+      - name: Install
+        run: ssh deploy 'cd /html/dev/tcm/dev/'
       - name: Install
         run: ssh deploy 'npm install'
       - name: build react

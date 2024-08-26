@@ -19,28 +19,23 @@ jobs:
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Configure SSH
         run: |
-          echo #################### current dir mkdir
-          ls -a
-          mkdir -p .ssh/
-          echo #################### current dir 
-          ls -a
-          echo "$SSH_KEY" > .ssh/staging.key
-          chmod 600  .ssh/staging.key
-          cat >> .ssh/config <<END
-          Host deploy
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/staging.key
+          chmod 600 ~/.ssh/staging.key
+          cat >>~/.ssh/config <<END
+          Host staging
             HostName $SSH_HOST
             User $SSH_USER
-            IdentityFile .ssh/staging.key
+            IdentityFile ~/.ssh/staging.key
             StrictHostKeyChecking no
           END
-          echo current dir 2
-          cd .ssh
-          ls -a
 
         env:
           SSH_USER: ${{ vars.SSH_USERNAME }}
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_HOST: ${{ vars.SSH_HOST }}
+      - name: Install
+        run: ssh deploy 'cd /html/dev/tcm/dev/'
       - name: Install
         run: ssh deploy 'npm install'
       - name: build react

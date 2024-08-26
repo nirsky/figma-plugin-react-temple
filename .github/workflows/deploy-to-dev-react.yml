@@ -52,7 +52,7 @@ jobs:
       - name: Remove old Dist content
         run: ssh deploy 'rm html/dev/tcm/dev/dist/* html/dev/tcm/dev/dist/.* || true'
       - name: Remove old Dist
-        run: ssh deploy 'rmdir html/dev/tcm/dev/dist'
+        run: ssh deploy 'rmdir html/dev/tcm/dev/dist || true'
       - name: Yarn Build
         run: ssh deploy 'yarn --cwd html/dev/tcm/dev/ build'
       - name: current dir content

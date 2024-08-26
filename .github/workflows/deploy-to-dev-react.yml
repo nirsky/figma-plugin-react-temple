@@ -6,6 +6,14 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      switches: -avrh --delete
+      path: ./
+      working_dir: html/dev/tcm/dev/
+      remote_path: /var/www/virtual/${{ vars.SSH_USERNAME }}/$working_dir
+      remote_host: ${{ vars.SSH_HOST }}
+      remote_user: ${{ vars.SSH_USERNAME }}
+      remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
     steps:
       - uses: actions/checkout@v4
       - name: Deploy using Rsync
@@ -13,10 +21,10 @@ jobs:
         with:
           switches: -avrh --delete
           path: ./
-          remote_path: /var/www/virtual/${{ vars.SSH_USERNAME }}/html/dev/tcm/dev/
-          remote_host: ${{ vars.SSH_HOST }}
-          remote_user: ${{ vars.SSH_USERNAME }}
-          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          remote_path: $remote_path
+          remote_host: $remote_host
+          remote_user: $remote_user
+          remote_key: $remote_key
       - name: Configure SSH
         run: |
           echo oooooooooooooooooo current   
@@ -45,8 +53,10 @@ jobs:
       - name: current dir content
         run: ssh deploy 'ls -a'
       - name: NPM Install
-        run: ssh deploy 'npm --prefix html/dev/tcm/dev/ install html/dev/tcm/dev/'
+        run: ssh deploy 'npm install'
+        working-directory: $working_dir
       - name: Yarn Build
-        run: ssh deploy 'yarn --cwd html/dev/tcm/dev/ build'
+        run: ssh deploy 'yarn build'
+        working-directory: $working_dir
       - name: current dir content
-        run: ssh deploy 'ls -a html/dev/tcm/dev/'
+        run: ssh deploy 'ls -a $working_dir'

@@ -27,7 +27,7 @@ jobs:
           echo "$SSH_KEY" > ~/.ssh/staging.key
           chmod 600 ~/.ssh/staging.key
           cat >>~/.ssh/config <<END
-          Host staging
+          Host deploy
             HostName $SSH_HOST
             User $SSH_USER
             IdentityFile ~/.ssh/staging.key

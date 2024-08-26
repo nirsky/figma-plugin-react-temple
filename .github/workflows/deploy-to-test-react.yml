@@ -1,0 +1,45 @@
+name: Deploy TCM to DEV
+on:
+  push:
+    branches:
+      - 'test*'
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      switches: -avrh --delete
+      path: ./
+      working_dir: html/dev/tcm/test/
+      remote_path: /var/www/virtual/${{ vars.SSH_USERNAME }}/html/dev/tcm/test/
+      remote_host: ${{ vars.SSH_HOST }}
+      remote_user: ${{ vars.SSH_USERNAME }}
+      remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy using Rsync
+        uses: burnett01/rsync-deployments@6.0.0
+        with:
+          switches: -avrh --delete
+          path: ./
+          remote_path: $remote_path
+          remote_host: $remote_host
+          remote_user: $remote_user
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$remote_key" > ~/.ssh/staging.key
+          chmod 600 ~/.ssh/staging.key
+          cat >>~/.ssh/config <<END
+          Host deploy
+            HostName $remote_host
+            User $remote_user
+            IdentityFile ~/.ssh/staging.key
+            StrictHostKeyChecking no
+          END
+      - name: NPM Install
+        run: ssh deploy 'npm --prefix html/dev/tcm/test/ install html/dev/tcm/test/'
+      - name: Yarn Build
+        run: ssh deploy 'yarn --cwd html/dev/tcm/test/ build'
+      - name: current dir content
+        run: ssh deploy 'ls -a'

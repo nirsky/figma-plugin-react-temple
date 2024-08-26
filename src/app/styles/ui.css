@@ -1,55 +1,14 @@
 body {
-  padding: 1em;
-  background-color: #e9e3e6;
+  margin: 1px;
+  background-color: #eeeff3;
   color: #01161E;
   font-family: "Jost", sans-serif;
 }
-
-div {
-  border: 0px solid #000;
-  margin: 0px;
-}
-
-div.palette {
-  border-bottom: 0px solid #c0babe;
-  margin-bottom: 4px;
-}
-
-div.meta {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 4px;
-}
-
-div.type {
-  margin-right: auto;
-  font-style: italic;
-  display: flex;
-  align-items: center;
-  padding-left: 4px;
-  padding-right: 4px;
-} 
 
 div.controls {
   display: flex;
   align-items: center;
 } 
-
-div.control {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 24px;
-  height: 24px;
-  margin: 0px;
-} 
-
-div.colours {
-  display: inline-flex;
-  width: 100%;
-  margin-bottom: 4px;
-  padding-bottom: 4px;
-}
 
 div.colour, div.clr-field {
   width: 24px;
@@ -83,130 +42,6 @@ div.paletteContent {
   display: inline-flex;
   align-items: flex-end;
 }
-
-input.title {
-  width: 300px;
-  height: 30px;
-  font-weight: bold;
-  font-size: 20px;
-  display: inline-block;
-  vertical-align: top;
-  background-color: #efebed;
-  border: 1px solid #c3bec1;
-  white-space: nowrap;
-  overflow: hidden;
-  border-radius: 4px;
-}
-
-input.colourField, div.colourfield {
-  width: 24px;
-  height: 24px;
-}
-
-#upload {
-  height:48px;
-  display:flex;
-}
-
-input[type="file"] {
-  display: none;
-}
-
-input.colourValue {
-  width: 70px;
-  margin-left: 4px;
-}
-
-label.uploadButton {
-  display: flexbox;
-  justify-self: center;
-  align-self: center;
-  height: 32px; 
-  color: #E9E3E6;
-  background-color: #124559;
-  border: 0 solid #000;
-  border-radius: 10px;
-  font-weight: bold;
-  margin: 4px;
-  padding:4px;
-  cursor: pointer;
-}
-
-label.uploadButton:hover {
-  background-color: rgb(47, 93, 112);
-}
-
-textarea {
-  width: 100%;
-  height: 64px;
-}
-
-button.vizku {
-  height: 32px; 
-  color: #E9E3E6;
-  background-color: #124559;
-  border: 0 solid #000;
-  border-radius: 10px;
-  font-weight: bold;
-  margin: 4px;
-}
-
-button.selectColour {
-  width: 48px;
-  height:24px;
-  font-size: 12px;
-}
-
-button.vizku:hover {
-  background-color: rgb(47, 93, 112);
-}
-
-button.vizku:disabled {
-  color: #486774;
-  background-color: #c0babe;
-  border: 1px solid #2e424b;
-}
-
-.clr-field button {
-  width: 100% !important;
-}
-
-/*theme manager*/
-
-.themeMeta {
-  margin-right: 16px;
-} 
-/*
-#attributes.floatThead-table {
-  border-top: none;
-  border-bottom: none;
-  background-color: #fff;
-}
-
-#attributes {
-  border-collapse: collapse;
-  width: auto;
-}
-
-#attributes td, #attributes th {
-  border: 1px solid #cacaca;
-  padding: 2px;
-  width: auto;
-  height: auto;
-}
-
-#attributes tr:nth-child(even){
-  background-color: #f8f4f6;
-}
-
-#attributes th {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  text-align: left;
-  background-color: #124559;
-  color: #E9E3E6;
-  position: sticky;
-}*/
 
 .transparent {
   background: 

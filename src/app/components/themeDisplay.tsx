@@ -10,6 +10,16 @@ import Switch from '@mui/joy/Switch';
 import Button from '@mui/joy/Button';
 import Input from '@mui/joy/Input';
 import Table from '@mui/joy/Table';
+import Sheet from '@mui/joy/Sheet';
+import Tabs from '@mui/joy/Tabs';
+import TabList from '@mui/joy/TabList';
+import Tab from '@mui/joy/Tab';
+import TabPanel from '@mui/joy/TabPanel';
+import Upload from '@mui/icons-material/Upload';
+import Download from '@mui/icons-material/Download';
+import ButtonGroup from '@mui/joy/ButtonGroup';
+import Stack from '@mui/joy/Stack';
+import Divider from '@mui/joy/Divider';
 
 
 export default function ThemeManager({theme, setTheme, palettes}) {
@@ -17,29 +27,193 @@ export default function ThemeManager({theme, setTheme, palettes}) {
 
     window.onmessage = async (message) => { 
         const msg = message.data.pluginMessage
-        if (msg.type === 'store-variable') {
+        if (msg && msg.type === 'store-variable') {
             setTheme(draft => {
-                draft.theme.styles[msg.style.style][msg.style.attribute] = msg.style.value
+                draft.styles[msg.style.style][msg.style.attribute] = msg.style.value
               })
           }
     }
 
     return (
-      <div>
-        <Intro 
-            theme={theme}
-            setTheme={setTheme}
-            sync={sync}
-            setSync={setSync} />
-        <Theme 
-            theme={theme}
-            setTheme={setTheme}
-            sync={sync}
-            palettes={palettes}/>
-      </div>
+        <Stack
+            direction="column"
+            justifyContent="space-between"
+            alignItems="flex-start"
+            spacing={2}
+            divider={<Divider orientation="horizontal" />}>
+            <Intro 
+                theme={theme}
+                setTheme={setTheme}
+                sync={sync}
+                setSync={setSync}/>
+            <Theme 
+                theme={theme}
+                setTheme={setTheme}
+                sync={sync}
+                palettes={palettes}/>
+      </Stack>
       );
   }
 
+  function Intro({theme, setTheme, sync, setSync}) {
+
+    return (<Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="flex-start"
+                spacing={2}
+                divider={<Divider orientation="vertical" />}>
+                    <ButtonGroup
+                        color="primary"
+                        orientation="horizontal"
+                        size="sm"
+                        variant="solid">
+                            <UploadJSON 
+                                    theme={theme}
+                                    setTheme={setTheme}
+                                    sync={sync} />
+                            <DownloadJSON 
+                                    theme={theme} />
+                    </ButtonGroup>
+                    <Stack
+                        direction="row"
+                        justifyContent="flex-end"
+                        alignItems="flex-start"
+                        spacing={2}
+                        divider={<Divider orientation="vertical" />}>
+                            <SyncToFigma
+                                    theme={theme}
+                                    sync={sync}
+                                    setSync={setSync} />
+                            <LoadFromFigma />
+                            <ShowTheme
+                                    theme={theme} />
+                    </Stack>
+                </Stack>
+    );//<ShowTheme theme={theme} />                     
+  }
+
+  function UploadJSON({theme, setTheme, sync}) {
+    const [error, setError] = useState('');
+    const handleOnFileChange = (event) => {
+        const file = event.target.files[0];
+    
+        if (file) {
+          const reader = new FileReader();
+          console.log('1')
+            reader.onload = (e) => {
+                // Type guard to ensure the result is a string
+                const result = e.target.result;
+                if (typeof result === 'string') {
+                    try {
+                        
+          console.log('2')
+                        const parsedData = JSON.parse(result);
+                        console.log('parsedData', parsedData)
+                        setTheme(parsedData
+                        )
+                        
+                        setError('');
+                    } catch (error) {
+                        setError('Error parsing JSON file');
+                    }
+                } else {
+                    setError('Error: File content is not a string');
+                }
+                
+          console.log('3')
+            };
+          reader.readAsText(file);
+        }
+        
+        console.log('4')
+
+    };
+
+    if (sync === true ) {
+        utils.loopStyles(theme)
+    } 
+
+
+
+    return (<> <Button 
+                    component='label'
+                    startDecorator={<Upload />} >
+                        Upload 
+                        <conf.VisuallyHiddenInput type="file" onChange={handleOnFileChange} />
+                </Button>
+                {error}
+    </>);
+  }
+
+  function DownloadJSON({theme}) {
+  
+      const handleOnClick = () => {
+        const jsonString = JSON.stringify(theme, null, 2); // Convert object to JSON string with indentation
+        const blob = new Blob([jsonString], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+    
+        // Create a link element, set href and download attributes, then trigger click
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'data.json';
+        link.click();
+    
+        // Clean up and revoke object URL
+        URL.revokeObjectURL(url);
+      };
+
+    return (<>  
+                <Button
+                    onClick={handleOnClick}
+                    startDecorator={<Download />}>
+                    Download
+                </Button>
+            </>);
+  }
+
+  function SyncToFigma({theme, sync, setSync}) {
+    function handleOnClick() {
+        if (sync === true ) {
+            setSync(false)
+        } else {
+            setSync(true)
+            utils.loopStyles(theme)
+        } 
+     }
+
+    return ( <Stack
+                    direction="row"
+                    justifyContent="center"
+                    alignItems="flex-start"
+                    spacing={1}>
+        <Sheet>Sync to Figma: </Sheet>
+        
+        <Switch
+            checked={sync}
+            onChange={handleOnClick}
+            sx={{
+                "--Switch-trackWidth": "48px"
+              }}
+            />
+    </Stack>);
+  }
+
+  function LoadFromFigma() {
+    function handleOnClick() {
+        const msg = ''
+        parent.postMessage({ pluginMessage: { type: 'request-variables', msg: msg} }, '*')
+     }
+
+    return (<>  
+        <Button
+            size="sm"  
+            onClick={handleOnClick}>
+            Load From Figma   
+        </Button>
+    </>);
+  }
+  
   function ShowTheme({theme}) {
     function handleOnClick() {
         console.log('theme', theme)
@@ -53,47 +227,118 @@ export default function ThemeManager({theme, setTheme, palettes}) {
     </>);
   }
 
-  function Intro({theme, setTheme, sync, setSync}) {
+  function Theme({theme, setTheme, sync, palettes}) {
+    
+    const [palette, setPalette] = useState([])
+    let rows = []
+    let tabs = []
+    conf.styleSections.forEach((sectionName, index) => {
+        tabs.push(<Tab key={sectionName.section}>{sectionName.section}</Tab>)
+        rows.push(
+            <TabPanel value={index} key={index}>
+                <Section 
+                    sectionName={sectionName.section}
+                    theme={theme}
+                    setTheme={setTheme}
+                    sync={sync}
+                    palette={palette} /> 
+            </TabPanel>
+        )
+    })
 
-    return (<>
-                <h1>Theme Manager for Tableau</h1>
-                <UploadJSON 
-                        theme={theme}
-                        setTheme={setTheme}
-                        sync={sync} />
-                <DownloadJSON 
-                        theme={theme} />
-                <SyncToFigma
-                        theme={theme}
-                        sync={sync}
-                        setSync={setSync} />
-                <LoadFromFigma />
-                <ShowTheme
-                        theme={theme} />
-                        
 
-    </>);
+    return (
+        <>
+            <Meta 
+                theme={theme}
+                setTheme={setTheme}
+                palettes={palettes}
+                setPalette={setPalette}/>
+            <Sheet sx={{ height: 300, overflow: 'auto' }}>
+            
+
+    <Tabs 
+        aria-label="Basic tabs" 
+        defaultValue={0}
+        sx={{ width: 725 }}>
+      <TabList  sticky='top' 
+                sx={{justifyContent: 'center'}}>
+        {tabs}
+      </TabList>
+      {rows}
+    </Tabs>
+
+            </Sheet>
+        </>
+        );
   }
 
-  function SelectPalette({palettes}) {
-    function handleOnChange() {
-
+  function Meta({theme, setTheme, palettes, setPalette}) {
+    const handleOnChange = (_event, newValue) => {
+        setTheme(draft => {
+            draft['base-theme'] = newValue
+          })
     }
+    let options = []
+    conf.baseThemes.forEach(option => {
+            options.push(
+                <Option 
+                    key={option}
+                    value={option}>{option}</Option>
+            )
+        })
+    return (
+        <>
+            <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="flex-start"
+                spacing={2}
+                divider={<Divider orientation="vertical" />}>
+                <Input 
+                    color="primary"
+                    size="sm"
+                    defaultValue='New Theme'></Input>
+                <Sheet>Version: {theme.version}</Sheet>
+                <Stack
+                    direction="row"
+                    justifyContent="center"
+                    alignItems="flex-start"
+                    spacing={1}>
+                    <Sheet>Base Theme:</Sheet>
+                    <Select 
+                        size="sm"
+                        color="primary"
+                        onChange={handleOnChange} 
+                        value={theme['base-theme']}>
+                        {options}
+                    </Select> 
+                </Stack>
+                <SelectPalette
+                        palettes={palettes}
+                        setPalette={setPalette} />
+            </Stack>
+        </>
+        );
+  }
+
+  function SelectPalette({palettes, setPalette}) {
+    const handleOnChange = (_event, newValue) => {
+        const palette = palettes.find(palette => palette.meta.id === newValue);
+        setPalette(palette.colours.map(colour => colour.value))
+      };
     let options = [<Option key='thisisakey' value=''></Option>] 
     
-    console.log('palettes', palettes)
     palettes.forEach(palette => {
-        console.log('palette.colours', palette.colours)
         let colours = []
         palette.colours.forEach(colour => {
-            console.log('colour', colour)
             colours.push(<div className='colourSmall' 
                             key={colour.value}
                 style={{backgroundColor: colour.value}}></div>)
         })
         options.push(
             <Option key={palette.meta.id}
-                    value={palette.meta.title} > 
+                    value={palette.meta.id} > 
                 <div className='paletteDropdown'>
                     <div className='paletteTitle' >{palette.meta.title}</div>
                     <div className='paletteContent' >{colours}</div>
@@ -118,194 +363,45 @@ export default function ThemeManager({theme, setTheme, palettes}) {
         );
   }
 
-  function UploadJSON({theme, setTheme, sync}) {
-    const [error, setError] = useState('');
-    const handleOnFileChange = (event) => {
-        const file = event.target.files[0];
-    
-        if (file) {
-          const reader = new FileReader();
-            reader.onload = (e) => {
-                // Type guard to ensure the result is a string
-                const result = e.target.result;
-                if (typeof result === 'string') {
-                    try {
-                        const parsedData = JSON.parse(result);
-                        setTheme(draft => {draft.theme = {
-                                                ...draft.theme,
-                                                ...parsedData.theme,
-                                                styles: {
-                                                ...draft.theme.styles,
-                                                ...parsedData.theme.styles,
-                                                },
-                                            };
-                                        }
-                        )
-                        
-                        setError('');
-                    } catch (error) {
-                        setError('Error parsing JSON file');
-                    }
-                } else {
-                    setError('Error: File content is not a string');
-                }
-            };
-          reader.readAsText(file);
-        }
+  function Section({sectionName, theme, setTheme, sync, palette}) {
 
-    };
-
-    if (sync === true ) {
-        utils.loopStyles(theme)
-    } 
-
-    return (<>
-                <form id="upload">
-                    <label htmlFor="file" className="uploadButton">
-                        Upload Theme.json
-                    </label>
-                    <input type="file" id="file" accept=".json" onChange={handleOnFileChange}></input>
-                    {error && <p style={{ color: 'red' }}>{error}</p>}
-                </form>
-    </>);
-  }
-
-  function DownloadJSON({theme}) {
+    const section = utils.getSectionDetails(sectionName, theme)
   
-      const handleOnClick = () => {
-        const jsonString = JSON.stringify(theme, null, 2); // Convert object to JSON string with indentation
-        const blob = new Blob([jsonString], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-    
-        // Create a link element, set href and download attributes, then trigger click
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'data.json';
-        link.click();
-    
-        // Clean up and revoke object URL
-        URL.revokeObjectURL(url);
-      };
-
-    return (<>  
-                <Button
-                    size="sm" 
-                    onClick={handleOnClick}>
-                    Download JSON
-                </Button>
-            </>);
+  
+  return( <Table
+      borderAxis="xBetween"
+      color="neutral"
+      size="sm"
+      variant="plain" 
+      id='attributes'
+      sx={{ 
+            mt: 0}}>
+      <thead>
+          <Header
+                  section={section}/>
+      </thead>
+      <tbody>
+          <Settings 
+              section={section}
+              theme={theme}
+              setTheme={setTheme}
+              sync={sync}
+              palette={palette}/>
+      </tbody>
+  </Table>)
   }
 
-  function SyncToFigma({theme, sync, setSync}) {
-    function handleOnClick() {
-        if (sync === true ) {
-            setSync(false)
-        } else {
-            setSync(true)
-            utils.loopStyles(theme)
-        } 
-     }
+  function Header({section}) {
 
-    return (<> Sync to Figma: 
-        <Switch
-            checked={sync}
-            onChange={handleOnClick}
-            sx={{
-                "--Switch-trackWidth": "48px"
-              }}
-            />
-    </>);
-  }
-
-  function LoadFromFigma() {
-    function handleOnClick() {
-        const msg = ''
-        parent.postMessage({ pluginMessage: { type: 'request-variables', msg: msg} }, '*')
-     }
-
-    return (<>  
-        <Button
-            size="sm"  
-            onClick={handleOnClick}>
-            Load Settings From Figma   
-        </Button>
-    </>);
-  }
-
-  function Theme({theme, setTheme, sync, palettes}) {
-    return (
-        <>
-            <Meta 
-                theme={theme}
-                setTheme={setTheme}
-                palettes={palettes}/>
-            <Table
-                borderAxis="xBetween"
-                color="neutral"
-                size="sm"
-                stickyHeader
-                variant="plain" 
-                id='attributes'>
-                <thead>
-                    <Header/>
-                </thead>
-                <tbody>
-                    <Settings 
-                        theme={theme}
-                        setTheme={setTheme}
-                        sync={sync}/>
-                </tbody>
-            </Table>
-        </>
-        );
-  }
-
-  function Meta({theme, setTheme, palettes}) {
-    function handleOnChange(e) {
-        setTheme(draft => {
-            draft.theme['base-theme'] = e.target.value
-          })
-    }
-    let options = []
-    conf.baseThemes.forEach(option => {
-            options.push(
-                <Option 
-                    key={option}
-                    value={option}>{option}</Option>
-            )
-        })
-    return (
-        <>
-            <div className='controls'>
-                <Input 
-                    color="primary"
-                    size="sm"
-                    defaultValue='New Theme'></Input>
-                <div className='themeMeta'>Version: {theme.theme.version}</div>
-                Base Theme: 
-                <Select 
-                    size="sm"
-                    color="primary"
-                    onChange={handleOnChange} 
-                    value={theme.theme['base-theme']}>
-                    {options}
-                </Select> 
-                
-                <SelectPalette
-                        palettes={palettes} />
-            </div>
-        </>
-        );
-  }
-
-  function Header() {
     let columns = []
-    conf.attributeList.forEach(attr => {
+    section.attributes.forEach(key => {
+        //const styleObjects = key.attributes.map(attr => conf.attributeList || {});
+        const item = conf.attributeList.find(item => item.attr === key);
+        const attrName = item ? item.name : null;
         columns.push(
-          <th key={attr.name}>{attr.name}</th>
-      )
-  })
-
+            <th key={attrName}>{attrName}</th>
+        )
+    })
     return (
         <tr>
           <th>Settings</th>
@@ -314,28 +410,30 @@ export default function ThemeManager({theme, setTheme, palettes}) {
         );
   }
 
-  function Settings({theme, setTheme, sync}) {
-    const styleKeys = Object.keys(conf.jsonStructure.theme.styles);
+  function Settings({section, theme, setTheme, sync, palette}) {
+    
     let rows = []
-    styleKeys.forEach(style => {
+    section.styles.forEach(style => {
         rows.push(
             <Setting 
+                section={section}
                 style={style}
                 key={style}
                 theme={theme}
                 setTheme={setTheme}
-                sync={sync}/>
+                sync={sync}
+                palette={palette}/>
         )
     })
     return (<>{rows}</>); 
   }
 
-  function Setting({style, theme, setTheme, sync}) {
+  function Setting({section, style, theme, setTheme, sync, palette}) {
     let columns = []
-    
-    conf.attributeList.forEach(attr => {
+    section.attributes.forEach(key => {
+        const attr = conf.attributeList.find(item => item.attr === key);
         let output
-            if(conf.jsonStructure.theme.styles[style].hasOwnProperty([attr.attr])) {
+            if(conf.jsonStructure.styles[style].hasOwnProperty([attr.attr])) {
                 switch (attr.type) {
                     case 'COLOR':
                         output = <ColourEdit 
@@ -343,7 +441,8 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                                     attribute={attr.attr}
                                     theme={theme}
                                     setTheme={setTheme}
-                                    sync={sync}/>
+                                    sync={sync}
+                                    palette={palette}/>
                     break;
                     case 'STRING':
                         output = <StringEdit 
@@ -363,7 +462,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                     break;
                 }
             }
-            //output = theme.styles[style][attr.attr]
+            
         columns.push(
           <td key={attr.attr}>{output}</td>
       )
@@ -371,54 +470,60 @@ export default function ThemeManager({theme, setTheme, palettes}) {
 
     return (
         <tr>
-            <td>{style}</td>
+            <td key={style}>{style}</td>
             {columns}
         </tr>
         );
   }
 
   function StringEdit({style, attribute, theme, setTheme, sync}) {
-    function handleOnChange(e) {
+    const handleOnChange = (_event, newValue) => {
         setTheme(draft => {
-            draft.theme.styles[style][attribute] = e.target.value
+            draft.styles[style][attribute] = newValue
           })
           if(sync === true) {
-            utils.sendToFigma(style, attribute, e.target.value)
+            utils.sendToFigma(style, attribute, newValue)
           }
     }
+
     const values = conf.attributeList.find(attr => attr.attr === attribute)
-    let options = [<option key='thisisakey'></option>]
+    let options = [<Option 
+                        key='thisisakey'
+                        value=''></Option>]
     values.value.forEach(option => {
             options.push(
-                <option key={option}>{option}</option>
+                <Option 
+                    key={option}
+                    value={option}>{option}</Option>
             )
         })
     
     return (
         <>
-            <select onChange={handleOnChange} value={theme.theme.styles.hasOwnProperty([style]) ? theme.theme.styles[style][attribute] : ''}>
+            <Select
+                color="primary"
+                size="sm" 
+                onChange={handleOnChange} 
+                value={theme.styles[style][attribute]}
+                defaultValue=''>
                 {options}
-            </select> 
+            </Select> 
         </>
         );
   }
 
-  function ColourEdit({style, attribute, theme, setTheme, sync}) {
-    const [colour, setColour] = useState(theme.theme.styles[style][attribute]);
-    console.log('style', style)
-    console.log('attribute', attribute)
-    console.log('colour', colour)
-    console.log('theme.theme.styles[style][attribute]', theme.theme.styles[style][attribute])
-    console.log('theme', theme)
+  function ColourEdit({style, attribute, theme, setTheme, sync, palette}) {
+    const [setColour] = useState(theme.styles[style][attribute]);
     function handleOnChange(color) {
         setTheme(draft => {
-            draft.theme.styles[style][attribute] = color.hex
+            draft.styles[style][attribute] = color.hex
           })
         setColour(color.hex)
         if(sync === true) {
             utils.sendToFigma(style, attribute, color.hex)
         }
     }
+
     return(<div className='controls'>
             <Tippy interactive={true}
                 placement='left'
@@ -426,41 +531,55 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                 arrow={false}
                     content={<>
                         <Sketch
-                            color={theme.theme.styles.hasOwnProperty([style]) ? theme.theme.styles[style][attribute] : ''}
+                            color={theme.styles.hasOwnProperty([style]) ? theme.styles[style][attribute] : ''}
                             disableAlpha={true}
                             onChange={handleOnChange}
+                            presetColors={palette}
                             /></>
                     }>
 
-                <div className={theme.theme.styles[style][attribute] == '' ? 'colour transparent' : 'colour'}
-                        style={{backgroundColor: theme.theme.styles[style][attribute]}}></div>
+                <div className={theme.styles[style][attribute] == '' ? 'colour transparent' : 'colour'}
+                        style={{backgroundColor: theme.styles[style][attribute]}}></div>
             </Tippy>
-            <input className='colourValue' onChange={handleOnChange} value={theme.theme.styles[style][attribute]}></input>
+            <Input 
+                color="primary"
+                size="sm"
+                onChange={handleOnChange} 
+                value={theme.styles[style][attribute]}></Input>
         </div>
       )
   }
 
   function NumberEdit({style, attribute, theme, setTheme, sync}) {
-    function handleOnChange(e) {
+    const handleOnChange = (_event, newValue) => {
         setTheme(draft => {
-            draft.theme.styles[style][attribute] = e.target.value
+            draft.styles[style][attribute] = newValue
           })
-        if(sync === true) {
-            utils.sendToFigma(style, attribute, e.target.value)
-        }
+          if(sync === true) {
+            utils.sendToFigma(style, attribute, newValue)
+          }
     }
-    let options = [<option key='thisisakey'></option>] 
-    for(let i = 1; i <=100; i++) {
+    let options = [<Option 
+                        key='thisisakey'
+                        value=''></Option>] 
+    for(let i = 1; i <=99; i++) {
         options.push(
-            <option key={utils.generateUUID()}>{i}</option>
+            <Option 
+                key={utils.generateUUID()}
+                value={i}>{i}</Option>
         )
     }
     
     return (
         <>
-            <select onChange={handleOnChange} value={theme.theme.styles.hasOwnProperty([style]) ? theme.theme.styles[style][attribute] : ''}>
+            <Select
+                color="primary"
+                size="sm" 
+                onChange={handleOnChange} 
+                value={theme.styles[style][attribute]}
+                defaultValue=''>
                 {options}
-            </select> 
+            </Select>
         </>
         );
   }

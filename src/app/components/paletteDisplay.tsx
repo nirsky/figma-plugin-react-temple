@@ -3,31 +3,29 @@ import { useState } from 'react';
 import * as utils from './utils'
 import chroma from "chroma-js"
 import * as conf from './config';
-import Saturation from '@uiw/react-color-saturation';
 import Sketch from '@uiw/react-color-sketch';
 import Tippy from '@tippyjs/react'
+import Button from '@mui/joy/Button';
+import Input from '@mui/joy/Input';
+import Typography from '@mui/joy/Typography';
+import Sheet from '@mui/joy/Sheet';
+import Textarea from '@mui/joy/Textarea';
+import Chip from '@mui/joy/Chip';
+import IconButton from '@mui/joy/IconButton';
+import Edit from '@mui/icons-material/Edit';
+import SwapHoriz from '@mui/icons-material/SwapHoriz';
+import ArrowUpward from '@mui/icons-material/ArrowUpward';
+import ArrowDownward from '@mui/icons-material/ArrowDownward';
+import Delete from '@mui/icons-material/Delete';
+import Check from '@mui/icons-material/Check';
+import Upload from '@mui/icons-material/Upload';
+import Download from '@mui/icons-material/Download';
+import ButtonGroup from '@mui/joy/ButtonGroup';
+import Stack from '@mui/joy/Stack';
+import Divider from '@mui/joy/Divider';
 
-export default function ColourManager({palettes, setPalettes}) {
-  return (
-    <div>
-      
-      <Intro />
-      <ImportXML 
-          palettes={palettes}
-          setPalettes={setPalettes}/>
-      <ShowPalettes
-          palettes={palettes} />
-      <Palettes
-          palettes = {palettes}
-          setPalettes = {setPalettes}/>
-      <AddPalettes
-          palettes = {palettes}
-          setPalettes = {setPalettes}/> 
-    </div>
-    );
-}
 
-function ColourPicker() {
+/*function ColourPicker() {
   const [hsva, setHsva] = useState({ h: 0, s: 0, v: 68, a: 1 });
   return (<>
     <Saturation
@@ -39,26 +37,53 @@ function ColourPicker() {
     <Sketch />
     </>
   );
+}*/
+
+function ShowPalettes({palettes}) {
+  function handleOnClick() {
+      console.log('palettes', palettes)
+      console.log('palettes.stringify()', JSON.stringify(palettes))
+  }
+  return (<>  
+      <button className='vizku' onClick={handleOnClick}>
+          Show Palettes   
+      </button>
+  </>);
 }
 
-function Intro() {
+export default function ColourManager({palettes, setPalettes}) {
+  return (
+      <Intro 
+          palettes = {palettes}
+          setPalettes = {setPalettes}/>);
+}
+
+function Intro({palettes, setPalettes}) {
   return(
-    <>
-      <h1>Colour Manager for Tableau</h1>
-        <div>
-          <h2>Upload your preferences.tps (optional)</h2>
-          <div>
-              <p>Or add palettes below if you start from scratch.</p>
-              <p>You can find it in: C:\Users\..\Documents\My Tableau Repository.</p>
-              <p>For more details on what this tool is doing, visit <a href="https://help.tableau.com/current/pro/desktop/en-us/formatting_create_custom_colors.htm">the Tableau Knowledge Base</a></p>
-          </div>
-      </div>
-    </>
-  );
+      <Stack
+        direction="column"
+        justifyContent="space-between"
+        alignItems="flex-start"
+        spacing={2}>
+          <ButtonGroup
+            color="primary"
+            orientation="horizontal"
+            size="sm"
+            variant="solid">
+              <ImportXML 
+                palettes={palettes}
+                setPalettes={setPalettes}/>
+              <ExportXML 
+                palettes = {palettes}/>
+          </ButtonGroup>
+          <AddPalettes
+            palettes = {palettes}
+            setPalettes = {setPalettes}/> 
+      </Stack>);
 }
 
 function ImportXML({palettes, setPalettes}) {
-  function handleOnFileChange(e) {
+  const handleOnFileChange = (e) => {
     e.preventDefault();
 
     const file = e.target.files[0];
@@ -77,26 +102,319 @@ function ImportXML({palettes, setPalettes}) {
   }
 
   return(
-    <>
-          <form id="upload">
-              <label htmlFor="file" className="uploadButton">
-                Upload Preferences.tps
-              </label>
-              <input type="file" id="file" accept=".tps" onChange={handleOnFileChange}></input>
-          </form>
-    </>
-  );
+        <Button 
+            component='label'
+            startDecorator={<Upload />} >
+                Upload 
+                <conf.VisuallyHiddenInput type="file" onChange={handleOnFileChange} />
+        </Button>);
 }
 
-function ShowPalettes({palettes}) {
+function ExportXML({palettes}) {
   function handleOnClick() {
-      console.log('palettes', palettes)
+    const xmlString = utils.createXML(palettes)
+    let filename = "preferences.tps";
+    let pom = document.createElement('a');
+    let bb = new Blob([xmlString], {type: 'text/plain'});
+  
+    pom.setAttribute('href', window.URL.createObjectURL(bb));
+    pom.setAttribute('download', filename);
+  
+    pom.dataset.downloadurl = ['text/plain', pom.download, pom.href].join(':');
+    pom.draggable = true; 
+    pom.classList.add('dragout');
+  
+    pom.click();
   }
-  return (<>  
-      <button className='vizku' onClick={handleOnClick}>
-          Show Palettes   
-      </button>
-  </>);
+
+  return (
+            <Button
+                size="sm" 
+                onClick={handleOnClick}
+                startDecorator={<Download />}>
+                Download
+            </Button>)
+}
+
+function AddPalettes({palettes, setPalettes}) {
+  const [colours, setColours] = useState([]);
+  function handleOnChange(e) {
+    let newColours = []
+    const parsedColours = utils.parseColours(e.target.value)
+    parsedColours.forEach((parsedColour, index) => {
+      newColours.push(
+        {
+          value: parsedColour,
+          selected: false,
+          index: index
+        }
+      )
+    }) 
+    setColours(newColours)
+  }
+
+  function handleOnSelectClick(button) {
+    let select = false
+    switch (button){
+      case 'none':
+        select = false
+        break;
+      case 'all':
+        select = true
+        break;
+    }
+    const newColours = colours.map(element => {
+      return {
+          ...element,
+          selected: select
+      };
+    });
+    setColours(newColours)
+  }
+
+  const rows = []
+  colours.forEach((colour, index) => {
+      rows.push(
+          <ColourSelect 
+              colour = {colour}
+              key = {index}
+              colours = {colours}
+              setColours = {setColours}/>
+      )
+  })
+
+  const selectedColours = colours.filter(element => element.selected === true)
+  const deselectedColours = colours.filter(element => element.selected === false)
+  const border = 0
+  return (
+        <Stack
+          direction="column"
+          alignItems="flex-start"
+          justifyContent="space-between"
+          spacing={1}
+          sx={{width: 766, border: border}} >
+            <Textarea
+              minRows={2}
+              size="sm"
+              id="colourstring"
+              variant="outlined"
+              onInput={handleOnChange} 
+              onLoad={handleOnChange} 
+              defaultValue="https://coolors.co/01161e-8dadb9-124559-e9e3e6-c4d6b0"
+              sx={{width: 1}} />  
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="flex-start"
+              spacing={1}
+              sx={{width: 766, border: border}}> 
+                <Stack
+                  direction="column"
+                  justifyContent="space-between"
+                  alignItems="flex-start"
+                  spacing={1}
+                  sx={{width: 766, border: border}}> 
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      spacing={1}
+                      sx={{width: 766, border: border}}>
+                        <div>
+                          <Chip
+                            onClick={() => handleOnSelectClick('all')}
+                            color="primary"
+                            size="md"
+                            variant="solid"
+                            disabled={deselectedColours.length === 0}>All </Chip> 
+                          <Chip
+                            onClick={() => handleOnSelectClick('none')}
+                            color="primary"
+                            size="md"
+                            variant="solid"
+                            disabled={selectedColours.length === 0}>None </Chip>
+                        </div>
+                        <Stack
+                          direction="row"
+                          justifyContent="center"
+                          alignItems="flex-start"
+                          spacing={1}
+                          sx={{border: border}}>
+                            <ShowPalettes palettes = {palettes} />
+                            <AddCategorical colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
+                            <AddSequential colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
+                            <AddDivergingBright colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
+                            <CreateEverything colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
+                        </Stack>
+                    </Stack>
+                    <Stack
+                      direction="row"
+                      justifyContent="center"
+                      alignItems="flex-start"
+                      spacing={0.5}
+                      sx={{border: border}}>
+                        {rows}
+                    </Stack>
+                </Stack>   
+            </Stack>
+            <Palettes
+                palettes = {palettes}
+                setPalettes = {setPalettes}/>
+        </Stack>);
+}
+
+function ColourSelect({colour, colours, setColours}){
+  function handleOnClick() { 
+    let newColours = colours.slice()
+      newColours[colour.index].selected = !colour.selected
+      setColours(newColours)
+  }
+  let selected = false
+  if (colour.selected === true) {
+    selected = true
+  } 
+
+  let textcolour = ''
+  if (chroma.contrast(colour.value, '#ffffff') < 4.5 ) {
+    textcolour = '#000000'
+  } else {
+    textcolour = '#ffffff'
+  }
+
+  return(
+        <Sheet  
+        color="primary" 
+        onClick={handleOnClick}
+        sx={{ bgcolor: colour.value, color: textcolour, width:24, height:24, borderRadius: 5}}> 
+        {selected ? <Check /> : <></>}
+        
+        </Sheet>
+  )
+}
+
+function AddCategorical({colours, palettes, setPalettes}) {
+
+  function handleOnClick () {
+    const selectedItems = colours.filter(element => element.selected === true);
+    const selectedColours = selectedItems.map(element => element.value)
+    let palette = utils.createPalette(selectedColours, 'regular')
+   
+    let newPalettes = palettes.slice()
+    newPalettes.push(palette)
+    setPalettes(newPalettes)
+  }
+
+  
+  const selectedItems = colours.filter(element => element.selected === true);
+
+  return(
+            <Button
+                size="sm" 
+                onClick={handleOnClick}
+                disabled={selectedItems.length === 0}>
+                Categorical
+            </Button>)
+}
+
+function AddSequential({colours, palettes, setPalettes}) {
+  function handleOnClick () {
+    const selectedItems = colours.filter(element => element.selected === true);
+    const selectedColours = selectedItems.map(element => element.value)
+
+    const palette = utils.createPalette(selectedColours, 'ordered-sequential')
+ 
+    let newPalettes = palettes.slice()
+    newPalettes.push(palette)
+    setPalettes(newPalettes)
+  }
+
+  const selectedItems = colours.filter(element => element.selected === true);
+  let sequential = ''
+  switch (selectedItems.length) {
+    case 0:
+      sequential = 'disabled'
+    break;
+    default:
+      sequential = ''
+  }
+
+  return(<>
+            <Button
+                size="sm" 
+                id='seq'
+                onClick={handleOnClick}
+                disabled={sequential === 'disabled'}>
+                Sequential
+            </Button>
+      </>
+  )
+}
+
+function AddDivergingBright({colours, palettes, setPalettes}) {
+  function handleOnClick () {
+    const selectedItems = colours.filter(element => element.selected === true);
+    const selectedColours = selectedItems.map(element => element.value)
+
+    const palette = utils.createPalette(selectedColours, 'ordered-diverging')
+    
+    let newPalettes = palettes.slice()
+    newPalettes.push(palette)
+    setPalettes(newPalettes)
+  }
+
+  const selectedItems = colours.filter(element => element.selected === true);
+  let diverging = 'disabled'
+  switch (selectedItems.length) {
+    case 2:
+      diverging = ''
+    break;
+    default:
+      diverging = 'disabled'
+  }
+  
+  return(
+            <Button
+                size="sm" 
+                onClick={handleOnClick}
+                disabled={diverging === 'disabled'}>
+                Diverging (midpoint)
+            </Button>)
+}
+
+function CreateEverything({colours, palettes, setPalettes}) {
+  function handleOnClick () {
+    const selectedItems = colours.filter(element => element.selected === true);
+    const selectedColours = selectedItems.map(element => element.value)
+
+    let palette = []
+
+    palette.push(utils.createPalette(selectedColours, 'regular'))
+
+    selectedColours.forEach(function(colour) {
+      palette.push(utils.createPalette(colour, 'ordered-sequential'))
+    })
+
+    selectedColours.forEach(function(colour, index) {
+      for (let i = index + 1; i < selectedColours.length; i++) {
+        palette.push(utils.createPalette([colour, selectedColours[i]], 'ordered-sequential'))
+        palette.push(utils.createPalette([colour, selectedColours[i]], 'ordered-diverging'))
+      }
+    })
+ 
+    let newPalettes = palettes.concat(palette)
+    setPalettes(newPalettes)   
+  }  
+
+  const selectedItems = colours.filter(element => element.selected === true);
+  return(<>
+            <Button
+                size="sm" 
+                onClick={handleOnClick}
+                disabled={selectedItems.length < 2}>
+                Everything
+            </Button>
+      </>
+  )
 }
 
 function Palettes({palettes, setPalettes}) {
@@ -111,20 +429,32 @@ function Palettes({palettes, setPalettes}) {
               setPalettes = {setPalettes}/>
       )
   })
-  return (<>{rows}
-          {rows.length > 0 ? 
-            <>
-              <ExportXML 
-                  palettes = {palettes}/>
-            </>: ''}
-          </>);
+  return (
+      <>
+        <Divider orientation="horizontal" />
+        <Stack
+          direction="column"
+          alignItems="flex-start"
+          justifyContent="space-between"
+          spacing={1}
+          divider={<Divider orientation="horizontal" />}
+          sx={{width: 766}} >
+            {rows}
+        </Stack>
+      </>);
 }
 
 function Palette({index, palette, palettes, setPalettes}){
   const [edit, setEdit] = useState(false);
 
   return(
-      <div className="palette">
+    <Stack
+      direction="column"
+      alignItems="flex-start"
+      justifyContent="space-between"
+      spacing={0.5}
+      divider={<Divider orientation="vertical" />}
+      sx={{width: 766}} >
           <Meta 
             id = {palette.meta.id}
             index = {index}
@@ -137,13 +467,20 @@ function Palette({index, palette, palettes, setPalettes}){
             id = {palette.meta.id}
             palettes = {palettes}
             setPalettes = {setPalettes}/> : ''}
-          <Colours 
-            id = {palette.meta.id}
-            colours = {palette.colours}
-            palettes = {palettes}
-            setPalettes = {setPalettes}/>
+          {palette.meta.type === 'regular' 
+          ? <ColoursCategorical 
+              id = {palette.meta.id}
+              colours = {palette.colours}
+              palettes = {palettes}
+              setPalettes = {setPalettes}/> 
+          : <ColoursSeeded
+              id = {palette.meta.id}
+              colours = {palette.colours}
+              palettes = {palettes}
+              setPalettes = {setPalettes}/>}  
           
-      </div>
+          
+      </Stack>
   )
 }
 
@@ -166,13 +503,19 @@ function Meta({id, index, meta, palettes, setPalettes, edit, setEdit}){
     setPalettes(updatedPalettes)
   }
   return(
-      <div className="meta">
-          <input 
-            type="text" 
-            className="title" 
-            value={meta.title}
-            onChange={handleInputChange}></input>
-          <div className="type">{meta.type}</div>
+    <Stack
+      direction="row"
+      alignItems="flex-start"
+      justifyContent="space-between"
+      spacing={0.5}
+      sx={{width: 766}} >
+          <Input 
+              color="primary"
+              size="sm"
+              defaultValue={meta.title}
+              onChange={handleInputChange}
+              sx={{width: 400}}></Input>
+          <Typography color="neutral" level="body-md">{conf.paletteTypes[meta.type]}</Typography>
           <Controls 
             id = {id}
             index = {index}
@@ -180,14 +523,17 @@ function Meta({id, index, meta, palettes, setPalettes, edit, setEdit}){
             setPalettes = {setPalettes}
             edit = {edit}
             setEdit = {setEdit}/>
-      </div>
+      </Stack>
   )
 }
 
 function Controls({id, index, palettes, setPalettes, edit, setEdit}){
   const rows = []
+  const palette = palettes.find(palette => palette.meta.id === id)
   conf.controls.forEach((control) => {
-      rows.push(
+    if(control.type === 'edit') {
+       if(palette.meta.type === 'regular') {
+        rows.push(
           <Control 
               id = {id}
               index = {index}
@@ -197,13 +543,33 @@ function Controls({id, index, palettes, setPalettes, edit, setEdit}){
               setPalettes = {setPalettes} 
               edit = {edit}
               setEdit = {setEdit}/>
-      )
+              )
+       }
+      
+        
+    } else {
+          rows.push(
+              <Control 
+                  id = {id}
+                  index = {index}
+                  control = {control}
+                  key = {control.name}
+                  palettes = {palettes}
+                  setPalettes = {setPalettes} 
+                  edit = {edit}
+                  setEdit = {setEdit}/>
+          )
+    }
   })
 
   return(
-      <div className="controls">
+    <Stack
+    direction="row"
+    justifyContent="center"
+    alignItems="flex-start"
+    spacing={0.1}>
           {rows}
-      </div>
+      </Stack>
   )
 }
 
@@ -260,26 +626,39 @@ function Control({id, index, control, palettes, setPalettes, edit, setEdit}){
         break;
     }
   }
-  
+  let button
+  switch(control.type) {
+    case 'edit':
+      button = <Edit />
+    break;
+    case 'swap':
+      button = <SwapHoriz />
+    break;
+    case 'up':
+      button = <ArrowUpward />
+    break;
+    case 'down':
+      button = <ArrowDownward />
+    break;
+    case 'delete':
+      button = <Delete />
+    break;
+  }
+
   return(
-      <div className="control">
-          <i 
-            className="material-symbols-outlined"
-            title={control.tooltip} 
-            onClick={handleOnClick} >
-            {control.name}</i>
-      </div>
-  )
+            <IconButton
+              variant="plain"
+              color={control.type === 'delete' ? "danger" : "primary" }
+              size='sm'
+              onClick={handleOnClick}>{button}</IconButton>)
 }
-// CHECK THIS ONE!
+
 function EditPalette({id, palettes, setPalettes}) {
   const colours = palettes
                       .find(palette => palette.meta.id === id)?.colours
                       .map(colour => colour.value) || [];
   function handleOnChange(e) {
-    console.log('e.target.value', e.target.value)
     const parsedColours = utils.parseColours(e.target.value)
-    console.log('parsedColours', parsedColours)
     const newItems = parsedColours.map(element => {
       return {
           value: element,
@@ -287,9 +666,8 @@ function EditPalette({id, palettes, setPalettes}) {
       };
 
     });
-    console.log('newItems', newItems)
     
-    const newPalettes = (newColours) => {
+    const newPalettes = () => {
       return palettes.map(palette => {
           if (palette.meta.id === id) {
               return {
@@ -301,17 +679,23 @@ function EditPalette({id, palettes, setPalettes}) {
       });
   };
     setPalettes(newPalettes)
-    console.log('done')
   }
 
 
-  return(<>
-    <textarea onChange={handleOnChange} defaultValue={colours}></textarea>
-    </>
-  )
+  return(
+  <Textarea
+                minRows={2}
+                size="sm"
+                id="colourstring"
+                variant="outlined"
+                onInput={handleOnChange} 
+                onLoad={handleOnChange} 
+                defaultValue={colours}
+                sx={{width: 1}}
+              />)
 }
 
-function Colours({id, colours, palettes, setPalettes}){
+function ColoursCategorical({id, colours, palettes, setPalettes}){
   const rows = []
   colours.forEach((colour) => {
     rows.push( 
@@ -324,10 +708,76 @@ function Colours({id, colours, palettes, setPalettes}){
     )
   })
   return(
-      <div className="colours">
-          {rows}
-      </div>
-  )
+    <Stack
+      direction="row"
+      justifyContent="center"
+      alignItems="flex-start"
+      spacing={0.5}>
+        {rows}
+    </Stack>)
+}
+
+function ColoursSeeded({id, colours, palettes, setPalettes}){
+  
+  const paletteColours = []
+
+  const newPalette = palettes.find(palette => palette.meta.id === id)
+  const seeds = newPalette.meta.seed
+  
+  
+  
+  colours.forEach((colour) => {
+    paletteColours.push( 
+      <Sheet  
+        color="neutral" 
+        variant="outlined" 
+        key={colour.id}
+        sx={{ bgcolor: colour.value, width:24, height:24, borderRadius: 5 }}/> 
+    )
+  })
+
+
+  const seedColours = []
+  seeds.forEach((seed) => {
+    seedColours.push( 
+      <ColourSeed 
+      id = {id}
+      colour = {seed}
+      key = {seed.id}
+      palettes = {palettes}
+      setPalettes = {setPalettes}
+      seeds={seeds}/>
+    )
+  })
+
+  return(   
+    <Stack
+      direction="row"
+      justifyContent="space-between"
+      alignItems="flex-start"
+      spacing={2}
+      sx={{width: 766}}>
+
+        <Sheet
+          color="primary"
+          variant="outlined"
+          sx={{padding: 0.5, bgcolor: 'primary.50', borderRadius: 4}}>
+          <Stack
+            direction="row"
+            justifyContent="center"
+            alignItems="flex-start"
+            spacing={0.5}>
+              {paletteColours} 
+              </Stack>
+        </Sheet>
+        <Stack
+          direction="row"
+          justifyContent="center"
+          alignItems="flex-start"
+          spacing={0.5}>
+            {seedColours}
+        </Stack>
+    </Stack>)
 }
 
 function ColourActive({id, colour, palettes, setPalettes}){
@@ -335,344 +785,108 @@ function ColourActive({id, colour, palettes, setPalettes}){
   function handleOnChange(newColour) {
     
     setColourPicker(newColour.hex)
-    const updatedPalettes = palettes.map(palette => {
-      if (palette.meta.id === id) {
-          return {
-              ...palette,
-              colours: palette.colours.map(c => {
-                  if (c.id === colour.id) {
-                      return {
-                          ...c,
-                          value: newColour.hex
-                      };
-                  }
-                  return c;
-              })
-          };
-      }
-      return palette;
-    });
+
+
+    let updatedPalettes
+ 
+      updatedPalettes = palettes.map(palette => {
+        if (palette.meta.id === id) {
+            return {
+                ...palette,
+                colours: palette.colours.map(c => {
+                    if (c.id === colour.id) {
+                        return {
+                            ...c,
+                            value: newColour.hex
+                        };
+                    }
+                    return c;
+                })
+            };
+        }
+        return palette;
+      });
+  
     setPalettes(updatedPalettes);
   }
-/*return(<><div className='colour'
-  style={{backgroundColor: colour.value}}></div></>)*/
+
   return(
             <Tippy interactive={true}
                 placement='bottom'
                 duration={0}
                 arrow={false}
-                    content={
-                        
-                        <Sketch
-                            color={colourPicker}
-                            disableAlpha={true}
-                            presetColors={[]}
-                            onChange={handleOnChange}/>
-                            
+                content={
+                  <Sketch
+                      color={colourPicker}
+                      disableAlpha={true}
+                      presetColors={[]}
+                      onChange={handleOnChange}/>    
                     }>
-
-                <div className='colour'
-                        style={{backgroundColor: colourPicker}}></div>
-            </Tippy>
-            
-                           
-    
-  )
+                  <Sheet  
+                      color="neutral" 
+                      variant="outlined" 
+                      sx={{ bgcolor: colourPicker, width:24, height:24, borderRadius: 5 }}/> 
+            </Tippy>)
 }  
 
-function ExportXML({palettes}) {
-  function handleOnClick() {
-    const xmlString = utils.createXML(palettes)
-    let filename = "preferences.tps";
-    let pom = document.createElement('a');
-    let bb = new Blob([xmlString], {type: 'text/plain'});
-  
-    pom.setAttribute('href', window.URL.createObjectURL(bb));
-    pom.setAttribute('download', filename);
-  
-    pom.dataset.downloadurl = ['text/plain', pom.download, pom.href].join(':');
-    pom.draggable = true; 
-    pom.classList.add('dragout');
-  
-    pom.click();
-  }
+function ColourSeed({id, colour, palettes, setPalettes, seeds}){
+  const [colourPicker, setColourPicker] = useState(colour.value);
+  function handleOnChange(newColour) {
 
-  return (<>
-    <button className='vizku' onClick={handleOnClick}>Export Preferences</button>
-    </>
-  )
-}
+    setColourPicker(newColour.hex)
+    seeds = seeds.map(element => element.value === colour.value ? {value: newColour.hex, id: element.id} : element);
+    seeds.find(seed => seed.value === colour.value)?.id
+    const seedID = seeds.find(seed => seed.value === colour.value)?.id
+    let updatedPalettes
+    
+      updatedPalettes = palettes.map(palette => {
+        if (palette.meta.id === id) {
+          let newPalette
+          switch (palette.meta.type) {
+            case 'ordered-sequential':
+              newPalette = utils.createPalette(seeds.map(element => element.value), 'ordered-sequential')
+              break;
+            case 'ordered-diverging':
+              newPalette = utils.createPalette(seeds.map(element => element.value), 'ordered-diverging')
+              break;
 
-function AddPalettes({palettes, setPalettes}) {
-  const [colours, setColours] = useState([]);
-  function handleOnChange(e) {
-    let newColours = []
-    const parsedColours = utils.parseColours(e.target.value)
-    parsedColours.forEach((parsedColour, index) => {
-      newColours.push(
-        {
-          value: parsedColour,
-          selected: false,
-          index: index
+          } 
+            return {
+                meta: {
+                  ...palette.meta,
+                  seed: seeds.map(s => {
+                    if (s.id === seedID) {
+                        return {
+                            ...s,
+                            value: newColour.hex
+                        };
+                    }
+                    return s;
+                })
+                },
+                colours: newPalette.colours
+            };
         }
-      )
-    }) 
-    setColours(newColours)
-  }
-
-  function handleOnSelectClick(e) {
-    let select = false
-    switch (e.target.textContent){
-      case 'All':
-        select = true
-        break;
-      case 'None':
-        select = false
-        break;
-    }
-    const newColours = colours.map(element => {
-      return {
-          ...element,
-          selected: select
-      };
-    });
-    setColours(newColours)
-  }
-
-  const rows = []
-  colours.forEach((colour, index) => {
-      rows.push(
-          <ColourSelect 
-              colour = {colour}
-              key = {index}
-              colours = {colours}
-              setColours = {setColours} />
-      )
-  })
-
-  let selectButtons
-  const selectedColours = colours.filter(element => element.selected === true)
-  const deselectedColours = colours.filter(element => element.selected === false)
-
-  if (colours.length > 0) {
-    selectButtons  =  <>
-                        <button onClick={handleOnSelectClick} 
-                                className='vizku'
-                                disabled={deselectedColours.length === 0}>All</button>
-                        <button onClick={handleOnSelectClick} 
-                                className='vizku'
-                                disabled={selectedColours.length === 0}>None</button>
-                      </>
-  }
-
-  return (
-    <div>
-              <textarea id="colourstring" placeholder="eg.: https://coolors.co/fb5012-#01fdf6 (cbbaed,#e9df00)#03fcba" onInput={handleOnChange} onLoad={handleOnChange} defaultValue='https://coolors.co/01161e-8dadb9-124559-e9e3e6-c4d6b0'></textarea>
-              <div>You can insert any text with hexcodes, no need to clean them up. All found colours are displayed below.</div>
-              {selectButtons}
-              <div className="colours">{rows}</div>
-              {rows.length > 0 ? <>
-              <div>Select the coloured boxes above to create palettes</div>
-                  <AddCategorical colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
-                  <AddSequential colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
-                  <AddDivergingBright colours = {colours} palettes = {palettes} setPalettes = {setPalettes} /> </>: ''}
-          </div>
-    );
-}
-
-function ColourSelect({colour, colours, setColours}){
-  function handleOnClick() { 
-    let newColours = colours.slice()
-      newColours[colour.index].selected = !colour.selected
-      setColours(newColours)
-  }
-  let selected = ''
-  if (colour.selected === true) {
-    selected = 'check'
-  } else {
-    selected = ''
-  }
-  let textcolour = ''
-  if (chroma.contrast(colour.value, '#ffffff') < 4.5 ) {
-    textcolour = '#000000'
-  } else {
-    textcolour = '#ffffff'
+        return palette;
+      });
+    setPalettes(updatedPalettes);
   }
 
   return(
-        <div className="colour" style={{backgroundColor: colour.value, color: textcolour}} onClick={handleOnClick}>
-          <i className='material-symbols-outlined'>{selected}</i>
-        </div>
-  )
-}
-
-function AddCategorical({colours, palettes, setPalettes}) {
-
-
-  function handleOnClick () {
-    const selectedItems = colours.filter(element => element.selected === true);
-    const selectedColours = selectedItems.map(element => {
-      return {
-          value: element.value,
-          id: utils.generateUUID()
-      };
-    });
-
-    let palette = {
-      meta: {
-          id: utils.generateUUID(),
-          title: 'Categorical',
-          type: 'regular',
-          seed: [],
-          comment: '',
-      },
-      colours: selectedColours
-    };
-    let newPalettes = palettes.slice()
-    newPalettes.push(palette)
-    setPalettes(newPalettes)
-  }
-
-  
-  const selectedItems = colours.filter(element => element.selected === true);
-
-  return(<>
-            <button onClick={handleOnClick}
-                                    className='vizku'
-                                    disabled={selectedItems.length === 0}>Categorical Palette</button>
-      </>
-  )
-}
-
-function AddSequential({colours, palettes, setPalettes}) {
-  function handleOnClick (e) {
-    const selectedItems = colours.filter(element => element.selected === true);
-    const selectedColours = selectedItems.map(element => element.value)
-    const paletteColours = utils.generateSequential(selectedColours)
-    const paletteItems = paletteColours.map(element => {
-      return {
-          value: element,
-          id: utils.generateUUID()
-      };
-    });
-    let type, title
-    switch (e.target.id) {
-      case 'seq':
-        type = 'ordered-sequential'
-        title = 'Sequential'
-        break;
-      case 'div_dark':
-        type = 'ordered-diverging'
-        title = 'Diverging Dark'
-        break;
-      default:
-        type = 'unexpected value'
-    }
-
-    let palette = {
-      meta: {
-          id: utils.generateUUID(),
-          title: title,
-          type: type,
-          seed: [],
-          comment: '',
-      },
-      colours: paletteItems
-    };
-    
-    let newPalettes = palettes.slice()
-    newPalettes.push(palette)
-    setPalettes(newPalettes)
-  }
-
-
-  const selectedItems = colours.filter(element => element.selected === true);
-  let sequential, diverging = ''
-  switch (selectedItems.length) {
-    case 0:
-      sequential = 'disabled'
-      diverging = 'disabled'
-    break;
-    case 1:
-      sequential = ''
-      diverging = 'disabled'
-    break;
-    case 2:
-      sequential = 'disabled'
-      diverging = ''
-    break;
-    default:
-      sequential = 'disabled'
-      diverging = 'disabled'
-  }
-  
-
-  return(<>
-            <button onClick={handleOnClick}
-                    id='seq'
-                    className='vizku'
-                    disabled={sequential === 'disabled'}>Sequential Palette</button>
-            <button onClick={handleOnClick}
-                    id='div_dark'
-                    className='vizku'
-                    disabled={diverging === 'disabled'}>Diverging Dark Palette</button>
-      </>
-  )
-}
-
-function AddDivergingBright({colours, palettes, setPalettes}) {
-  function handleOnClick () {
-    const selectedItems = colours.filter(element => element.selected === true);
-    const selectedColours = selectedItems.map(element => element.value)
-
-    let paletteColours = utils.generateSequential([selectedColours[0]], 10).reverse()
-    paletteColours = paletteColours.concat(utils.generateSequential([selectedColours[1]], 10))
-
-    const paletteItems = paletteColours.map(element => {
-      return {
-          value: element,
-          id: utils.generateUUID()
-      };
-    });
-   
-    let palette = {
-      meta: {
-          id: utils.generateUUID(),
-          title: 'Diverging Bright',
-          type: 'ordered-diverging',
-          seed: [],
-          comment: '',
-      },
-      colours: paletteItems
-    };
-    
-    let newPalettes = palettes.slice()
-    newPalettes.push(palette)
-    setPalettes(newPalettes)
-  }
-
-
-  const selectedItems = colours.filter(element => element.selected === true);
-  let diverging = ''
-  switch (selectedItems.length) {
-    case 0:
-      diverging = 'disabled'
-    break;
-    case 1:
-      diverging = 'disabled'
-    break;
-    case 2:
-      diverging = ''
-    break;
-    default:
-      diverging = 'disabled'
-  }
-  
-
-  return(<>
-            <button onClick={handleOnClick}
-                                    className='vizku'
-                                    disabled={diverging === 'disabled'}>Diverging Bright Palette</button>
-      </>
-  )
-}
+    <Tippy interactive={true}
+    placement='bottom'
+    duration={0}
+    arrow={false}
+    content={
+      <Sketch
+          color={colourPicker}
+          disableAlpha={true}
+          presetColors={[]}
+          onChange={handleOnChange}/>    
+        }>
+      <Sheet  
+          color="neutral" 
+          variant="outlined" 
+          sx={{ bgcolor: colourPicker, width:24, height:24, borderRadius: 5 }}/> 
+</Tippy>)
+}  

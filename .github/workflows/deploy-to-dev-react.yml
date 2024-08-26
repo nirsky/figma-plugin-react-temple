@@ -22,8 +22,8 @@ jobs:
           echo oooooooooooooooooo current   
           ls -a
           mkdir -p ~/.ssh/
-          echo oooooooooooooooooo current   
-          ls -a
+          echo oooooooooooooooooo home   
+          ls -a ~/
           echo "$SSH_KEY" > ~/.ssh/staging.key
           chmod 600 ~/.ssh/staging.key
           cat >>~/.ssh/config <<END

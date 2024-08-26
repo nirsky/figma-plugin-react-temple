@@ -36,7 +36,7 @@ export default function App() {
           alignItems="center"
           spacing={0.1}
           sx={{width: 798}}>
-            <Typography color="primary" level="h1" >Style Manager for Tableau</Typography> 
+            <Typography color="primary" level="h1" >Style Manager for Tableau - TEST</Typography> 
             <HelpModal />
         </Stack>
         <Tabs 

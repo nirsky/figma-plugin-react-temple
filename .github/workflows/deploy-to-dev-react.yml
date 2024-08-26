@@ -10,7 +10,7 @@ jobs:
       switches: -avrh --delete
       path: ./
       working_dir: html/dev/tcm/dev/
-      remote_path: /var/www/virtual/${{ vars.SSH_USERNAME }}/$working_dir
+      remote_path: /var/www/virtual/${{ vars.SSH_USERNAME }}/html/dev/tcm/dev/
       remote_host: ${{ vars.SSH_HOST }}
       remote_user: ${{ vars.SSH_USERNAME }}
       remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -27,11 +27,7 @@ jobs:
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Configure SSH
         run: |
-          echo oooooooooooooooooo current   
-          ls -a
           mkdir -p ~/.ssh/
-          echo oooooooooooooooooo home   
-          ls -a ~/
           echo "$remote_key" > ~/.ssh/staging.key
           chmod 600 ~/.ssh/staging.key
           cat >>~/.ssh/config <<END
@@ -41,18 +37,8 @@ jobs:
             IdentityFile ~/.ssh/staging.key
             StrictHostKeyChecking no
           END
-          echo oooooooooooooooooo current   
-          ls -a
-      - name: current dir
-        run: ssh deploy 'pwd'
-      - name: current dir content
-        run: ssh deploy 'ls -a'
       - name: NPM Install
         run: ssh deploy 'npm --prefix html/dev/tcm/dev/ install html/dev/tcm/dev/'
-      - name: Remove old Dist content
-        run: ssh deploy 'rm html/dev/tcm/dev/dist/* html/dev/tcm/dev/dist/.* || true'
-      - name: Remove old Dist
-        run: ssh deploy 'rmdir html/dev/tcm/dev/dist || true'
       - name: Yarn Build
         run: ssh deploy 'yarn --cwd html/dev/tcm/dev/ build'
       - name: current dir content

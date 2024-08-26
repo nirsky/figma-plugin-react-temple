@@ -19,9 +19,11 @@ jobs:
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Configure SSH
         run: |
-          echo current dir
-          ls
+          echo #################### current dir mkdir
+          ls -a
           mkdir -p .ssh/
+          echo #################### current dir 
+          ls -a
           echo "$SSH_KEY" > .ssh/staging.key
           chmod 600  .ssh/staging.key
           cat >> .ssh/config <<END
@@ -32,8 +34,8 @@ jobs:
             StrictHostKeyChecking no
           END
           echo current dir 2
-          ls
-          
+          ls -a
+
         env:
           SSH_USER: ${{ vars.SSH_USERNAME }}
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}

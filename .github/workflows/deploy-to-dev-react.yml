@@ -41,8 +41,6 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_HOST: ${{ vars.SSH_HOST }}
       - name: Install
-        run: ssh deploy 'cd /html/dev/tcm/dev/'
-      - name: Install
         run: ssh deploy 'npm install'
       - name: build react
         run: ssh deploy 'yarn build'

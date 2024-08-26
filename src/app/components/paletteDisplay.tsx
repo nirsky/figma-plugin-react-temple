@@ -30,6 +30,7 @@ import ButtonGroup from '@mui/joy/ButtonGroup';
 import Stack from '@mui/joy/Stack';
 import Divider from '@mui/joy/Divider';
 
+
 function ColourPicker() {
   const [hsva, setHsva] = useState({ h: 0, s: 0, v: 68, a: 1 });
   return (<>
@@ -47,6 +48,7 @@ function ColourPicker() {
 function ShowPalettes({palettes}) {
   function handleOnClick() {
       console.log('palettes', palettes)
+      console.log('palettes.stringify()', JSON.stringify(palettes))
   }
   return (<>  
       <button className='vizku' onClick={handleOnClick}>
@@ -159,7 +161,6 @@ function AddPalettes({palettes, setPalettes}) {
 
   function handleOnSelectClick(button) {
     let select = false
-    console.log('button', button)
     switch (button){
       case 'none':
         select = false
@@ -245,6 +246,7 @@ function AddPalettes({palettes, setPalettes}) {
                           alignItems="flex-start"
                           spacing={1}
                           sx={{border: border}}>
+                            <ShowPalettes palettes = {palettes} />
                             <AddCategorical colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
                             <AddSequential colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
                             <AddDivergingBright colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
@@ -301,8 +303,7 @@ function AddCategorical({colours, palettes, setPalettes}) {
   function handleOnClick () {
     const selectedItems = colours.filter(element => element.selected === true);
     const selectedColours = selectedItems.map(element => element.value)
-
-    let palette = utils.createPalette(selectedColours, 'ordered-sequential')
+    let palette = utils.createPalette(selectedColours, 'regular')
    
     let newPalettes = palettes.slice()
     newPalettes.push(palette)
@@ -325,21 +326,9 @@ function AddSequential({colours, palettes, setPalettes}) {
   function handleOnClick (e) {
     const selectedItems = colours.filter(element => element.selected === true);
     const selectedColours = selectedItems.map(element => element.value)
-    const paletteColours = utils.generateSequential(selectedColours)
 
-    let type, palette
-    switch (e.target.id) {
-      case 'seq':
-        if(selectedItems.length === 1) {
-          palette = utils.createPalette(paletteColours, 'ordered-sequential')
-        } else {
-          palette = utils.createPalette(paletteColours, 'ordered-diverging')
-        }
-        break;
-      default:
-        type = 'unexpected value'
-    }
-
+    const palette = utils.createPalette(selectedColours, 'ordered-sequential')
+ 
     let newPalettes = palettes.slice()
     newPalettes.push(palette)
     setPalettes(newPalettes)
@@ -358,6 +347,7 @@ function AddSequential({colours, palettes, setPalettes}) {
   return(<>
             <Button
                 size="sm" 
+                id='seq'
                 onClick={handleOnClick}
                 disabled={sequential === 'disabled'}>
                 Sequential
@@ -371,10 +361,7 @@ function AddDivergingBright({colours, palettes, setPalettes}) {
     const selectedItems = colours.filter(element => element.selected === true);
     const selectedColours = selectedItems.map(element => element.value)
 
-    let paletteColours = utils.generateSequential([selectedColours[0]], 10).reverse()
-    paletteColours = paletteColours.concat(utils.generateSequential([selectedColours[1]], 10))
-
-    const palette = utils.createPalette(paletteColours, 'ordered-diverging')
+    const palette = utils.createPalette(selectedColours, 'ordered-diverging')
     
     let newPalettes = palettes.slice()
     newPalettes.push(palette)
@@ -408,33 +395,20 @@ function CreateEverything({colours, palettes, setPalettes}) {
     let palette = []
 
     palette.push(utils.createPalette(selectedColours, 'regular'))
-    console.log('palette', palette  )
 
     selectedColours.forEach(function(colour) {
-      console.log('colour', colour  )
-      const paletteColours = utils.generateSequential([colour])
-      console.log('paletteColours', paletteColours  )
-      palette.push(utils.createPalette(paletteColours, 'ordered-sequential'))
+      palette.push(utils.createPalette(colour, 'ordered-sequential'))
     })
 
-    console.log('palette', palette  )
     selectedColours.forEach(function(colour, index) {
       for (let i = index + 1; i < selectedColours.length; i++) {
-        let paletteColours = utils.generateSequential([colour], 10).reverse()
-
-        paletteColours = paletteColours.concat(utils.generateSequential([selectedColours[i]], 10))
-        palette.push(utils.createPalette(paletteColours, 'ordered-diverging'))
-
-        paletteColours = utils.generateSequential([colour, selectedColours[i]])
-        palette.push(utils.createPalette(paletteColours, 'ordered-sequential'))
+        palette.push(utils.createPalette([colour, selectedColours[i]], 'ordered-sequential'))
+        palette.push(utils.createPalette([colour, selectedColours[i]], 'ordered-diverging'))
       }
     })
-    
-    let newPalettes = palettes.slice()
-    newPalettes.push(palette)
-    newPalettes.forEach(newPalette => {
-           setPalettes(newPalette)
-      }); 
+ 
+    let newPalettes = palettes.concat(palette)
+    setPalettes(newPalettes)   
   }  
 
   const selectedItems = colours.filter(element => element.selected === true);
@@ -499,11 +473,18 @@ function Palette({index, palette, palettes, setPalettes}){
             id = {palette.meta.id}
             palettes = {palettes}
             setPalettes = {setPalettes}/> : ''}
-          <Colours 
-            id = {palette.meta.id}
-            colours = {palette.colours}
-            palettes = {palettes}
-            setPalettes = {setPalettes}/>
+          {palette.meta.type === 'regular' 
+          ? <ColoursCategorical 
+              id = {palette.meta.id}
+              colours = {palette.colours}
+              palettes = {palettes}
+              setPalettes = {setPalettes}/> 
+          : <ColoursSeeded
+              id = {palette.meta.id}
+              colours = {palette.colours}
+              palettes = {palettes}
+              setPalettes = {setPalettes}/>}  
+          
           
       </Stack>
   )
@@ -664,9 +645,7 @@ function EditPalette({id, palettes, setPalettes}) {
                       .find(palette => palette.meta.id === id)?.colours
                       .map(colour => colour.value) || [];
   function handleOnChange(e) {
-    console.log('e.target.value', e.target.value)
     const parsedColours = utils.parseColours(e.target.value)
-    console.log('parsedColours', parsedColours)
     const newItems = parsedColours.map(element => {
       return {
           value: element,
@@ -674,7 +653,6 @@ function EditPalette({id, palettes, setPalettes}) {
       };
 
     });
-    console.log('newItems', newItems)
     
     const newPalettes = (newColours) => {
       return palettes.map(palette => {
@@ -688,7 +666,6 @@ function EditPalette({id, palettes, setPalettes}) {
       });
   };
     setPalettes(newPalettes)
-    console.log('done')
   }
 
 
@@ -705,7 +682,7 @@ function EditPalette({id, palettes, setPalettes}) {
               />)
 }
 
-function Colours({id, colours, palettes, setPalettes}){
+function ColoursCategorical({id, colours, palettes, setPalettes}){
   const rows = []
   colours.forEach((colour) => {
     rows.push( 
@@ -727,28 +704,96 @@ function Colours({id, colours, palettes, setPalettes}){
     </Stack>)
 }
 
+function ColoursSeeded({id, colours, palettes, setPalettes}){
+  
+  const paletteColours = []
+
+  const newPalette = palettes.find(palette => palette.meta.id === id)
+  const seeds = newPalette.meta.seed
+  
+  
+  
+  colours.forEach((colour) => {
+    paletteColours.push( 
+      <Sheet  
+        color="neutral" 
+        variant="outlined" 
+        key={colour.id}
+        sx={{ bgcolor: colour.value, width:24, height:24, borderRadius: 5 }}/> 
+    )
+  })
+
+
+  const seedColours = []
+  seeds.forEach((seed) => {
+    seedColours.push( 
+      <ColourSeed 
+      id = {id}
+      colour = {seed}
+      key = {seed.id}
+      palettes = {palettes}
+      setPalettes = {setPalettes}
+      seeds={seeds}/>
+    )
+  })
+
+  return(   
+    <Stack
+      direction="row"
+      justifyContent="space-between"
+      alignItems="flex-start"
+      spacing={2}
+      sx={{width: 766}}>
+
+        <Sheet
+          color="primary"
+          variant="outlined"
+          sx={{padding: 0.5, bgcolor: 'primary.50', borderRadius: 4}}>
+          <Stack
+            direction="row"
+            justifyContent="center"
+            alignItems="flex-start"
+            spacing={0.5}>
+              {paletteColours} 
+              </Stack>
+        </Sheet>
+        <Stack
+          direction="row"
+          justifyContent="center"
+          alignItems="flex-start"
+          spacing={0.5}>
+            {seedColours}
+        </Stack>
+    </Stack>)
+}
+
 function ColourActive({id, colour, palettes, setPalettes}){
   const [colourPicker, setColourPicker] = useState(colour.value);
   function handleOnChange(newColour) {
     
     setColourPicker(newColour.hex)
-    const updatedPalettes = palettes.map(palette => {
-      if (palette.meta.id === id) {
-          return {
-              ...palette,
-              colours: palette.colours.map(c => {
-                  if (c.id === colour.id) {
-                      return {
-                          ...c,
-                          value: newColour.hex
-                      };
-                  }
-                  return c;
-              })
-          };
-      }
-      return palette;
-    });
+
+
+    let updatedPalettes
+ 
+      updatedPalettes = palettes.map(palette => {
+        if (palette.meta.id === id) {
+            return {
+                ...palette,
+                colours: palette.colours.map(c => {
+                    if (c.id === colour.id) {
+                        return {
+                            ...c,
+                            value: newColour.hex
+                        };
+                    }
+                    return c;
+                })
+            };
+        }
+        return palette;
+      });
+  
     setPalettes(updatedPalettes);
   }
 
@@ -757,18 +802,78 @@ function ColourActive({id, colour, palettes, setPalettes}){
                 placement='bottom'
                 duration={0}
                 arrow={false}
-                    content={
-                        
-                        <Sketch
-                            color={colourPicker}
-                            disableAlpha={true}
-                            presetColors={[]}
-                            onChange={handleOnChange}/>
-                            
+                content={
+                  <Sketch
+                      color={colourPicker}
+                      disableAlpha={true}
+                      presetColors={[]}
+                      onChange={handleOnChange}/>    
                     }>
-                    <Sheet  
-                        color="neutral" 
-                        variant="outlined" 
-                        sx={{ bgcolor: colourPicker, width:24, height:24, borderRadius: 5 }}/> 
+                  <Sheet  
+                      color="neutral" 
+                      variant="outlined" 
+                      sx={{ bgcolor: colourPicker, width:24, height:24, borderRadius: 5 }}/> 
             </Tippy>)
+}  
+
+function ColourSeed({id, colour, palettes, setPalettes, seeds}){
+  const [colourPicker, setColourPicker] = useState(colour.value);
+  function handleOnChange(newColour) {
+
+    setColourPicker(newColour.hex)
+    seeds = seeds.map(element => element.value === colour.value ? {value: newColour.hex, id: element.id} : element);
+    seeds.find(seed => seed.value === colour.value)?.id
+    const seedID = seeds.find(seed => seed.value === colour.value)?.id
+    let updatedPalettes
+    
+      updatedPalettes = palettes.map(palette => {
+        if (palette.meta.id === id) {
+          let newPalette
+          switch (palette.meta.type) {
+            case 'ordered-sequential':
+              newPalette = utils.createPalette(seeds.map(element => element.value), 'ordered-sequential')
+              break;
+            case 'ordered-diverging':
+              newPalette = utils.createPalette(seeds.map(element => element.value), 'ordered-diverging')
+              break;
+
+          } 
+            return {
+                meta: {
+                  ...palette.meta,
+                  seed: seeds.map(s => {
+                    if (s.id === seedID) {
+                        return {
+                            ...s,
+                            value: newColour.hex
+                        };
+                    }
+                    return s;
+                })
+                },
+                colours: newPalette.colours
+            };
+        }
+        return palette;
+      });
+    setPalettes(updatedPalettes);
+  }
+
+  return(
+    <Tippy interactive={true}
+    placement='bottom'
+    duration={0}
+    arrow={false}
+    content={
+      <Sketch
+          color={colourPicker}
+          disableAlpha={true}
+          presetColors={[]}
+          onChange={handleOnChange}/>    
+        }>
+      <Sheet  
+          color="neutral" 
+          variant="outlined" 
+          sx={{ bgcolor: colourPicker, width:24, height:24, borderRadius: 5 }}/> 
+</Tippy>)
 }  

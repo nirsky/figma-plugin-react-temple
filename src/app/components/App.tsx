@@ -111,7 +111,7 @@ function HelpModal() {
 }
 
 function Copyright() {
-  return(<>Colour Manager for Tableau (v2.1) was created by Alex Waleczek @ vizku.</>
+  return(<>Colour Manager for Tableau (v3.0) was created by Alex Waleczek @ vizku.</>
     
   )
 }

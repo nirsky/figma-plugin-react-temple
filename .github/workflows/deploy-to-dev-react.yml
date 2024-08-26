@@ -20,14 +20,14 @@ jobs:
       - name: Configure SSH
         run: |
           ls
-          mkdir .ssh/
-          echo "$SSH_KEY" > -p .ssh/staging.key
-          chmod 600 -p .ssh/staging.key
-          cat >>-p .ssh/config <<END
+          mkdir -p .ssh/
+          echo "$SSH_KEY" > .ssh/staging.key
+          chmod 600  .ssh/staging.key
+          cat >> .ssh/config <<END
           Host deploy
             HostName $SSH_HOST
             User $SSH_USER
-            IdentityFile ~-p .ssh/staging.key
+            IdentityFile .ssh/staging.key
             StrictHostKeyChecking no
           END
         env:

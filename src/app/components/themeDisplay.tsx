@@ -10,7 +10,6 @@ import Switch from '@mui/joy/Switch';
 import Button from '@mui/joy/Button';
 import Input from '@mui/joy/Input';
 import Table from '@mui/joy/Table';
-import Typography from '@mui/joy/Typography';
 import Sheet from '@mui/joy/Sheet';
 import Tabs from '@mui/joy/Tabs';
 import TabList from '@mui/joy/TabList';
@@ -22,7 +21,6 @@ import ButtonGroup from '@mui/joy/ButtonGroup';
 import Stack from '@mui/joy/Stack';
 import Divider from '@mui/joy/Divider';
 
-import { SwatchPresetColor } from '@uiw/react-color-swatch';
 
 export default function ThemeManager({theme, setTheme, palettes}) {
     const [sync, setSync] = useState(false);
@@ -144,6 +142,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
                         Upload 
                         <conf.VisuallyHiddenInput type="file" onChange={handleOnFileChange} />
                 </Button>
+                {error}
     </>);
   }
 
@@ -275,7 +274,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
   }
 
   function Meta({theme, setTheme, palettes, setPalette}) {
-    const handleOnChange = (event, newValue) => {
+    const handleOnChange = (_event, newValue) => {
         setTheme(draft => {
             draft['base-theme'] = newValue
           })
@@ -324,7 +323,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
   }
 
   function SelectPalette({palettes, setPalette}) {
-    const handleOnChange = (event, newValue) => {
+    const handleOnChange = (_event, newValue) => {
         const palette = palettes.find(palette => palette.meta.id === newValue);
         setPalette(palette.colours.map(colour => colour.value))
       };
@@ -478,7 +477,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
   }
 
   function StringEdit({style, attribute, theme, setTheme, sync}) {
-    const handleOnChange = (event, newValue) => {
+    const handleOnChange = (_event, newValue) => {
         setTheme(draft => {
             draft.styles[style][attribute] = newValue
           })
@@ -514,7 +513,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
   }
 
   function ColourEdit({style, attribute, theme, setTheme, sync, palette}) {
-    const [colour, setColour] = useState(theme.styles[style][attribute]);
+    const [setColour] = useState(theme.styles[style][attribute]);
     function handleOnChange(color) {
         setTheme(draft => {
             draft.styles[style][attribute] = color.hex
@@ -552,7 +551,7 @@ export default function ThemeManager({theme, setTheme, palettes}) {
   }
 
   function NumberEdit({style, attribute, theme, setTheme, sync}) {
-    const handleOnChange = (event, newValue) => {
+    const handleOnChange = (_event, newValue) => {
         setTheme(draft => {
             draft.styles[style][attribute] = newValue
           })

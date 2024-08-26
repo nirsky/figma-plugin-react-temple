@@ -3,15 +3,10 @@ import { useState } from 'react';
 import * as utils from './utils'
 import chroma from "chroma-js"
 import * as conf from './config';
-import Saturation from '@uiw/react-color-saturation';
 import Sketch from '@uiw/react-color-sketch';
 import Tippy from '@tippyjs/react'
-import Select from '@mui/joy/Select';
-import Option from '@mui/joy/Option';
-import Switch from '@mui/joy/Switch';
 import Button from '@mui/joy/Button';
 import Input from '@mui/joy/Input';
-import Table from '@mui/joy/Table';
 import Typography from '@mui/joy/Typography';
 import Sheet from '@mui/joy/Sheet';
 import Textarea from '@mui/joy/Textarea';
@@ -25,13 +20,12 @@ import Delete from '@mui/icons-material/Delete';
 import Check from '@mui/icons-material/Check';
 import Upload from '@mui/icons-material/Upload';
 import Download from '@mui/icons-material/Download';
-import { styled } from '@mui/joy';
 import ButtonGroup from '@mui/joy/ButtonGroup';
 import Stack from '@mui/joy/Stack';
 import Divider from '@mui/joy/Divider';
 
 
-function ColourPicker() {
+/*function ColourPicker() {
   const [hsva, setHsva] = useState({ h: 0, s: 0, v: 68, a: 1 });
   return (<>
     <Saturation
@@ -43,7 +37,7 @@ function ColourPicker() {
     <Sketch />
     </>
   );
-}
+}*/
 
 function ShowPalettes({palettes}) {
   function handleOnClick() {
@@ -323,7 +317,7 @@ function AddCategorical({colours, palettes, setPalettes}) {
 }
 
 function AddSequential({colours, palettes, setPalettes}) {
-  function handleOnClick (e) {
+  function handleOnClick () {
     const selectedItems = colours.filter(element => element.selected === true);
     const selectedColours = selectedItems.map(element => element.value)
 
@@ -388,7 +382,7 @@ function AddDivergingBright({colours, palettes, setPalettes}) {
 }
 
 function CreateEverything({colours, palettes, setPalettes}) {
-  function handleOnClick (e) {
+  function handleOnClick () {
     const selectedItems = colours.filter(element => element.selected === true);
     const selectedColours = selectedItems.map(element => element.value)
 
@@ -673,7 +667,7 @@ function EditPalette({id, palettes, setPalettes}) {
 
     });
     
-    const newPalettes = (newColours) => {
+    const newPalettes = () => {
       return palettes.map(palette => {
           if (palette.meta.id === id) {
               return {

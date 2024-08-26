@@ -383,7 +383,7 @@ let variable
         //Convert hex to Figma RGB
         let value
         if (variable.resolvedType == 'COLOR') {
-            let rgb = Object.values(variable['valuesByMode'])
+            let rgb: any = Object.values(variable['valuesByMode'])
             value = chroma(rgb[0].r * 255,  rgb[0].g * 255, rgb[0].b * 255).hex()
         } else {
             value = Object.values(variable['valuesByMode'])[0]

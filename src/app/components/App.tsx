@@ -103,7 +103,7 @@ function HelpModal() {
             Welcome to the Style Manager for Tableau
           </Typography>
           <Typography id="modal-desc" textColor="text.tertiary">
-            Learn about the Colour Manager for Tabelau and the Theme Manager for Tableau. Both together with Figma.
+            Learn about the Colour Manager for Tableau.
           </Typography>
         </Sheet>
       </Modal>

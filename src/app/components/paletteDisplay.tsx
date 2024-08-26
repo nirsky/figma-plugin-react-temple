@@ -535,8 +535,11 @@ function Meta({id, index, meta, palettes, setPalettes, edit, setEdit}){
 
 function Controls({id, index, palettes, setPalettes, edit, setEdit}){
   const rows = []
+  const palette = palettes.find(palette => palette.meta.id === id)
   conf.controls.forEach((control) => {
-      rows.push(
+    if(control.type === 'edit') {
+       if(palette.meta.type === 'regular') {
+        rows.push(
           <Control 
               id = {id}
               index = {index}
@@ -546,7 +549,23 @@ function Controls({id, index, palettes, setPalettes, edit, setEdit}){
               setPalettes = {setPalettes} 
               edit = {edit}
               setEdit = {setEdit}/>
-      )
+              )
+       }
+      
+        
+    } else {
+          rows.push(
+              <Control 
+                  id = {id}
+                  index = {index}
+                  control = {control}
+                  key = {control.name}
+                  palettes = {palettes}
+                  setPalettes = {setPalettes} 
+                  edit = {edit}
+                  setEdit = {setEdit}/>
+          )
+    }
   })
 
   return(

@@ -44,8 +44,9 @@ jobs:
         run: ssh deploy 'pwd'
       - name: current dir content
         run: ssh deploy 'ls -a'
-      - name: Install
-        run: ssh deploy 'cd html/dev/tcm/dev/'
-          ssh deploy 'npm install'
-          ssh deploy 'pwd'
-          ssh deploy 'yarn build'
+      - name: NPM Install
+        run: ssh deploy 'npm --prefix html/dev/tcm/dev/ install html/dev/tcm/dev/'
+      - name: Yarn Build
+        run: ssh deploy 'yarn --cwd html/dev/tcm/dev/ build'
+      - name: current dir content
+        run: ssh deploy 'ls -a html/dev/tcm/dev/'

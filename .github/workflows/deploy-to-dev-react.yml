@@ -48,11 +48,8 @@ jobs:
       - name: current dir content
         run: ssh deploy 'ls -a'
       - name: NPM Install
-        run: ssh deploy 'npm install'
-        working-directory: html/dev/tcm/dev/
+        run: ssh deploy 'npm --prefix html/dev/tcm/dev/ install html/dev/tcm/dev/'
       - name: Yarn Build
-        run: ssh deploy 'yarn build'
-        working-directory: html/dev/tcm/dev/
+        run: ssh deploy 'yarn --cwd html/dev/tcm/dev/ build'
       - name: current dir content
         run: ssh deploy 'ls -a'
-        working-directory: html/dev/tcm/dev/

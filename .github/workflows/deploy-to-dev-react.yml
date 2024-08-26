@@ -49,9 +49,10 @@ jobs:
         run: ssh deploy 'ls -a'
       - name: NPM Install
         run: ssh deploy 'npm install'
-        working-directory: $working_dir
+        working-directory: html/dev/tcm/dev/
       - name: Yarn Build
         run: ssh deploy 'yarn build'
-        working-directory: $working_dir
+        working-directory: html/dev/tcm/dev/
       - name: current dir content
-        run: ssh deploy 'ls -a $working_dir'
+        run: ssh deploy 'ls -a'
+        working-directory: html/dev/tcm/dev/

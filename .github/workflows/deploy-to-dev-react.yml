@@ -19,14 +19,14 @@ jobs:
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Configure SSH
         run: |
-          mkdir -p ~/.ssh/
-          echo "$SSH_KEY" > ~/.ssh/staging.key
-          chmod 600 ~/.ssh/staging.key
-          cat >>~/.ssh/config <<END
+          mkdir -p ~/html/dev/tcm/dev/.ssh/
+          echo "$SSH_KEY" > ~/html/dev/tcm/dev/.ssh/staging.key
+          chmod 600 ~/html/dev/tcm/dev/.ssh/staging.key
+          cat >>~/html/dev/tcm/dev/.ssh/config <<END
           Host deploy
             HostName $SSH_HOST
             User $SSH_USER
-            IdentityFile ~/.ssh/staging.key
+            IdentityFile ~/html/dev/tcm/dev/.ssh/staging.key
             StrictHostKeyChecking no
           END
         env:

@@ -19,17 +19,18 @@ jobs:
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Configure SSH
         run: |
-          mkdir -p ~/html/dev/tcm/dev/.ssh/
-          echo "$SSH_KEY" > ~/html/dev/tcm/dev/.ssh/staging.key
-          chmod 600 ~/html/dev/tcm/dev/.ssh/staging.key
-          cat >>~/html/dev/tcm/dev/.ssh/config <<END
+          mkdir -p $remote_path.ssh/
+          echo "$SSH_KEY" > -p $remote_path.ssh/staging.key
+          chmod 600 -p $remote_path.ssh/staging.key
+          cat >>-p $remote_path.ssh/config <<END
           Host deploy
             HostName $SSH_HOST
             User $SSH_USER
-            IdentityFile ~/html/dev/tcm/dev/.ssh/staging.key
+            IdentityFile ~-p $remote_path.ssh/staging.key
             StrictHostKeyChecking no
           END
         env:
+          remote_path: /var/www/virtual/${{ vars.SSH_USERNAME }}/html/dev/tcm/dev/
           SSH_USER: ${{ vars.SSH_USERNAME }}
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_HOST: ${{ vars.SSH_HOST }}

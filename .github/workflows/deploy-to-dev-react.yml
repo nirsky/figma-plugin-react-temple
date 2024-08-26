@@ -20,7 +20,7 @@ jobs:
       - name: Configure SSH
         run: |
           ls
-          mkdir -p .ssh/
+          mkdir .ssh/
           echo "$SSH_KEY" > -p .ssh/staging.key
           chmod 600 -p .ssh/staging.key
           cat >>-p .ssh/config <<END

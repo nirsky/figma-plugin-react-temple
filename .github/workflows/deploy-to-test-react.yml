@@ -2,7 +2,7 @@ name: Deploy TCM to DEV
 on:
   push:
     branches:
-      - 'dev*'
+      - 'test*'
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest

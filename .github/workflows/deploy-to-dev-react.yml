@@ -32,22 +32,17 @@ jobs:
           mkdir -p ~/.ssh/
           echo oooooooooooooooooo home   
           ls -a ~/
-          echo "$SSH_KEY" > ~/.ssh/staging.key
+          echo "$remote_key" > ~/.ssh/staging.key
           chmod 600 ~/.ssh/staging.key
           cat >>~/.ssh/config <<END
           Host deploy
-            HostName $SSH_HOST
-            User $SSH_USER
+            HostName $remote_host
+            User $remote_user
             IdentityFile ~/.ssh/staging.key
             StrictHostKeyChecking no
           END
           echo oooooooooooooooooo current   
           ls -a
-
-        env:
-          SSH_USER: ${{ vars.SSH_USERNAME }}
-          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_HOST: ${{ vars.SSH_HOST }}
       - name: current dir
         run: ssh deploy 'pwd'
       - name: current dir content

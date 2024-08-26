@@ -17,5 +17,7 @@ jobs:
           remote_host: ${{ vars.SSH_HOST }}
           remote_user: ${{ vars.SSH_USERNAME }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Install
+        run: npm install
       - name: build react
         run: yarn build

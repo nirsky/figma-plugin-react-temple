@@ -22,7 +22,7 @@ import Help from '@mui/icons-material/Help';
 export default function App() {
   const [theme, setTheme] = useImmer(conf.jsonStructure);
   const [palettes, setPalettes] = useState(conf.testPalettes); 
-
+  const test = true
   return( 
     <Stack
       direction="column"
@@ -45,19 +45,20 @@ export default function App() {
           sx={{ width: 798 }}>
             <TabList sx={{justifyContent: 'center'}}>
               <Tab>Colour Manager</Tab>
-              <Tab>Theme Manager</Tab>
+              {test != true ? <Tab>Theme Manager</Tab> : '' }
             </TabList>
             <TabPanel value={0}>
               <ColourManager 
                 palettes = {palettes}
                 setPalettes = {setPalettes}/>
             </TabPanel>
+            {test != true ? 
             <TabPanel value={1}>
               <ThemeManager
                 theme={theme}
                 setTheme={setTheme}
                 palettes = {palettes} /> 
-            </TabPanel>
+            </TabPanel> : '' }
         </Tabs>
         <Copyright />
     </Stack>)

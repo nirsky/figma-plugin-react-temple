@@ -18,6 +18,7 @@ import ArrowUpward from '@mui/icons-material/ArrowUpward';
 import ArrowDownward from '@mui/icons-material/ArrowDownward';
 import Delete from '@mui/icons-material/Delete';
 import Check from '@mui/icons-material/Check';
+import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
 import Upload from '@mui/icons-material/Upload';
 import Download from '@mui/icons-material/Download';
 import ButtonGroup from '@mui/joy/ButtonGroup';
@@ -39,17 +40,7 @@ import Divider from '@mui/joy/Divider';
   );
 }*/
 
-function ShowPalettes({palettes}) {
-  function handleOnClick() {
-      console.log('palettes', palettes)
-      console.log('palettes.stringify()', JSON.stringify(palettes))
-  }
-  return (<>  
-      <button className='vizku' onClick={handleOnClick}>
-          Show Palettes   
-      </button>
-  </>);
-}
+
 
 export default function ColourManager({palettes, setPalettes}) {
   return (
@@ -59,27 +50,105 @@ export default function ColourManager({palettes, setPalettes}) {
 }
 
 function Intro({palettes, setPalettes}) {
+
+  const [colours, setColours] = useState([]);
+  function handleOnChange(e) {
+    let newColours = []
+    const parsedColours = utils.parseColours(e.target.value)
+    parsedColours.forEach((parsedColour, index) => {
+      newColours.push(
+        {
+          value: parsedColour,
+          selected: false,
+          index: index
+        }
+      )
+    }) 
+    setColours(newColours)
+  }
+
+  const border = 0
+  const width = 130
   return(
       <Stack
         direction="column"
         justifyContent="space-between"
         alignItems="flex-start"
-        spacing={2}>
-          <ButtonGroup
-            color="primary"
-            orientation="horizontal"
-            size="sm"
-            variant="solid">
-              <ImportXML 
-                palettes={palettes}
-                setPalettes={setPalettes}/>
-              <ExportXML 
-                palettes = {palettes}/>
-          </ButtonGroup>
-          <AddPalettes
-            palettes = {palettes}
-            setPalettes = {setPalettes}/> 
+        spacing={0.5}>
+          <Stack
+            direction="column"
+            justifyContent="flex-start"
+            alignItems="center"
+            spacing={1}>
+              <Stack
+                direction="row"
+                justifyContent="flex-start"
+                alignItems="flex-start"
+                spacing={1}>
+                  <Divider orientation="horizontal" sx={{width: 210}}>
+                    <Tippy 
+                        placement='auto'
+                        content={
+                            <Sheet color="primary" variant="soft" sx={{padding: 1, border: 1}}>
+                              <Typography level="title-sm">Upload a Preferences.tps</Typography>
+                              <Typography level="body-xs">if you have one. You can find it in "C:\Users\..\Documents\My Tableau Repository". Or just start with step 2 if you want to create one from scratch</Typography>  
+                              <Typography level="title-sm">Download a Preferences.tps</Typography>
+                              <Typography level="body-xs">Once you are done, download the new Preferences.tps into "C:\Users\..\Documents\My Tableau Repository". Then restart Tableau to be able to use the new palettes</Typography> 
+                            </Sheet>}>
+                            <div> 1. Load File  <HelpOutlineOutlinedIcon fontSize="large" /> </div>
+                    </Tippy>
+                  </Divider>
+                  <Divider orientation="horizontal" sx={{width: 556}}>2. Paste Colours  <HelpOutlineOutlinedIcon fontSize="large" /></Divider>    
+              </Stack>
+              <Stack
+                direction="row"
+                justifyContent="flex-start"
+                alignItems="flex-start"
+                spacing={1}>
+                  <Sheet sx={{width: 210}}>
+                    <LoadFile 
+                          palettes = {palettes}
+                          setPalettes = {setPalettes}/>
+                  </Sheet>
+                  <Textarea
+                  minRows={2}
+                  size="sm"
+                  id="colourstring"
+                  variant="outlined"
+                  onInput={handleOnChange} 
+                  onLoad={handleOnChange} 
+                  defaultValue="https://coolors.co/01161e-8dadb9-124559-e9e3e6-c4d6b0"
+                  sx={{width: 556}} />  
+              </Stack>
+          </Stack>
+          <Divider orientation="horizontal"sx={{'--Divider-childPosition': '10%'}}>3. Add Palette  <HelpOutlineOutlinedIcon fontSize="large" /></Divider>
+          <AddPalette 
+              colours = {colours}
+              setColours = {setColours}
+              palettes = {palettes}
+              setPalettes = {setPalettes}/>
+          <Palettes
+              palettes = {palettes}
+              setPalettes = {setPalettes}/>
       </Stack>);
+}
+
+function LoadFile({palettes, setPalettes}) {
+  const width = 130
+  return(
+      <ButtonGroup
+        color="primary"
+        orientation="horizontal"
+        size="sm"
+        variant="solid">
+          <ImportXML 
+            palettes={palettes}
+            setPalettes={setPalettes}/>
+          <ExportXML 
+            palettes = {palettes}/>
+      </ButtonGroup>
+
+  )
 }
 
 function ImportXML({palettes, setPalettes}) {
@@ -136,22 +205,7 @@ function ExportXML({palettes}) {
             </Button>)
 }
 
-function AddPalettes({palettes, setPalettes}) {
-  const [colours, setColours] = useState([]);
-  function handleOnChange(e) {
-    let newColours = []
-    const parsedColours = utils.parseColours(e.target.value)
-    parsedColours.forEach((parsedColour, index) => {
-      newColours.push(
-        {
-          value: parsedColour,
-          selected: false,
-          index: index
-        }
-      )
-    }) 
-    setColours(newColours)
-  }
+function AddPalette({colours, setColours, palettes, setPalettes}) {
 
   function handleOnSelectClick(button) {
     let select = false
@@ -187,88 +241,67 @@ function AddPalettes({palettes, setPalettes}) {
   const deselectedColours = colours.filter(element => element.selected === false)
   const border = 0
   return (
+    
+    <Stack
+      direction="column"
+      justifyContent="flex-start"
+      alignItems="flex-start"
+      spacing={1}
+      sx={{border: border}}>
         <Stack
-          direction="column"
-          alignItems="flex-start"
+          direction="row"
           justifyContent="space-between"
+          alignItems="center"
           spacing={1}
-          sx={{width: 766, border: border}} >
-            <Textarea
-              minRows={2}
-              size="sm"
-              id="colourstring"
-              variant="outlined"
-              onInput={handleOnChange} 
-              onLoad={handleOnChange} 
-              defaultValue="https://coolors.co/01161e-8dadb9-124559-e9e3e6-c4d6b0"
-              sx={{width: 1}} />  
+          sx={{width: 646, border: border}}>
+            <div>
+              <Chip
+                onClick={() => handleOnSelectClick('all')}
+                color="primary"
+                size="md"
+                variant="solid"
+                disabled={deselectedColours.length === 0}>All </Chip> 
+              <Chip
+                onClick={() => handleOnSelectClick('none')}
+                color="primary"
+                size="md"
+                variant="solid"
+                disabled={selectedColours.length === 0}>None </Chip>
+            </div>
             <Stack
               direction="row"
-              justifyContent="space-between"
+              justifyContent="center"
               alignItems="flex-start"
               spacing={1}
-              sx={{width: 766, border: border}}> 
-                <Stack
-                  direction="column"
-                  justifyContent="space-between"
-                  alignItems="flex-start"
-                  spacing={1}
-                  sx={{width: 766, border: border}}> 
-                    <Stack
-                      direction="row"
-                      justifyContent="space-between"
-                      alignItems="center"
-                      spacing={1}
-                      sx={{width: 766, border: border}}>
-                        <div>
-                          <Chip
-                            onClick={() => handleOnSelectClick('all')}
-                            color="primary"
-                            size="md"
-                            variant="solid"
-                            disabled={deselectedColours.length === 0}>All </Chip> 
-                          <Chip
-                            onClick={() => handleOnSelectClick('none')}
-                            color="primary"
-                            size="md"
-                            variant="solid"
-                            disabled={selectedColours.length === 0}>None </Chip>
-                        </div>
-                        <Stack
-                          direction="row"
-                          justifyContent="center"
-                          alignItems="flex-start"
-                          spacing={1}
-                          sx={{border: border}}>
-                            <ShowPalettes palettes = {palettes} />
-                            <AddCategorical colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
-                            <AddSequential colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
-                            <AddDivergingBright colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
-                            <CreateEverything colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
-                        </Stack>
-                    </Stack>
-                    <Stack
-                      direction="row"
-                      justifyContent="center"
-                      alignItems="flex-start"
-                      spacing={0.5}
-                      sx={{border: border}}>
-                        {rows}
-                    </Stack>
-                </Stack>   
+              sx={{border: border}}>
+                <AddCategorical colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
+                <AddSequential colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
+                <AddDivergingBright colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
+                <CreateEverything colours = {colours} palettes = {palettes} setPalettes = {setPalettes} />
             </Stack>
-            <Palettes
-                palettes = {palettes}
-                setPalettes = {setPalettes}/>
-        </Stack>);
+        </Stack>
+        <Stack
+          direction="row"
+          justifyContent="flex-start"
+          alignItems="flex-start"
+          spacing={0.5}
+          sx={{border: border}}>
+            {rows}
+        </Stack>
+  </Stack>);
 }
 
 function ColourSelect({colour, colours, setColours}){
   function handleOnClick() { 
     let newColours = colours.slice()
+      console.log('test')
+    
+      console.log('newColours[colour.index]', newColours[colour.index])
+      console.log('colour', colour)
       newColours[colour.index].selected = !colour.selected
       setColours(newColours)
   }
+
   let selected = false
   if (colour.selected === true) {
     selected = true

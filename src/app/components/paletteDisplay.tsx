@@ -67,8 +67,8 @@ function Intro({palettes, setPalettes}) {
     setColours(newColours)
   }
 
-  const border = 0
-  const width = 130
+  //const border = 0
+  //const width = 130
   return(
       <Stack
         direction="column"
@@ -134,7 +134,7 @@ function Intro({palettes, setPalettes}) {
 }
 
 function LoadFile({palettes, setPalettes}) {
-  const width = 130
+  //const width = 130
   return(
       <ButtonGroup
         color="primary"

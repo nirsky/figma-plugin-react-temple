@@ -36,7 +36,8 @@ export default function App() {
           alignItems="center"
           spacing={0.1}
           sx={{width: 798}}>
-            <Typography color="primary" level="h1" >Style Manager for Tableau - TEST 5</Typography> 
+            <Typography color="primary" level="h1" >Colour Manager - TEST 5</Typography> 
+            <ShowPalettes palettes = {palettes} />
             <HelpModal />
         </Stack>
         <Tabs 
@@ -64,6 +65,17 @@ export default function App() {
     </Stack>)
 }
 
+function ShowPalettes({palettes}) {
+  function handleOnClick() {
+      console.log('palettes', palettes)
+      console.log('palettes.stringify()', JSON.stringify(palettes))
+  }
+  return (<>  
+      <button className='vizku' onClick={handleOnClick}>
+          Show Palettes   
+      </button>
+  </>);
+}
 
 function HelpModal() {
   const [open, setOpen] = React.useState(false);
